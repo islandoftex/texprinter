@@ -64,7 +64,7 @@ import net.sf.texprinter.utils.StringHelper;
 /**
  * The main class.
  * @author Paulo Roberto Massa Cereda
- * @version 1.0
+ * @version 1.0.2
  * @since 1.0
  */
 public class TeXPrinter {
@@ -166,7 +166,7 @@ public class TeXPrinter {
                     filename = filename + ".tex";
 
                     // and generate it
-                    TeXGenerator.generate(q, filename);
+                    TeXGenerator.generate(q, filename, isCommandLine);
 
                     // and stop now
                     break;

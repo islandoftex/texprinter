@@ -53,7 +53,7 @@ package net.sf.texprinter.model;
 /**
  * Provides a simple POJO to handle comments.
  * @author Paulo Roberto Massa Cereda
- * @version 1.0
+ * @version 1.0.2
  * @since 1.0
  */
 public class Comment {

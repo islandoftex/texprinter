@@ -63,7 +63,7 @@ import java.net.URLConnection;
 /**
  * Provides download features for other helper classes.
  * @author Paulo Roberto Massa Cereda
- * @version 1.0
+ * @version 1.0.2
  * @since 1.0
  */
 public class DownloadHelper {
@@ -113,7 +113,7 @@ public class DownloadHelper {
             
             // set the new buffer
             buffer = new byte[size];
-            
+                        
             // while there are bytes to read
             while ((bytesRead = inputStream.read(buffer)) != -1) {
                 
@@ -130,10 +130,10 @@ public class DownloadHelper {
                 
                 // close the input stream
                 inputStream.close();
-                
+
                 // close the output stream
                 outputStream.close();
-                
+                                
             } catch (IOException e) {
                 // something bad happened, but we won't do nothing
             }

@@ -58,7 +58,7 @@ import java.util.ArrayList;
  * Provides a simple POJO to handle posts, which can be a question or
  * an answer.
  * @author Paulo Roberto Massa Cereda
- * @version 1.0
+ * @version 1.0.2
  * @since 1.0
  */
 public class Post {

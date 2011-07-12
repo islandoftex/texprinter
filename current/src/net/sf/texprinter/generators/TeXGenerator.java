@@ -63,7 +63,7 @@ import net.sf.texprinter.utils.StringHelper;
 /**
  * Provides the TeX generation from a Question object.
  * @author Paulo Roberto Massa Cereda
- * @version 1.0
+ * @version 1.0.2
  * @since 1.0
  */
 public class TeXGenerator {
@@ -73,7 +73,7 @@ public class TeXGenerator {
      * @param question The question.
      * @param filename The filename.
      */
-    public static void generate(Question question, String filename) {
+    public static void generate(Question question, String filename, boolean isCommandLine) {
 
         // lets try again
         try {
@@ -138,7 +138,7 @@ public class TeXGenerator {
             document.write("\\section*{The question}\n\n");
 
             // get the question text
-            document.write(StringHelper.escapeHTMLtoTeX(question.getQuestion().getText()) + "\n\n");
+            document.write(StringHelper.escapeHTMLtoTeX(question.getQuestion().getText(), isCommandLine) + "\n\n");
 
             // if the question has comments
             if (!question.getQuestion().getComments().isEmpty()) {
@@ -156,7 +156,7 @@ public class TeXGenerator {
                 for (Comment questionComment : questionComments) {
 
                     // add it as a list item
-                    document.write("\\item " + StringHelper.escapeHTMLtoTeX(questionComment.getText()) + " -- \\emph{" + questionComment.getAuthor() + " on " + questionComment.getDate() + ".}\n");
+                    document.write("\\item " + StringHelper.escapeHTMLtoTeX(questionComment.getText(), isCommandLine) + " -- \\emph{" + questionComment.getAuthor() + " on " + questionComment.getDate() + ".}\n");
                 }
 
                 // close the environment
@@ -201,7 +201,7 @@ public class TeXGenerator {
                     document.write("\\emph{Answered by " + answer.getUser().getName() + " (" + answer.getUser().getReputation() + ") on " + answer.getDate() + answerAccepted + "}\n\n\\vspace{0.3cm}\n\n");
 
                     // write the answer
-                    document.write(StringHelper.escapeHTMLtoTeX(answer.getText()) + "\n\n");
+                    document.write(StringHelper.escapeHTMLtoTeX(answer.getText(), isCommandLine) + "\n\n");
 
                     // if the answer has comments
                     if (!answer.getComments().isEmpty()) {
@@ -219,7 +219,7 @@ public class TeXGenerator {
                         for (Comment answerComment : answerComments) {
 
                             // write it as an item
-                            document.write("\\item " + StringHelper.escapeHTMLtoTeX(answerComment.getText()) + " -- \\emph{" + answerComment.getAuthor() + " on " + answerComment.getDate() + ".}\n");
+                            document.write("\\item " + StringHelper.escapeHTMLtoTeX(answerComment.getText(), isCommandLine) + " -- \\emph{" + answerComment.getAuthor() + " on " + answerComment.getDate() + ".}\n");
                         }
 
                         // close the environment

@@ -61,7 +61,7 @@ import javax.swing.UIManager;
 /**
  * Provides message features to the other classes.
  * @author Paulo Roberto Massa Cereda
- * @version 1.0
+ * @version 1.0.2
  * @since 1.0
  */
 public class MessagesHelper {
@@ -73,7 +73,7 @@ public class MessagesHelper {
      * @param text The text of the messagebox.
      */
     public static void info(Window window, String title, String text) {
-
+                
         // display the dialog
         TaskDialogs.inform(window, title, text);
     }
@@ -168,6 +168,6 @@ public class MessagesHelper {
         final String COPYRIGHT = "\u00a9";
 
         // call the proper method
-        TaskDialogs.inform(window, "TeXPrinter", "<i>Version 1.0 - Tasty Waffles</i>\n\nCopyright " + COPYRIGHT + " 2011, Paulo Roberto Massa Cereda\nAll rights reserved.\n\nThis application is licensed under the <u>New BSD License</u>. I want to call your attention\nto the fact that the <i>New BSD License</i> has been verified as a <i>GPL-compatible free\nsoftware license</i> by the Free Software Foundation, and has been vetted as an <i>open\nsource license</i> by the Open Source Initiative.");
+        TaskDialogs.inform(window, "TeXPrinter", "<i>Version 1.0.2 - Tasty Waffles</i>\n\nCopyright " + COPYRIGHT + " 2011, Paulo Roberto Massa Cereda\nAll rights reserved.\n\nThis application is licensed under the <u>New BSD License</u>. I want to call your attention\nto the fact that the <i>New BSD License</i> has been verified as a <i>GPL-compatible free\nsoftware license</i> by the Free Software Foundation, and has been vetted as an <i>open\nsource license</i> by the Open Source Initiative.");
     }
 }

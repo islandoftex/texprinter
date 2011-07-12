@@ -64,7 +64,7 @@ import org.apache.commons.cli.ParseException;
 /**
  * Provides command line features for the main application.
  * @author Paulo Roberto Massa Cereda
- * @version 1.0
+ * @version 1.0.2
  * @since 1.0
  */
 public class CommandLineHelper {
@@ -76,7 +76,7 @@ public class CommandLineHelper {
     // the command line options
     private Options commandLineOptions;
     // the application version
-    private static final String VERSION = "1.0 - Tasty Waffles";
+    private static final String VERSION = "1.0.2 - Tasty Waffles";
 
     /**
      * Constructor method.

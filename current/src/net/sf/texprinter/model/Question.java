@@ -63,7 +63,7 @@ import net.sf.texprinter.utils.MessagesHelper;
  * Provides a simple POJO to handle question. Well, not so simple, but it
  * aims at encapsulating the logic in it.
  * @author Paulo Roberto Massa Cereda
- * @version 1.0
+ * @version 1.0.2
  * @since 1.0
  */
 public class Question {
