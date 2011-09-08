@@ -64,7 +64,7 @@ import net.sf.texprinter.utils.StringHelper;
 /**
  * The main class.
  * @author Paulo Roberto Massa Cereda
- * @version 1.0.2
+ * @version 1.1
  * @since 1.0
  */
 public class TeXPrinter {

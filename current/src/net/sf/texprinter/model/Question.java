@@ -53,17 +53,19 @@ package net.sf.texprinter.model;
 
 // needed packages
 import java.util.ArrayList;
+import java.util.Collections;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import net.sf.texprinter.utils.MessagesHelper;
+import net.sf.texprinter.utils.PostComparator;
 
 /**
  * Provides a simple POJO to handle question. Well, not so simple, but it
  * aims at encapsulating the logic in it.
  * @author Paulo Roberto Massa Cereda
- * @version 1.0.2
+ * @version 1.1
  * @since 1.0
  */
 public class Question {
@@ -102,12 +104,17 @@ public class Question {
             // get question text
             Element questionText = doc.select("div.post-text").first();
             
+            // get question vote
+            Element questionVote = doc.select("div#question").first().select("div.vote").first().select("span.vote-count-post").first();
+            
+            System.out.println("question vote: " + questionVote.text());
+            
             // get the question comment elements
             Elements questionCommentElements = doc.select("div.comments").first().select("tr.comment");
 
             // create a new list of question comments
             ArrayList<Comment> questionComments = new ArrayList<Comment>();
-
+            
             // if there are comments on this question
             if (!questionCommentElements.isEmpty()) {
 
@@ -125,6 +132,15 @@ public class Question {
                     
                     // set the comment date
                     c.setDate(questionCommentElement.select("span.comment-date").first().text());
+                    
+                    // set the comment vote
+                    try {
+                        c.setVotes(Integer.parseInt(questionCommentElement.select("span.cool").first().text()));
+                        System.out.println("Comment: " + questionCommentElement.select("span.cool").first().text());
+                    }
+                    catch (Exception e) {
+                        c.setVotes(0);
+                    }
                     
                     // add this new comment to the list of question comments
                     questionComments.add(c);
@@ -152,6 +168,15 @@ public class Question {
             // set the text
             q.setText(questionText.html());
 
+            // set the votes
+            try {
+                q.setVotes(Integer.parseInt(questionVote.text()));
+                System.out.println("Question: " + questionVote.text());
+            }
+            catch (Exception e) {
+                q.setVotes(0);
+            }
+            
             // set the comments
             q.setComments(questionComments);
 
@@ -221,7 +246,7 @@ public class Question {
                 
                 // get the answer vote block
                 Elements theVotes = answersBlock.select("div.vote");
-
+                
                 // iterate through the answers
                 for (int i = 0; i < authorsNames.size(); i++) {
 
@@ -249,6 +274,16 @@ public class Question {
                             // set the comment date
                             c.setDate(currentAnswerCommentElement.select("span.comment-date").first().text());
                             
+                            // set the comment vote
+                            try {
+                                c.setVotes(Integer.parseInt(currentAnswerCommentElement.select("span.cool").first().text()));
+                                System.out.println("A Comment: " + currentAnswerCommentElement.select("span.cool").first().text());
+                            }
+                            catch (Exception e) {
+                                c.setVotes(0);
+                            }
+                            
+                            
                             // add this comment to the list
                             currentAnswerComments.add(c);
                             
@@ -268,7 +303,16 @@ public class Question {
                     
                     // set the text
                     ps.setText(answersTexts.get(i).html());
-
+                    
+                    // set the votes
+                    try {
+                        ps.setVotes(Integer.parseInt(theVotes.get(i).select("span.vote-count-post").first().text()));
+                        System.out.println("Answer votes: " + theVotes.get(i).select("span.vote-count-post").first().text());
+                    }
+                    catch(Exception e) {
+                        ps.setVotes(0);
+                    }
+                    
                     // set the comment
                     ps.setComments(currentAnswerComments);
                     
@@ -338,6 +382,9 @@ public class Question {
      * @return A list of answers.
      */
     public ArrayList<Post> getAnswers() {
+        
+        // sort the answers with the post comparator
+        Collections.sort(answers, new PostComparator());
         
         // return a list of answers
         return answers;

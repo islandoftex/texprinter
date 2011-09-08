@@ -82,7 +82,7 @@ import org.apache.commons.codec.binary.Base64;
 /**
  * Provides the PDF generation from a Question object.
  * @author Paulo Roberto Massa Cereda
- * @version 1.0.2
+ * @version 1.1
  * @since 1.0
  */
 public class PDFGenerator {
@@ -123,9 +123,9 @@ public class PDFGenerator {
             
             // set the asker font
             Font askerFont = new Font(FontFamily.HELVETICA, 10, Font.ITALIC, BaseColor.DARK_GRAY);
-            
+                        
             // set the chunk for the asker
-            Chunk questionAsker = new Chunk("Asked by " + question.getQuestion().getUser().getName() + " (" + question.getQuestion().getUser().getReputation() + ") on " + question.getQuestion().getDate(), askerFont);
+            Chunk questionAsker = new Chunk("Asked by " + question.getQuestion().getUser().getName() + " (" + question.getQuestion().getUser().getReputation() + ") on " + question.getQuestion().getDate() + " (" + String.valueOf(question.getQuestion().getVotes()) + (question.getQuestion().getVotes() == 1 ? " vote" : " votes") + ")", askerFont);
             
             // create a paragraph from that chunk
             Paragraph paragraphQuestionAsker = new Paragraph(questionAsker);
@@ -190,7 +190,7 @@ public class PDFGenerator {
                     }
                     
                     // create a new paragraph about the comment author
-                    Paragraph paragraphCommentAuthor = new Paragraph(questionComment.getAuthor() + " on " + questionComment.getDate(), askerFont);
+                    Paragraph paragraphCommentAuthor = new Paragraph(questionComment.getAuthor() + " on " + questionComment.getDate() + " (" + String.valueOf(questionComment.getVotes()) + (questionComment.getVotes() == 1 ? " vote" : " votes") + ")", askerFont);
                     
                     // set the alignment to the right
                     paragraphCommentAuthor.setAlignment(Element.ALIGN_RIGHT);
@@ -256,7 +256,7 @@ public class PDFGenerator {
                     answerCount++;
 
                     // create a new chunk
-                    Chunk questionAnswerer = new Chunk("Answered by " + answer.getUser().getName() + " (" + answer.getUser().getReputation() + ") on " + answer.getDate() + answerAccepted, askerFont);
+                    Chunk questionAnswerer = new Chunk("Answered by " + answer.getUser().getName() + " (" + answer.getUser().getReputation() + ") on " + answer.getDate() + answerAccepted + " (" + String.valueOf(answer.getVotes()) + (answer.getVotes() == 1 ? " vote" : " votes") + ")", askerFont);
                     
                     // create a paragraph from that chunk
                     Paragraph paragraphQuestionAnswerer = new Paragraph(questionAnswerer);
@@ -318,7 +318,7 @@ public class PDFGenerator {
                             }
                             
                             // create a new paragraph for the comment author
-                            Paragraph paragraphAnswerCommentAuthor = new Paragraph(answerComment.getAuthor() + " on " + answerComment.getDate(), askerFont);
+                            Paragraph paragraphAnswerCommentAuthor = new Paragraph(answerComment.getAuthor() + " on " + answerComment.getDate() + " (" + String.valueOf(answerComment.getVotes()) + (answerComment.getVotes() == 1 ? " vote" : " votes") + ")", askerFont);
                             
                             // set the aligment to the right
                             paragraphAnswerCommentAuthor.setAlignment(Element.ALIGN_RIGHT);

@@ -1,6 +1,6 @@
 # TeXPrinter
 
-> **Current stable version:** 1.0.2 - Tasty Waffles
+> **Current stable version:** 1.1 - Apple Pie
 
 ## The application
 
@@ -19,6 +19,16 @@ Please note that only the main [TeX.SX](http://tex.stackexchange.com/) website i
 This application is licensed under the [New BSD License](http://www.opensource.org/licenses/bsd-license.php). I want to call your attention to the fact that the New BSD License has been verified as a GPL-compatible free software license by the [Free Software Foundation](http://www.fsf.org/), and has been vetted as an open source license by the [Open Source Initiative](http://www.opensource.org/).
 
 ## Changelog
+
+### 1.1
+
++ Added `PostComparator` class to sort answers according to their votes and acceptance. Just to be sure of top answers being displayed first.
+
++ Added test suite for the new sorting class.
+
++ Added version number and name control instead of hard-coding it.
+
++ Added number of votes to both `PDFGenerator` and `TeXGenerator` classes. Now questions and answers *do* have their corresponding votes for easy conference.
 
 ### 1.0.2
 

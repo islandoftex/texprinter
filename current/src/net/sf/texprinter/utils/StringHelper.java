@@ -64,7 +64,7 @@ import org.jsoup.select.Elements;
 /**
  * Provides String functions to the generator classes.
  * @author Paulo Roberto Massa Cereda
- * @version 1.0.2
+ * @version 1.1
  * @since 1.0
  */
 public class StringHelper {

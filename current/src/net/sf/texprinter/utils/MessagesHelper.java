@@ -57,11 +57,12 @@ import com.ezware.dialog.task.TaskDialogs;
 import java.awt.Window;
 import java.util.List;
 import javax.swing.UIManager;
+import net.sf.texprinter.conf.ConfigurationRetriever;
 
 /**
  * Provides message features to the other classes.
  * @author Paulo Roberto Massa Cereda
- * @version 1.0.2
+ * @version 1.1
  * @since 1.0
  */
 public class MessagesHelper {
@@ -167,7 +168,10 @@ public class MessagesHelper {
         // define the copyright symbol
         final String COPYRIGHT = "\u00a9";
 
+        // create a new configuration
+        ConfigurationRetriever config = new ConfigurationRetriever();
+        
         // call the proper method
-        TaskDialogs.inform(window, "TeXPrinter", "<i>Version 1.0.2 - Tasty Waffles</i>\n\nCopyright " + COPYRIGHT + " 2011, Paulo Roberto Massa Cereda\nAll rights reserved.\n\nThis application is licensed under the <u>New BSD License</u>. I want to call your attention\nto the fact that the <i>New BSD License</i> has been verified as a <i>GPL-compatible free\nsoftware license</i> by the Free Software Foundation, and has been vetted as an <i>open\nsource license</i> by the Open Source Initiative.");
+        TaskDialogs.inform(window, "TeXPrinter", "<i>Version " + config.getAppVersionNumber() + " - " + config.getAppVersionName() + "</i>\n\nCopyright " + COPYRIGHT + " 2011, Paulo Roberto Massa Cereda\nAll rights reserved.\n\nThis application is licensed under the <u>New BSD License</u>. I want to call your attention\nto the fact that the <i>New BSD License</i> has been verified as a <i>GPL-compatible free\nsoftware license</i> by the Free Software Foundation, and has been vetted as an <i>open\nsource license</i> by the Open Source Initiative.");
     }
 }

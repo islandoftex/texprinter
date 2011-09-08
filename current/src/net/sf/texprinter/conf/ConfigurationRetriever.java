@@ -44,114 +44,78 @@
  * ********************************************************************
  * \endcond
  *
- * <b>Comment.java</b>: This class is a simple POJO to handle comments.
+ * <b>ConfigurationRetriever.java</b>: This class retrieves the application
+ * properties.
  */
 
 // package definition
-package net.sf.texprinter.model;
+package net.sf.texprinter.conf;
+
+// needed imports
+import java.io.InputStream;
+import java.util.Properties;
 
 /**
- * Provides a simple POJO to handle comments.
+ * Retrieves the application properties.
  * @author Paulo Roberto Massa Cereda
  * @version 1.1
- * @since 1.0
+ * @since 1.1
  */
-public class Comment {
-
-    // the comment text
-    private String text;
-    // the author name
-    private String author;
-    // the date
-    private String date;
-    // the votes
-    private int votes;
+public class ConfigurationRetriever {
+    
+    // the properties
+    private Properties properties;
 
     /**
-     * Getter for the author name. I had to remove the diamond symbol when
-     * found. A user which happens to be a moderator, by a design feature,
-     * has a diamond symbol attached to his name.
-     * @return The author name.
+     * Constructor method.
      */
-    public String getAuthor() {
-
-        // replace the diamond
-        author = author.replaceAll("♦", "");
-
-        // return the author name
-        return author;
-    }
-
-    /**
-     * Setter for the author name.
-     * @param author The author name.
-     */
-    public void setAuthor(String author) {
-
-        // set the author name
-        this.author = author;
-    }
-
-    /**
-     * Getter for the date.
-     * @return The comment date.
-     */
-    public String getDate() {
-
-        // return the date
-        return date;
-    }
-
-    /** 
-     * Setter for the date.  Since StackOverflow displays dates in a pretty
-     * nice format, I decide to leave the date String as it is.
-     * @param date The comment date.
-     */
-    public void setDate(String date) {
-
-        // set the date
-        this.date = date;
-    }
-
-    /**
-     * Getter for the comment text.
-     * @return The comment text.
-     */
-    public String getText() {
-
-        // return the text
-        return text;
-    }
-
-    /**
-     * Setter for the comment text.  The text is hold in the HTML format.
-     * @param text The comment text.
-     */
-    public void setText(String text) {
-
-        // set the comment text
-        this.text = text;
-    }
-
-    /**
-     * Getter for the comment votes.
-     * @return The comment votes.
-     */
-    public int getVotes() {
+    public ConfigurationRetriever() {
         
-        // the vots
-        return votes;
-    }
-
-    /**
-     * Setter for the comment votes.
-     * @param votes The comment votes.
-     */
-    public void setVotes(int votes) {
+        // create a new properties object
+        properties = new Properties();
         
-        // set the votes
-        this.votes = votes;
+        // lets try to load the configuration
+        try {
+            
+            // get the configuration file
+            InputStream inStream = getClass().getResourceAsStream("/net/sf/texprinter/conf/texprinter.properties");
+            
+            // load it
+            properties.load(inStream);
+            
+            // close the stream
+            inStream.close();
+        }
+        catch (Exception e) {
+            // something bad happened
+            
+            // set a dummy app version number
+            properties.setProperty("AppVersionNumber","0.0");
+            
+            // and a dummy app version name
+            properties.setProperty("AppVersionName", "Lazy developer");
+        }
+        
     }
     
+    /**
+     * Gets the version number.
+     * @return The version number.
+     */
+    public String getAppVersionNumber() {
+        
+        // return the property
+        return properties.getProperty("AppVersionNumber");
+    }
+    
+    /**
+     * Gets the version name.
+     * @return The version name.
+     */
+    public String getAppVersionName() {
+        
+        // return the property
+        return properties.getProperty("AppVersionName");
+    }
     
 }

@@ -53,7 +53,7 @@ package net.sf.texprinter.model;
 /**
  * Provides a simple POJO to handle users.
  * @author Paulo Roberto Massa Cereda
- * @version 1.0.2
+ * @version 1.1
  * @since 1.0
  */
 public class User {

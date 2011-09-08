@@ -52,6 +52,7 @@
 package net.sf.texprinter.utils;
 
 // needed imports
+import net.sf.texprinter.conf.ConfigurationRetriever;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
@@ -64,7 +65,7 @@ import org.apache.commons.cli.ParseException;
 /**
  * Provides command line features for the main application.
  * @author Paulo Roberto Massa Cereda
- * @version 1.0.2
+ * @version 1.1
  * @since 1.0
  */
 public class CommandLineHelper {
@@ -75,8 +76,6 @@ public class CommandLineHelper {
     private String questionId;
     // the command line options
     private Options commandLineOptions;
-    // the application version
-    private static final String VERSION = "1.0.2 - Tasty Waffles";
 
     /**
      * Constructor method.
@@ -153,8 +152,11 @@ public class CommandLineHelper {
             // if we are dealing with version
             if (line.hasOption("version")) {
                 
+                // set the configuration retriever
+                ConfigurationRetriever config = new ConfigurationRetriever();
+                
                 // print the application version
-                System.out.println("TeXPrinter " + VERSION);
+                System.out.println("TeXPrinter " + config.getAppVersionNumber() + " - " + config.getAppVersionName());
                 
                 // and exit
                 System.exit(0);

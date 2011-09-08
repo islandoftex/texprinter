@@ -44,114 +44,63 @@
  * ********************************************************************
  * \endcond
  *
- * <b>Comment.java</b>: This class is a simple POJO to handle comments.
+ * <b>PostComparator.java</b>: This class implements a comparator for lists,
+ * based on votes and acceptance marks.
  */
 
 // package definition
-package net.sf.texprinter.model;
+package net.sf.texprinter.utils;
+
+// needed imports
+import java.util.Comparator;
+import net.sf.texprinter.model.Post;
 
 /**
- * Provides a simple POJO to handle comments.
+ * Implements a comparator for lists based on votes and acceptance marks.
  * @author Paulo Roberto Massa Cereda
  * @version 1.1
- * @since 1.0
+ * @since 1.1
  */
-public class Comment {
-
-    // the comment text
-    private String text;
-    // the author name
-    private String author;
-    // the date
-    private String date;
-    // the votes
-    private int votes;
+public class PostComparator implements Comparator<Post> {
 
     /**
-     * Getter for the author name. I had to remove the diamond symbol when
-     * found. A user which happens to be a moderator, by a design feature,
-     * has a diamond symbol attached to his name.
-     * @return The author name.
+     * Compares two objects and return the priority.
+     * @param o1 Object one.
+     * @param o2 Object two.
+     * @return The priority.
      */
-    public String getAuthor() {
-
-        // replace the diamond
-        author = author.replaceAll("♦", "");
-
-        // return the author name
-        return author;
-    }
-
-    /**
-     * Setter for the author name.
-     * @param author The author name.
-     */
-    public void setAuthor(String author) {
-
-        // set the author name
-        this.author = author;
-    }
-
-    /**
-     * Getter for the date.
-     * @return The comment date.
-     */
-    public String getDate() {
-
-        // return the date
-        return date;
-    }
-
-    /** 
-     * Setter for the date.  Since StackOverflow displays dates in a pretty
-     * nice format, I decide to leave the date String as it is.
-     * @param date The comment date.
-     */
-    public void setDate(String date) {
-
-        // set the date
-        this.date = date;
-    }
-
-    /**
-     * Getter for the comment text.
-     * @return The comment text.
-     */
-    public String getText() {
-
-        // return the text
-        return text;
-    }
-
-    /**
-     * Setter for the comment text.  The text is hold in the HTML format.
-     * @param text The comment text.
-     */
-    public void setText(String text) {
-
-        // set the comment text
-        this.text = text;
-    }
-
-    /**
-     * Getter for the comment votes.
-     * @return The comment votes.
-     */
-    public int getVotes() {
+    @Override
+    public int compare(Post o1, Post o2) {
         
-        // the vots
-        return votes;
+        // if both are accepted
+        if (o1.isAccepted() && o2.isAccepted()) {
+            
+            // the highest score comes first
+            return ((o1.getVotes() > o2.getVotes() ? +1 : (o1.getVotes() < o2.getVotes() ? -1 : 0)) * -1);
+        }
+        else {
+            
+            // only the first one is accepted
+            if (o1.isAccepted()) {
+                
+                // it comes first
+                return -1;
+            }
+            else {
+                
+                // only the second one is accepted
+                if (o2.isAccepted()) {
+                    
+                    // it comes first
+                    return +1;
+                }
+                else {
+                    
+                    // the highest score comes first
+                    return ((o1.getVotes() > o2.getVotes() ? +1 : (o1.getVotes() < o2.getVotes() ? -1 : 0)) * -1);
+                }
+            }
+        }
     }
-
-    /**
-     * Setter for the comment votes.
-     * @param votes The comment votes.
-     */
-    public void setVotes(int votes) {
-        
-        // set the votes
-        this.votes = votes;
-    }
-    
     
 }
