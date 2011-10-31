@@ -44,63 +44,64 @@
  * ********************************************************************
  * \endcond
  *
- * PostComparator.java: This class implements a comparator for lists,
- * based on votes and acceptance marks.
+ * StringHandler.java: This class provides a string handler for
+ * the Logging API.
  */
 
 // package definition
 package net.sf.texprinter.utils;
 
 // needed imports
-import java.util.Comparator;
-import net.sf.texprinter.model.Post;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
+import java.util.logging.SimpleFormatter;
 
 /**
- * Implements a comparator for lists based on votes and acceptance marks.
+ * Provides a string handler for the Logging API.
  * @author Paulo Roberto Massa Cereda
  * @version 2.0
- * @since 1.1
+ * @since 2.0
  */
-public class PostComparator implements Comparator<Post> {
+public class StringHandler extends Handler {
+    
+    // the execution plan
+    private static final ExecutionLogging execPlan = ExecutionLogging.getInstance();
 
     /**
-     * Compares two objects and return the priority.
-     * @param o1 Object one.
-     * @param o2 Object two.
-     * @return The priority.
+     * Constructor method.
+     */
+    public StringHandler() {
+        
+        // set formatter
+        setFormatter(new SimpleFormatter());
+    }
+
+    
+    
+    /**
+     * Publishes the record.
+     * @param record The record.
      */
     @Override
-    public int compare(Post o1, Post o2) {
+    public void publish(LogRecord record) {
         
-        // if both are accepted
-        if (o1.isAccepted() && o2.isAccepted()) {
-            
-            // the highest score comes first
-            return ((o1.getVotes() > o2.getVotes() ? +1 : (o1.getVotes() < o2.getVotes() ? -1 : 0)) * -1);
-        }
-        else {
-            
-            // only the first one is accepted
-            if (o1.isAccepted()) {
-                
-                // it comes first
-                return -1;
-            }
-            else {
-                
-                // only the second one is accepted
-                if (o2.isAccepted()) {
-                    
-                    // it comes first
-                    return +1;
-                }
-                else {
-                    
-                    // the highest score comes first
-                    return ((o1.getVotes() > o2.getVotes() ? +1 : (o1.getVotes() < o2.getVotes() ? -1 : 0)) * -1);
-                }
-            }
-        }
+        // add the record to the execution plan
+        execPlan.add(getFormatter().format(record));
+    }
+
+    /**
+     * Flush method.
+     */
+    @Override
+    public void flush() {
+    }
+
+    /**
+     * Close method.
+     * @throws SecurityException 
+     */
+    @Override
+    public void close() throws SecurityException {
     }
     
 }

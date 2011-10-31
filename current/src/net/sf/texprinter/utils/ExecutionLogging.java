@@ -44,63 +44,78 @@
  * ********************************************************************
  * \endcond
  *
- * PostComparator.java: This class implements a comparator for lists,
- * based on votes and acceptance marks.
+ * ExecutionLogging.java: This class logs the execution plan.
  */
 
 // package definition
 package net.sf.texprinter.utils;
 
 // needed imports
-import java.util.Comparator;
-import net.sf.texprinter.model.Post;
+import java.util.ArrayList;
+import org.apache.commons.codec.binary.Base64;
 
 /**
- * Implements a comparator for lists based on votes and acceptance marks.
+ * Logs the execution plan.
  * @author Paulo Roberto Massa Cereda
  * @version 2.0
- * @since 1.1
+ * @since 2.0
  */
-public class PostComparator implements Comparator<Post> {
+public class ExecutionLogging {
+    
+    // singleton reference of ExecutionLogging.
+    private static ExecutionLogging selfRef;
+    
+    // the execution plan
+    private ArrayList<String> executionPlan;
 
     /**
-     * Compares two objects and return the priority.
-     * @param o1 Object one.
-     * @param o2 Object two.
-     * @return The priority.
+     * Constructs singleton instance of ExecutionLogging.
      */
-    @Override
-    public int compare(Post o1, Post o2) {
+    private ExecutionLogging() {
         
-        // if both are accepted
-        if (o1.isAccepted() && o2.isAccepted()) {
+        // set the reference
+        selfRef = this;
+        
+        // create the array
+        executionPlan = new ArrayList<String>();
+    }
+
+    /**
+     * Provides reference to singleton object of ExecutionLogging.
+     * @return The singleton instance.
+     */
+    public static final ExecutionLogging getInstance() {
+        
+        // if null
+        if (selfRef == null) {
             
-            // the highest score comes first
-            return ((o1.getVotes() > o2.getVotes() ? +1 : (o1.getVotes() < o2.getVotes() ? -1 : 0)) * -1);
+            // create it
+            selfRef = new ExecutionLogging();
         }
-        else {
-            
-            // only the first one is accepted
-            if (o1.isAccepted()) {
-                
-                // it comes first
-                return -1;
-            }
-            else {
-                
-                // only the second one is accepted
-                if (o2.isAccepted()) {
-                    
-                    // it comes first
-                    return +1;
-                }
-                else {
-                    
-                    // the highest score comes first
-                    return ((o1.getVotes() > o2.getVotes() ? +1 : (o1.getVotes() < o2.getVotes() ? -1 : 0)) * -1);
-                }
-            }
-        }
+        
+        // return it
+        return selfRef;
+    }
+    
+    /**
+     * Add message to the list.
+     * @param message The message.
+     */
+    public void add(String message) {
+        
+        // add the message to the array
+        executionPlan.add(message);
+    }
+    
+    /**
+     * Dumps the execution plan.
+     * @return A Base64 URL safe string.
+     */
+    public String dump() {
+        
+        // encode the execution plan as a URL safe string and return it
+        return Base64.encodeBase64URLSafeString(executionPlan.toString().getBytes());
+
     }
     
 }

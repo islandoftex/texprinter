@@ -44,7 +44,7 @@
  * ********************************************************************
  * \endcond
  *
- * <b>TeXPrinter.java</b>: The main class.
+ * TeXPrinter.java: The main class.
  */
 
 // package definition
@@ -52,22 +52,33 @@ package net.sf.texprinter;
 
 // needed imports
 import com.ezware.dialog.task.CommandLink;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import net.sf.texprinter.model.Question;
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 import net.sf.texprinter.generators.PDFGenerator;
 import net.sf.texprinter.generators.TeXGenerator;
+import net.sf.texprinter.model.Question;
 import net.sf.texprinter.utils.CommandLineHelper;
-import net.sf.texprinter.utils.MessagesHelper;
-import net.sf.texprinter.utils.StringHelper;
+import net.sf.texprinter.utils.Dialogs;
+import net.sf.texprinter.utils.OutputController;
+import net.sf.texprinter.utils.StringHandler;
+import net.sf.texprinter.utils.StringUtils;
 
 /**
  * The main class.
  * @author Paulo Roberto Massa Cereda
- * @version 1.1
+ * @version 2.0
  * @since 1.0
  */
 public class TeXPrinter {
+
+    // the debug flag, only for testing purposes
+    private static final int DEBUG = 0;
 
     /**
      * The main method.
@@ -75,14 +86,41 @@ public class TeXPrinter {
      */
     public static void main(String[] args) {
 
+        // get the log list
+        Logger logList = LogManager.getLogManager().getLogger("");
+
+        // set the level for every handler
+        for (Handler handler : logList.getHandlers()) {
+
+            // set it accordingly
+            handler.setLevel((DEBUG == 1 ? Level.ALL : Level.OFF));
+        }
+
+        // if TeXPrinter is in debug mode
+        if (DEBUG == 1) {
+
+            // lets try
+            try {
+
+                // add a file handler
+                logList.addHandler(new FileHandler("texprinter.xml"));
+
+            } catch (IOException e) {
+                // do nothing
+            }
+        }
+
+        // add the string handler to the log list
+        logList.addHandler(new StringHandler());
+
+        // get the output controller
+        OutputController outControl = OutputController.getInstance();
+
         // set the native look and feel
-        MessagesHelper.setNativeLookAndFeel();
+        Dialogs.setNativeLookAndFeel();
 
         // the question id
         String questionId;
-
-        // flag for command line use
-        boolean isCommandLine = false;
 
         // command line parser
         CommandLineHelper parser = new CommandLineHelper();
@@ -97,7 +135,8 @@ public class TeXPrinter {
             questionId = parser.getQuestionId();
 
             // and set the flag
-            isCommandLine = true;
+            //isCommandLine = true;
+            outControl.setCommandLineMode(true);
 
         } else {
 
@@ -107,111 +146,93 @@ public class TeXPrinter {
         }
 
         // fetch the question
-        Question q = new Question("http://tex.stackexchange.com/questions/" + questionId.trim(), isCommandLine);
+        Question q = new Question("http://tex.stackexchange.com/questions/" + questionId.trim());
 
-        // if the question isn't poisoned, i.e., invalid
-        if (!q.isPoisoned()) {
+        // create a result option
+        int result;
 
-            // create a result option
-            int result;
+        // if it's not a command line use
+        if (!outControl.isCommandLineMode()) {
 
-            // if it's not a command line use
-            if (!isCommandLine) {
+            // create a new list of options
+            List<CommandLink> listCommands = new ArrayList<CommandLink>();
 
-                // create a new list of options
-                List<CommandLink> listCommands = new ArrayList<CommandLink>();
+            // PDF option
+            CommandLink clPDF = new CommandLink("PDF Output", "Generate a PDF output from the provided question ID. All resources (e.g. images) will be\n embedded in the resulting PDF file. The document will be ready for viewing and printing.");
 
-                // PDF option
-                CommandLink clPDF = new CommandLink("PDF Output", "Generate a PDF output from the provided question ID. All resources (e.g. images) will be\n embedded in the resulting PDF file. The document will be ready for viewing and printing.");
+            // add to the list
+            listCommands.add(clPDF);
 
-                // add to the list
-                listCommands.add(clPDF);
+            // TeX option
+            CommandLink clTeX = new CommandLink("TeX Output", "Generate a source TeX output from the provided question ID. All resources (e.g. images)\nwill be downloaded to the current directory. You'll need to compile the TeX document.");
 
-                // TeX option
-                CommandLink clTeX = new CommandLink("TeX Output", "Generate a source TeX output from the provided question ID. All resources (e.g. images)\nwill be downloaded to the current directory. You'll need to compile the TeX document.");
+            // add to the list
+            listCommands.add(clTeX);
 
-                // add to the list
-                listCommands.add(clTeX);
+            // get the result
+            result = Dialogs.choices(null, "Choose the output", "I'm ready to print the question you provided me. Please choose your option.", 0, listCommands);
 
-                // get the result
-                result = MessagesHelper.choices(null, "Choose the output", "I'm ready to print the question you provided me. Please choose your option.", 0, listCommands);
-
-            } else {
-
-                // it's a command line use
-
-                // set the result according to the isPDF flag
-                result = (parser.isPDF() ? 0 : 1);
-            }
-
-            // set the filename
-            String filename = questionId.trim();
-
-            // check the result
-            switch (result) {
-                case 0:
-
-                    // set the filename to PDF
-                    filename = filename + ".pdf";
-
-                    // and generate it
-                    PDFGenerator.generate(q, filename);
-
-                    // stop now
-                    break;
-
-                case 1:
-
-                    // set the filename to TeX
-                    filename = filename + ".tex";
-
-                    // and generate it
-                    TeXGenerator.generate(q, filename, isCommandLine);
-
-                    // and stop now
-                    break;
-
-                default:
-
-                    // print a message error, this is only possible
-                    // in a non command line use
-                    MessagesHelper.error(null, "Why?", "Why didn't you choose an option?\nA kitten dies every time you do this.");
-
-                    // exit the application
-                    System.exit(0);
-            }
-
-            // if we are in command line
-            if (isCommandLine) {
-
-                // print message
-                System.out.println("Done! The new file '" + filename + "' was generated successfully! Have fun!");
-
-            } else {
-
-                // print messagebox
-                MessagesHelper.info(null, "Question printed successfully!", "Done! The new file <b>" + filename + "</b> was generated successfully! Have fun!");
-
-                // exit application
-                System.exit(0);
-            }
         } else {
 
-            // if we are in command line
-            if (isCommandLine) {
+            // it's a command line use
 
-                // display error message
-                System.out.println("Sorry, I couldn't create a PDF file from the question ID you provided.\nMaybe the ID leads to a 404 page or my internal algorithm failed at some\npoint.");
-
-            } else {
-
-                // display a fancy error messagebox
-                MessagesHelper.error(null, "Houston, we have a problem.", "Sorry, I couldn't create a PDF file from the question ID you provided.\nMaybe the ID leads to a 404 page or my internal algorithm failed at some point.");
-
-                // exit application
-                System.exit(0);
-            }
+            // set the result according to the isPDF flag
+            result = (parser.isPDF() ? 0 : 1);
         }
+
+        // set the filename
+        String filename = questionId.trim();
+
+        // check the result
+        switch (result) {
+            
+            case 0:
+
+                // set the filename to PDF
+                filename = filename + ".pdf";
+
+                // and generate it
+                PDFGenerator.generate(q, filename);
+
+                // stop now
+                break;
+
+            case 1:
+
+                // set the filename to TeX
+                filename = filename + ".tex";
+
+                // and generate it
+                TeXGenerator.generate(q, filename);
+
+                // and stop now
+                break;
+
+            default:
+
+                // print a message error, this is only possible
+                // in a non command line use
+                Dialogs.info(null, "Oh, the humanity!", "Let me get straight: why on earth didn't\nyou choose an option?\n\nA kitten dies every time you do this.");
+
+                // exit the application
+                System.exit(0);
+        }
+
+        // if we are in command line
+        if (outControl.isCommandLineMode()) {
+
+            // print message
+            System.out.println("Done! The new file '" + filename + "' was generated successfully! Have fun!");
+
+        } else {
+
+            // print messagebox
+            Dialogs.info(null, "Question printed successfully!", "Done! The new file <b>" + filename + "</b> was generated successfully! Have fun!");
+
+            // exit application
+            System.exit(0);
+        }
+        
     }
 
     /**
@@ -230,38 +251,38 @@ public class TeXPrinter {
         while (keep) {
 
             // ask for id
-            id = MessagesHelper.input(null, "Welcome to TeXPrinter!", "Please type the question ID you want me to print.\nIf you want me to display the application version, type <b>?</b>.", "");
+            id = Dialogs.inputQuestion();
 
             // if the user didn't type anything
             if (id == null || id.length() == 0) {
 
                 // exit the application
                 System.exit(0);
-                
+
             } else {
-                
+
                 // if the input is equal to the question mark
                 if (id.trim().equals("?")) {
-                    
+
                     // show the about message
-                    MessagesHelper.showAbout(null);
-                    
+                    Dialogs.showAbout(null);
+
                     // and exit application
                     System.exit(0);
-                    
+
                 } else {
-                    
+
                     // check if the string contains only numbers
-                    if (StringHelper.onlyNumbers(id)) {
-                        
+                    if (StringUtils.onlyNumbers(id)) {
+
                         // if so, stop loop
                         keep = false;
-                        
+
                     } else {
-                        
+
                         // if the user does not want to try again
-                        if (MessagesHelper.ask(null, "Oops!", "The ID you typed seems to be invalid. Do you want to try again?") == false) {
-                            
+                        if (Dialogs.ask(null, "Oops!", "The ID you typed seems to be invalid. Do you want to try again?") == false) {
+
                             // exit application
                             System.exit(0);
                         }

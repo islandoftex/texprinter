@@ -44,10 +44,9 @@
  * ********************************************************************
  * \endcond
  *
- * <b>Post.java</b>: This class is a simple POJO to handle posts, which can
- * be a question or an answer.
+ * Post.java: This class is a simple POJO to handle posts, which can be
+ * a question or an answer.
  */
-
 // package definition
 package net.sf.texprinter.model;
 
@@ -58,24 +57,30 @@ import java.util.ArrayList;
  * Provides a simple POJO to handle posts, which can be a question or
  * an answer.
  * @author Paulo Roberto Massa Cereda
- * @version 1.1
+ * @version 2.0
  * @since 1.0
  */
 public class Post {
 
     // the post title
     private String title;
+    
     // the post text
     private String text;
+    
     // the post date
     private String date;
+    
     // the user who posted it
     private User user;
+    
     // this is a special flag for posts that happen to be answers:
     // if an answer is accepted, this flag is set to true
     private boolean accepted = false;
+    
     // the votes
     private int votes;
+    
     // a list of comments to this post, if any
     private ArrayList<Comment> comments;
 
@@ -199,13 +204,13 @@ public class Post {
         // set the post comments
         this.comments = comments;
     }
-    
+
     /**
      * Getter for the number of votes.
      * @return The number of votes.
      */
     public int getVotes() {
-        
+
         // return the votes
         return votes;
     }
@@ -215,9 +220,8 @@ public class Post {
      * @param votes The number of votes.
      */
     public void setVotes(int votes) {
-        
+
         // set the number of votes
         this.votes = votes;
     }
-    
 }

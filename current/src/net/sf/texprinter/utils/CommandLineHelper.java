@@ -44,7 +44,7 @@
  * ********************************************************************
  * \endcond
  *
- * <b>CommandLineHelper.java</b>: This class provides command line features
+ * CommandLineHelper.java: This class provides command line features
  * for the main application.
  */
 
@@ -52,7 +52,7 @@
 package net.sf.texprinter.utils;
 
 // needed imports
-import net.sf.texprinter.conf.ConfigurationRetriever;
+import net.sf.texprinter.config.Configuration;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
@@ -65,15 +65,17 @@ import org.apache.commons.cli.ParseException;
 /**
  * Provides command line features for the main application.
  * @author Paulo Roberto Massa Cereda
- * @version 1.1
+ * @version 2.0
  * @since 1.0
  */
 public class CommandLineHelper {
 
     // flag to determine if the output will be PDF
     private boolean isPDF = true;
+    
     // the question id
     private String questionId;
+    
     // the command line options
     private Options commandLineOptions;
 
@@ -116,7 +118,7 @@ public class CommandLineHelper {
      * @return The question id.
      */
     public String getQuestionId() {
-        
+
         // return the question id
         return questionId;
     }
@@ -126,7 +128,7 @@ public class CommandLineHelper {
      * @return A boolean to determine if the output will be PDF.
      */
     public boolean isPDF() {
-        
+
         // return the flag
         return isPDF;
     }
@@ -151,49 +153,49 @@ public class CommandLineHelper {
 
             // if we are dealing with version
             if (line.hasOption("version")) {
-                
+
                 // set the configuration retriever
-                ConfigurationRetriever config = new ConfigurationRetriever();
-                
+                Configuration config = new Configuration();
+
                 // print the application version
                 System.out.println("TeXPrinter " + config.getAppVersionNumber() + " - " + config.getAppVersionName());
-                
+
                 // and exit
                 System.exit(0);
-                
+
             } else {
-                
+
                 // the help argument
                 if (line.hasOption("help")) {
-                    
+
                     // print usage
                     printUsage();
-                    
+
                     // and exit
                     System.exit(0);
-                    
+
                 } else {
-                    
+
                     // check for both question id and output format
                     if (line.hasOption("question-id") && line.hasOption("output")) {
-                        
+
                         // set the question id
                         questionId = line.getOptionValue("question-id");
-                        
+
                         // if the output is not set to PDF or TeX
                         if (!line.getOptionValue("output").equalsIgnoreCase("pdf") && !line.getOptionValue("output").equalsIgnoreCase("tex")) {
-                            
+
                             // print error message and exit
                             printErrorMessage("You need to provide either PDF or TeX output.");
-                            
+
                         } else {
-                            
+
                             // set the format flag
                             this.isPDF = line.getOptionValue("output").equalsIgnoreCase("pdf");
                         }
-                        
+
                     } else {
-                        
+
                         // none of the above, print error message and exit
                         printErrorMessage("Missing or wrong parameters.");
                     }
@@ -201,7 +203,7 @@ public class CommandLineHelper {
             }
 
         } catch (ParseException exp) {
-            
+
             // oops something went wrong, print error message and exit
             printErrorMessage(exp.getMessage());
 
@@ -216,10 +218,10 @@ public class CommandLineHelper {
 
         // print message
         System.out.println("Parsing failed. Reason: " + message + "\n");
-        
+
         // print usage
         printUsage();
-        
+
         // and exit
         System.exit(0);
     }
@@ -228,10 +230,10 @@ public class CommandLineHelper {
      * Prints the usage.
      */
     private void printUsage() {
-        
+
         // create a new help formatter
         HelpFormatter formatter = new HelpFormatter();
-        
+
         // print the options for arguments
         formatter.printHelp("texprinter [ --question-id ID --output EXT | --version | --help ]", commandLineOptions);
     }
@@ -240,7 +242,7 @@ public class CommandLineHelper {
      * Prints the application header.
      */
     private void printHeader() {
-        
+
         // print header
         System.out.println("TeXPrinter - A TeX.SX question printer");
         System.out.println("Copyright (c) 2011, Paulo Roberto Massa Cereda");

@@ -44,62 +44,97 @@
  * ********************************************************************
  * \endcond
  *
- * PostComparator.java: This class implements a comparator for lists,
- * based on votes and acceptance marks.
+ * UIUtils.java: This class provides UI helper methods.
  */
 
 // package definition
 package net.sf.texprinter.utils;
 
 // needed imports
-import java.util.Comparator;
-import net.sf.texprinter.model.Post;
+import java.awt.Font;
+import java.awt.Insets;
+import java.net.URL;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JEditorPane;
+import javax.swing.UIManager;
+import javax.swing.text.html.HTMLDocument;
 
 /**
- * Implements a comparator for lists based on votes and acceptance marks.
+ * Provides UI helper methods.
  * @author Paulo Roberto Massa Cereda
  * @version 2.0
- * @since 1.1
+ * @since 2.0
  */
-public class PostComparator implements Comparator<Post> {
-
+public class UIUtils {
+    
     /**
-     * Compares two objects and return the priority.
-     * @param o1 Object one.
-     * @param o2 Object two.
-     * @return The priority.
+     * Converts a JButton to a JLabel.
+     * @param button The button.
      */
-    @Override
-    public int compare(Post o1, Post o2) {
+    public static void convertToLabel(JButton button) {
         
-        // if both are accepted
-        if (o1.isAccepted() && o2.isAccepted()) {
+        // disable focus paint
+        button.setFocusPainted(false);
+        
+        // redefine margins
+        button.setMargin(new Insets(0, 0, 0, 0));
+        
+        // disable content area fill
+        button.setContentAreaFilled(false);
+        
+        // disable border paint
+        button.setBorderPainted(false);
+        
+        // disable property
+        button.setOpaque(false);
+    }
+    
+    /**
+     * Set the operating system font to the editor.
+     * @param editor The editor.
+     */
+    public static void setDefaultFontToEditorPane(JEditorPane editor) {
+        
+        // get the system font
+        Font font = UIManager.getFont("Label.font");
+        
+        // set the body rule
+        String bodyRule = "body { font-family: " + font.getFamily() + "; " +
+                "font-size: " + font.getSize() + "pt; margin-left: 0px; margin-top: 0px; }";
+        
+        // set the list rule
+        String listRule = "ol { margin-left: 20px; list-style-type: square; }";
+        
+        // add the body rule
+        ((HTMLDocument)editor.getDocument()).getStyleSheet().addRule(bodyRule);
+        
+        // add the list rule
+        ((HTMLDocument)editor.getDocument()).getStyleSheet().addRule(listRule);
+    }
+    
+    /**
+     * Loads the icon from a package.
+     * @param theClass The class.
+     * @param path The path.
+     * @param description The description.
+     * @return The icon.
+     */
+    public static ImageIcon createImageIcon(Class theClass, String path, String description) {
+        
+        // get the resource
+        URL imgURL = theClass.getClass().getResource(path);
+        
+        // check if not null
+        if (imgURL != null) {
             
-            // the highest score comes first
-            return ((o1.getVotes() > o2.getVotes() ? +1 : (o1.getVotes() < o2.getVotes() ? -1 : 0)) * -1);
-        }
-        else {
+            // return new icon
+            return new ImageIcon(imgURL, description);
             
-            // only the first one is accepted
-            if (o1.isAccepted()) {
-                
-                // it comes first
-                return -1;
-            }
-            else {
-                
-                // only the second one is accepted
-                if (o2.isAccepted()) {
-                    
-                    // it comes first
-                    return +1;
-                }
-                else {
-                    
-                    // the highest score comes first
-                    return ((o1.getVotes() > o2.getVotes() ? +1 : (o1.getVotes() < o2.getVotes() ? -1 : 0)) * -1);
-                }
-            }
+        } else {
+            
+            // return null
+            return null;
         }
     }
     

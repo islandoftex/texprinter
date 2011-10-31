@@ -44,7 +44,7 @@
  * ********************************************************************
  * \endcond
  *
- * <b>Comment.java</b>: This class is a simple POJO to handle comments.
+ * Comment.java: This class is a simple POJO to handle comments.
  */
 
 // package definition
@@ -53,17 +53,20 @@ package net.sf.texprinter.model;
 /**
  * Provides a simple POJO to handle comments.
  * @author Paulo Roberto Massa Cereda
- * @version 1.1
+ * @version 2.0
  * @since 1.0
  */
 public class Comment {
 
     // the comment text
     private String text;
+    
     // the author name
     private String author;
+    
     // the date
     private String date;
+    
     // the votes
     private int votes;
 
@@ -138,7 +141,7 @@ public class Comment {
      * @return The comment votes.
      */
     public int getVotes() {
-        
+
         // the vots
         return votes;
     }
@@ -148,10 +151,8 @@ public class Comment {
      * @param votes The comment votes.
      */
     public void setVotes(int votes) {
-        
+
         // set the votes
         this.votes = votes;
     }
-    
-    
 }

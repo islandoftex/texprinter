@@ -44,7 +44,7 @@
  * ********************************************************************
  * \endcond
  *
- * <b>Question.java</b>: This class is a simple POJO to handle question.
+ * Question.java: This class is a simple POJO to handle question.
  * Well, not so simple, but it aims at encapsulating the logic in it.
  */
 
@@ -52,329 +52,519 @@
 package net.sf.texprinter.model;
 
 // needed packages
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import net.sf.texprinter.utils.Dialogs;
+import net.sf.texprinter.utils.PostComparator;
+import net.sf.texprinter.utils.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import net.sf.texprinter.utils.MessagesHelper;
-import net.sf.texprinter.utils.PostComparator;
 
 /**
  * Provides a simple POJO to handle question. Well, not so simple, but it
  * aims at encapsulating the logic in it.
  * @author Paulo Roberto Massa Cereda
- * @version 1.1
+ * @version 2.0
  * @since 1.0
  */
 public class Question {
 
+    // the application logger
+    private static final Logger log = Logger.getLogger(Question.class.getCanonicalName());
+    
     // the question
     private Post question;
     
     // the answers
     private ArrayList<Post> answers;
-    
-    // this flag controls any exception and thus may invalidate this
-    // question
-    private boolean poisoned = false;
 
-    /**
+     /**
      * Constructor method. It fetches the online question and sets the
      * attributes defined above.
      * @param questionLink The TeX.SX question link.
-     * @param isCommandLine A flag to determine if this program is being
-     * called from the command line.
      */
-    public Question(String questionLink, boolean isCommandLine) {
-        
+    public Question(String questionLink) {
+
         // lets try to fetch data
         try {
+
+            // log message
+            log.log(Level.INFO, "Fetching the following question link: {0}", questionLink);
             
-            // connect and fetch data
+            // fetch the question
             Document doc = Jsoup.connect(questionLink).get();
+
+            // new post to act as the question
+            Post q = new Post();
 
             // get the question title
             Element questionTitle = doc.select("div#question-header").first().select("h1").first().select("a").first();
+
+            // log message
+            log.log(Level.INFO, "Setting the question title.");
             
-            // get the question date
-            Element questionDate = doc.select(".post-signature").first().select("span.relativetime").first();
+            // set the title            
+            q.setTitle(questionTitle.text());
+
+            // trying to get the question date
+            Element questionDate = null;
             
-            // get question text
+            // try
+            try {
+                
+                // handles this possibility
+                questionDate = doc.select(".post-signature.owner").first().select("span.relativetime").first();
+                
+            } catch (Exception e) {
+                
+                // in case of failure, try this one instead
+                questionDate = doc.select(".post-signature").first().select("span.relativetime").first();
+            }
+
+            // log message
+            log.log(Level.INFO, "Setting the question date.");
+            
+            // set the date
+            q.setDate(questionDate.text());
+
+            // get the question text
             Element questionText = doc.select("div.post-text").first();
             
-            // get question vote
+            // log message
+            log.log(Level.INFO, "Setting the question text.");
+            
+            // set the question text
+            q.setText(questionText.html());
+
+            // get the question votes
             Element questionVote = doc.select("div#question").first().select("div.vote").first().select("span.vote-count-post").first();
             
-            System.out.println("question vote: " + questionVote.text());
+            // log message
+            log.log(Level.INFO, "Setting the question votes.");
             
-            // get the question comment elements
+            // set the votes
+            q.setVotes(Integer.parseInt(questionVote.text()));
+            
+            // get the question comments
             Elements questionCommentElements = doc.select("div.comments").first().select("tr.comment");
 
-            // create a new list of question comments
+
+            // create an array for comments
             ArrayList<Comment> questionComments = new ArrayList<Comment>();
-            
-            // if there are comments on this question
+
+            // if there are comments
             if (!questionCommentElements.isEmpty()) {
 
-                // for each question comment found
+                // log message
+                log.log(Level.INFO, "This question has comments, getting them.");
+
+                // iterate through comments
                 for (Element questionCommentElement : questionCommentElements) {
-                    
-                    // create a new comment
+
+                    // create a new comment object
                     Comment c = new Comment();
-                    
-                    // set the comment text
+
+                    // get the text
                     c.setText(questionCommentElement.select("span.comment-copy").first().html());
                     
-                    // set the comment author
-                    c.setAuthor(questionCommentElement.select("a.comment-user").first().text());
+                    // get the author
+                    c.setAuthor(questionCommentElement.select(".comment-user").first().text());
                     
-                    // set the comment date
+                    // get the date
                     c.setDate(questionCommentElement.select("span.comment-date").first().text());
+
+                    // the comment votes
+                    int votes;
                     
-                    // set the comment vote
+                    // lets try to parse
                     try {
-                        c.setVotes(Integer.parseInt(questionCommentElement.select("span.cool").first().text()));
-                        System.out.println("Comment: " + questionCommentElement.select("span.cool").first().text());
-                    }
-                    catch (Exception e) {
-                        c.setVotes(0);
+                        
+                        // parse the votes
+                        votes = Integer.parseInt(questionCommentElement.select("span.cool").first().text());
+                        
+                    } catch (Exception e) {
+                        
+                        // an error happened, set it to zero
+                        votes = 0;
                     }
                     
-                    // add this new comment to the list of question comments
+                    // set the votes
+                    c.setVotes(votes);
+                    
+                    // add to the comments array
                     questionComments.add(c);
                     
-                    // set the old comment to null, just to play it safe
+                    // set the object to null
                     c = null;
                 }
             }
 
-            // get the question author
-            Element authorName = doc.select(".post-signature.owner").first().select("div.user-details").first().select("a").first();
+            // log message
+            log.log(Level.INFO, "Comments retrieved, setting them to the question.");
             
-            // get the author reputation
-            Element authorReputation = doc.select(".post-signature.owner").first().select("div.user-details").first().select("span.reputation-score").first();
-
-            // create a new post
-            Post q = new Post();
-            
-            // set the title
-            q.setTitle(questionTitle.text());
-            
-            // set the date
-            q.setDate(questionDate.text());
-            
-            // set the text
-            q.setText(questionText.html());
-
-            // set the votes
-            try {
-                q.setVotes(Integer.parseInt(questionVote.text()));
-                System.out.println("Question: " + questionVote.text());
-            }
-            catch (Exception e) {
-                q.setVotes(0);
-            }
-            
-            // set the comments
+            // set comments
             q.setComments(questionComments);
 
-            // then we create a new user
-            User u = new User();
+            // define the author name element
+            Element authorName = null;
             
-            // set the name
-            u.setName(authorName.text());
+            // define the author reputation element
+            Element authorReputation = null;
             
-            // set the reputation
-            u.setReputation(authorReputation.text());
-
-            // set this new user to the question
-            q.setUser(u);
-
-            // and set this new object as an instance of the
-            // attribute of this very same classe
-            this.question = q;
-
-            // now we get the block destinated to answers
-            Elements answersBlock = doc.select("div.answer");
-
-            // set a new list of answers, empty at first
-            this.answers = new ArrayList<Post>();
-
-            // if the block of answers has any answer
-            if (!answersBlock.isEmpty()) {
-
-                // create a list to hold the authors names
-                Elements authorsNames = new Elements();
+            // log message
+            log.log(Level.INFO, "Getting the question author name and reputation.");
+            
+            // lets try
+            try {
                 
-                // create a list to hold the authors reputations
-                Elements authorsReputations = new Elements();
+                // get the name
+                authorName = doc.select(".post-signature.owner").first().select("div.user-details").first();
                 
-                // and we create a list to hold the authors dates
-                Elements authorsDates = new Elements();
-
-                // we need to fix the authors, since the TeX.SX template does
-                // not make a distinction between users that post answers than
-                // users that edit questions, e.g., if we have 4 answers and
-                // 2 of them were edited by moderators, we will have 6 users
-                // found in the template for answers. The following code aims
-                // at fixing it.
+                // get the reputation
+                authorReputation = doc.select(".post-signature.owner").first().select("div.user-details").first().select("span.reputation-score").first();
                 
-                // get the user info block
-                Elements fixAuthors = answersBlock.select("div.user-info");
+            } catch (Exception e) {
                 
-                // for each user found
-                for (Element fixAuthor : fixAuthors) {
-                    
-                    // if the author answered and not edited the question
-                    if (fixAuthor.select("div.user-action-time").text().startsWith("answered")) {
-                        
-                        // add the author name
-                        authorsNames.add(fixAuthor.select("div.user-details").select("a").first());
-                        
-                        // add the author reputation
-                        authorsReputations.add(fixAuthor.select("div.user-details").select("span.reputation-score").first());
-                        
-                        // add the author date
-                        authorsDates.add(fixAuthor.select("div.user-info").select("span.relativetime").first());
-                    }
-                }
-
-                // set the answer text
-                Elements answersTexts = answersBlock.select("div.post-text");
-                
-                // get the answer vote block
-                Elements theVotes = answersBlock.select("div.vote");
-                
-                // iterate through the answers
-                for (int i = 0; i < authorsNames.size(); i++) {
-
-                    // get the current answer comments block
-                    Elements currentAnswerCommentsElements = answersBlock.get(i).select("div.comments").first().select("tr.comment");
-
-                    // create a new list of comments for the current answer
-                    ArrayList<Comment> currentAnswerComments = new ArrayList<Comment>();
-
-                    // if there are comments for this answer
-                    if (!currentAnswerCommentsElements.isEmpty()) {
-
-                        // for each comment found
-                        for (Element currentAnswerCommentElement : currentAnswerCommentsElements) {
-                            
-                            // create a new comment
-                            Comment c = new Comment();
-                            
-                            // set the comment text
-                            c.setText(currentAnswerCommentElement.select("span.comment-copy").first().html());
-                            
-                            // set the comment author
-                            c.setAuthor(currentAnswerCommentElement.select("a.comment-user").first().text());
-                            
-                            // set the comment date
-                            c.setDate(currentAnswerCommentElement.select("span.comment-date").first().text());
-                            
-                            // set the comment vote
-                            try {
-                                c.setVotes(Integer.parseInt(currentAnswerCommentElement.select("span.cool").first().text()));
-                                System.out.println("A Comment: " + currentAnswerCommentElement.select("span.cool").first().text());
-                            }
-                            catch (Exception e) {
-                                c.setVotes(0);
-                            }
-                            
-                            
-                            // add this comment to the list
-                            currentAnswerComments.add(c);
-                            
-                            // lets play it safe, set the old comment to null
-                            c = null;
-                        }
-                    }
-
-                    // lets create a new post, which is an answer
-                    Post ps = new Post();
-                    
-                    // an answer has no title, so we set to an empty string
-                    ps.setTitle("");
-                    
-                    // set the date
-                    ps.setDate(authorsDates.get(i).text());
-                    
-                    // set the text
-                    ps.setText(answersTexts.get(i).html());
-                    
-                    // set the votes
-                    try {
-                        ps.setVotes(Integer.parseInt(theVotes.get(i).select("span.vote-count-post").first().text()));
-                        System.out.println("Answer votes: " + theVotes.get(i).select("span.vote-count-post").first().text());
-                    }
-                    catch(Exception e) {
-                        ps.setVotes(0);
-                    }
-                    
-                    // set the comment
-                    ps.setComments(currentAnswerComments);
-                    
-                    // if the votes for this answer indicate that it's accepted
-                    if (!theVotes.get(i).getElementsByClass("vote-accepted-on").isEmpty()) {
-                        
-                        // mark it as accepted
-                        ps.setAccepted(true);
-                    }
-
-                    // create a new user
-                    User us = new User();
-                    
-                    // set the name
-                    us.setName(authorsNames.get(i).text());
-                    
-                    // set the reputation
-                    us.setReputation(authorsReputations.get(i).text());
-
-                    // add the user to the answer
-                    ps.setUser(us);
-
-                    // add the answer to the list of answers
-                    this.answers.add(ps);
-                    
-                    // set the current post to null
-                    ps = null;
-                    
-                    // set the current user to null
-                    us = null;
-                }
+                // something wrong happened, trying to get the name again
+                authorName = doc.select(".post-signature").get(1).select("div.user-details").get(1);
             }
-        } catch (Exception e) {
-            
-            // something bad happened, lets catch the exception
-            
-            // if this application is executed from the command line
-            if (isCommandLine) {
+
+            // set the temp author name
+            String authorNameStr = "";
+
+            // check if this is a special question
+            if (!authorName.getElementsByTag("a").isEmpty() && authorName.getElementsByTag("a").html().contains("/>")) {
                 
-                // print the message
-                System.out.println("\nException: " + e.getMessage() + "\n");
+                // get the author name
+                authorNameStr = authorName.getElementsByTag("a").html();
                 
             } else {
                 
-                // display a fancy message on screen
-                MessagesHelper.exception(e);
+                // lets try again
+                try {
+                    
+                    // get the author name
+                    authorNameStr = authorName.getElementsByTag("a").first().text();
+                    
+                } catch (Exception e) {
+                    
+                    // another error, lets try again
+                    authorNameStr = authorName.text();
+                }
             }
+
+            // check if the author name needs to be retrieved from the string
+            if (authorNameStr.indexOf("/>") != -1) {
+                
+                // get the substring
+                authorNameStr = authorNameStr.substring(authorNameStr.indexOf("/>") + 2);
+            }
+
+            // log message
+            log.log(Level.INFO, "Creating a new user.");
             
-            // an error occurred, so this question is poisoned
-            poisoned = true;
+            // a new user is created
+            User u = new User();
+
+            // log message
+            log.log(Level.INFO, "Setting the user name.");
+            
+            // set the user name
+            u.setName(authorNameStr);
+            
+            // temp string for reputation
+            String authorReputationStr = "";
+
+            // log message
+            log.log(Level.INFO, "Checking user reputation.");
+            
+            // check if it is a normal question
+            if (doc.select("div#question").select("span.community-wiki").isEmpty()) {
+                
+                // check if it is a migrated question
+                if (authorName.getElementsByTag("a").isEmpty()) {
+                    
+                    // log message
+                    log.log(Level.INFO, "This is a migrated question.");
+                    
+                    // set the reputation
+                    authorReputationStr = "Migrated question";
+                    
+                } else {
+                    
+                    // log message
+                    log.log(Level.INFO, "This is a normal question.");
+                    
+                    // normal question
+                    authorReputationStr = authorReputation.text();
+                }
+            } else {
+                // log message
+                log.log(Level.INFO, "This is a community wiki question.");
+                
+                // set the reputation
+                authorReputationStr = "Community Wiki";
+            }
+
+            // log message
+            log.log(Level.INFO, "Setting the user reputation.");
+            
+            // set the reputation
+            u.setReputation(authorReputationStr);
+
+            // log message
+            log.log(Level.INFO, "Adding the user to the question.");
+            
+            // add the user to the question
+            q.setUser(u);
+
+            // set the class variable
+            this.question = q;
+
+            // create a new array
+            this.answers = new ArrayList<Post>();
+
+            // log message
+            log.log(Level.INFO, "Getting the answers.");
+            
+            // fetching the answers block
+            Elements answersBlock = doc.select("div.answer");
+            
+            // check if there are answers
+            if (!answersBlock.isEmpty()) {
+
+                // log message
+                log.log(Level.INFO, "Answers found, retrieving them.");
+
+                // get the authors block
+                Elements answerAuthorsBlock = answersBlock.select("table.fw");
+                
+                // counter for the loop
+                int counter = 0;
+
+                // iterate now
+                for (Element currentAnswerAuthor : answerAuthorsBlock) {
+
+                    // log message
+                    log.log(Level.INFO, "Getting answer {0}.", (counter + 1));
+
+                    // set new post
+                    Post a = new Post();
+                    
+                    // set new user
+                    User ua = new User();
+
+                    // the temp author name
+                    String answerAuthorNameStr = "";
+                    
+                    // check if it is a valid entry
+                    if (currentAnswerAuthor.select("div.user-details").last().getElementsByTag("a").isEmpty()) {
+                        
+                        // set the value
+                        answerAuthorNameStr = currentAnswerAuthor.select("div.user-details").last().text();
+                        
+                    } else {
+                        
+                        // try another approach
+                        answerAuthorNameStr = currentAnswerAuthor.select("div.user-details").last().getElementsByTag("a").first().html();
+                    }
+
+                    // check if user name has to be trimmed
+                    if (answerAuthorNameStr.indexOf("/>") != -1) {
+                        
+                        // get the substring
+                        answerAuthorNameStr = answerAuthorNameStr.substring(answerAuthorNameStr.indexOf("/>") + 2);
+                    }
+
+                    // log message
+                    log.log(Level.INFO, "Setting the author name for answer {0}.", (counter + 1));
+                    
+                    // set the author
+                    ua.setName(answerAuthorNameStr);
+
+                    // check if it has reputation
+                    if (currentAnswerAuthor.select("div.user-details").last().select("span.reputation-score").isEmpty()) {
+                        
+                        // it is a community wiki
+                        if (!currentAnswerAuthor.select("span.community-wiki").isEmpty()) {
+                            
+                            // log message
+                            log.log(Level.INFO, "Answer {0} is community wiki.", (counter + 1));
+                            
+                            // set the reputation
+                            ua.setReputation("Community Wiki");
+                            
+                        } else {
+                            
+                            // log message
+                            log.log(Level.INFO, "Answer {0} is a migrated answer.", (counter + 1));
+                            
+                            // it is a migrated question
+                            ua.setReputation("Migrated answer");
+                        }
+                    } else {
+                        
+                        // log message
+                        log.log(Level.INFO, "Answer {0} is a normal answer.", (counter + 1));
+                        
+                        // normal answer
+                        ua.setReputation(currentAnswerAuthor.select("div.user-details").last().select("span.reputation-score").first().text());
+                    }
+
+                    // log message
+                    log.log(Level.INFO, "Adding user to answer {0}.", (counter + 1));
+                    
+                    // add user
+                    a.setUser(ua);
+
+                    // log message
+                    log.log(Level.INFO, "Adding date for answer {0}.", (counter + 1));
+                    
+                    // add date
+                    a.setDate(currentAnswerAuthor.select("div.user-info").select("span.relativetime").first().text());
+
+                    // log message
+                    log.log(Level.INFO, "Adding text for answer {0}.", (counter + 1));
+                    
+                    // get text
+                    Elements answersTexts = answersBlock.select("div.post-text");
+                    
+                    // add text
+                    a.setText(answersTexts.get(counter).html());
+
+                    // get the votes
+                    Elements theVotes = answersBlock.select("div.vote");
+                    
+                    // log message
+                    log.log(Level.INFO, "Adding votes for answer {0}.", (counter + 1));
+                    
+                    // set the votes
+                    a.setVotes(Integer.parseInt(theVotes.get(counter).select("span.vote-count-post").first().text()));
+
+                    // check if it is accepted
+                    if (!theVotes.get(counter).getElementsByClass("vote-accepted-on").isEmpty()) {
+                        
+                        // log message
+                    log.log(Level.INFO, "Answer {0} is accepted.", (counter + 1));
+                        
+                        // set accepted
+                        a.setAccepted(true);
+                    }
+
+                    // create the comments array
+                    ArrayList<Comment> currentAnswerComments = new ArrayList<Comment>();
+
+                    // answers comments
+                    Elements currentAnswerCommentsElements = answersBlock.get(counter).select("div.comments").first().select("tr.comment");
+
+                    // log message
+                    log.log(Level.INFO, "Checking comments for answer {0}.", (counter + 1));
+                    
+                    // if the answer has comments
+                    if (!currentAnswerCommentsElements.isEmpty()) {
+
+                        // log message
+                        log.log(Level.INFO, "Adding comments for answer {0}.", (counter + 1));
+
+                        // iterate
+                        for (Element currentAnswerCommentElement : currentAnswerCommentsElements) {
+
+                            // create a new comment
+                            Comment ca = new Comment();
+
+                            // set the text
+                            ca.setText(currentAnswerCommentElement.select("span.comment-copy").first().html());
+
+                            try {
+                                
+                                // try to set the author
+                                ca.setAuthor(currentAnswerCommentElement.select("a.comment-user").first().text());
+                                
+                            } catch (Exception e) {
+                                
+                                // fix it
+                                ca.setAuthor(currentAnswerCommentElement.select("span.comment-user").first().text());
+                            }
+
+                            // set date
+                            ca.setDate(currentAnswerCommentElement.select("span.comment-date").first().text());
+
+                            // the comment votes
+                            int votes;
+                            
+                            // lets try
+                            try {
+                                
+                                // try to parse it
+                                votes = Integer.parseInt(currentAnswerCommentElement.select("span.cool").first().text());
+                                
+                            } catch (Exception e) {
+                                
+                                // set default to zero
+                                votes = 0;
+                                
+                            }
+                            
+                            // set votes
+                            ca.setVotes(votes);
+
+                            // set the current comment to the list of comments
+                            currentAnswerComments.add(ca);
+                            
+                            // set the current comment to null
+                            ca = null;
+
+                        }
+
+                    } else {
+                        
+                        // log message
+                        log.log(Level.INFO, "No comments for answer {0}.", (counter + 1));
+                        
+                    }
+
+                    // set the comments
+                    a.setComments(currentAnswerComments);
+
+                    // set to the class variable
+                    this.answers.add(a);
+
+                    // increments counter
+                    counter++;
+
+                }
+                
+                // log message
+                log.log(Level.INFO, "All answers added.");
+
+            } else {
+                
+                // log message
+                log.log(Level.INFO, "There are no answers for this question.");
+                
+            }
+
+        } catch (IOException ioex) {
+
+            // log message
+            log.log(Level.SEVERE, "An IO error occurred while trying to fetch and set the question data. Possibly a 404 page. MESSAGE: {0}", StringUtils.printStackTrace(ioex));
+            
+            Dialogs.info(null, "Hic Sunt Dracones", "I'm sorry to tell you this, but the question ID you provided\nseems to lead to a 404 page.\n\nPlease, correct the question ID and try again.");
+            
+            // exit application
+            System.exit(0);
+            
+        } catch (Exception excep) {
+            
+            // log message
+            log.log(Level.SEVERE, "A generic error occurred while trying to fetch and set the question data. MESSAGE: {0}", StringUtils.printStackTrace(excep));
+            
         }
-
-    }
-
-    /**
-     * Check if this question is poisoned.
-     * @return A boolean to indicate the state of the question.
-     */
-    public boolean isPoisoned() {
-        
-        // return the flag
-        return this.poisoned;
     }
 
     /**
@@ -382,10 +572,10 @@ public class Question {
      * @return A list of answers.
      */
     public ArrayList<Post> getAnswers() {
-        
+
         // sort the answers with the post comparator
         Collections.sort(answers, new PostComparator());
-        
+
         // return a list of answers
         return answers;
     }
@@ -395,7 +585,7 @@ public class Question {
      * @param answers A list of answers.
      */
     public void setAnswers(ArrayList<Post> answers) {
-        
+
         // set the list of answers
         this.answers = answers;
     }
@@ -405,7 +595,7 @@ public class Question {
      * @return The question itself.
      */
     public Post getQuestion() {
-        
+
         // return the question
         return question;
     }
@@ -415,7 +605,7 @@ public class Question {
      * @param question The question.
      */
     public void setQuestion(Post question) {
-        
+
         // set the question
         this.question = question;
     }

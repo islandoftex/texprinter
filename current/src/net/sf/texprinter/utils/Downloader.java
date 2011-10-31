@@ -44,8 +44,8 @@
  * ********************************************************************
  * \endcond
  *
- * <b>DownloadHelper.java</b>: This class provides download features for
- * other helper classes.
+ * Downloader.java: This class provides download features for other helper
+ * classes.
  */
 
 // package definition
@@ -59,15 +59,20 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Provides download features for other helper classes.
  * @author Paulo Roberto Massa Cereda
- * @version 1.1
+ * @version 2.0
  * @since 1.0
  */
-public class DownloadHelper {
+public class Downloader {
 
+    // the application logger
+    private static final Logger log = Logger.getLogger(Downloader.class.getCanonicalName());
+    
     // define the file size
     final static int size = 1024;
 
@@ -77,65 +82,76 @@ public class DownloadHelper {
      * @param fileName The file name.
      */
     public static void download(String resourceURL, String fileName) {
-        
+
         // set the output stream to null
         OutputStream outputStream = null;
-        
+
         // set the URL connection to null
         URLConnection connection = null;
 
         // set the input stream to null
         InputStream inputStream = null;
+
+        // log message
+        log.log(Level.INFO, "Trying to download the file {0}", fileName);
         
         // lets try
         try {
-            
+
             // create a URL
             URL theURL;
-            
+
             // and create a buffer
             byte[] buffer;
-            
+
             // create a reader of bytes
             int bytesRead;
-            
+
             // set the URL
             theURL = new URL(resourceURL);
-            
+
             // create the output stream
             outputStream = new BufferedOutputStream(new FileOutputStream(fileName));
 
             // open the connection
             connection = theURL.openConnection();
-            
+
             // get the input stream
             inputStream = connection.getInputStream();
-            
+
             // set the new buffer
             buffer = new byte[size];
-                        
+
             // while there are bytes to read
             while ((bytesRead = inputStream.read(buffer)) != -1) {
-                
+
                 // read and write them to the output stream
                 outputStream.write(buffer, 0, bytesRead);
             }
+            
+            // log message
+            log.log(Level.INFO, "File {0} downloaded successfully.", fileName);
 
         } catch (Exception e) {
-            // something bad happened, but we won't do nothing
-        } finally {
             
+            // log message
+            log.log(Level.SEVERE, "A generic error happened during the file download. MESSAGE: {0}", StringUtils.printStackTrace(e));
+            
+        } finally {
+
             // lets try to close the streams
             try {
-                
+
                 // close the input stream
                 inputStream.close();
 
                 // close the output stream
                 outputStream.close();
-                                
+
             } catch (IOException e) {
-                // something bad happened, but we won't do nothing
+                
+                // log message
+                log.log(Level.SEVERE, "A IO error happened during the file download. MESSAGE: {0}", StringUtils.printStackTrace(e));
             }
         }
     }

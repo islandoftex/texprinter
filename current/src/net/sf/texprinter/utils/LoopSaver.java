@@ -44,93 +44,56 @@
  * ********************************************************************
  * \endcond
  *
- * <b>ImageGroupHelper.java</b>: This is a helper class, actually a POJO
- * for handling images.
+ * LoopSaver.java: This class tries to save loops from infinity.
  */
 
 // package definition
 package net.sf.texprinter.utils;
 
-/**
- * Provides a POJO for handling images.
- * @author Paulo Roberto Massa Cereda
- * @version 1.1
- * @since 1.0
- */
-public class ImageGroupHelper {
+// needed imports
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-    // the image URL
-    private String url;
-    // the image name
-    private String name;
+/**
+ * Tries to save loops from infinity.
+ * @author Paulo Roberto Massa Cereda
+ * @version 2.0
+ * @since 2.0
+ */
+public class LoopSaver {
+    
+    // the ticks
+    private int ticks;
+    
+    // the application logger
+    private static final Logger log = Logger.getLogger(LoopSaver.class.getCanonicalName());
 
     /**
      * Constructor method.
-     * @param imgURL The image URL.
      */
-    public ImageGroupHelper(String imgURL) {
-
-        // set the image URL
-        this.url = imgURL;
-
-        // and set the image name
-        this.name = getNameFromLink(imgURL);
+    public LoopSaver() {
+        
+        // set default value
+        ticks = 0;
     }
-
+    
     /**
-     * Setter for the image name.
-     * @return The image name.
+     * Checks every loop iteration.
      */
-    public String getName() {
-
-        // return the name
-        return name;
+    public void tick() {
+        
+        // increment ticks
+        ticks++;
+        
+        // if it is too much
+        if (ticks > 10000) {
+            
+            // log message
+            log.log(Level.SEVERE, "There is a possible infinite loop in the image replacement algorithm.");
+            
+            // show exception dialog
+            Dialogs.exception();
+        }
     }
-
-    /**
-     * Setter for the image name.
-     * @param name The image name.
-     */
-    public void setName(String name) {
-        
-        // set the image name
-        this.name = name;
-    }
-
-    /**
-     * Getter for the image URL.
-     * @return The image URL.
-     */
-    public String getURL() {
-        
-        // return the image URL
-        return url;
-    }
-
-    /**
-     * Setter for the image URL.
-     * @param url The image URL.
-     */
-    public void setURL(String url) {
-        
-        // set the image URL
-        this.url = url;
-    }
-
-    /**
-     * Get the image name from the image URL.
-     * @param link The image URL.
-     * @return The image name.
-     */
-    private static String getNameFromLink(String link) {
-        
-        // split the image URL into several parts
-        String[] parts = link.split("/");
-        
-        // get the last part
-        String imgName = parts[parts.length - 1];
-        
-        // return the name
-        return imgName;
-    }
+    
 }

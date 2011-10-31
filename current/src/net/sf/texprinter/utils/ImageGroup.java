@@ -44,63 +44,94 @@
  * ********************************************************************
  * \endcond
  *
- * PostComparator.java: This class implements a comparator for lists,
- * based on votes and acceptance marks.
+ * ImageGroup.java: This is a helper class, actually a POJO for handling
+ * images.
  */
 
 // package definition
 package net.sf.texprinter.utils;
 
-// needed imports
-import java.util.Comparator;
-import net.sf.texprinter.model.Post;
-
 /**
- * Implements a comparator for lists based on votes and acceptance marks.
+ * Provides a POJO for handling images.
  * @author Paulo Roberto Massa Cereda
  * @version 2.0
- * @since 1.1
+ * @since 1.0
  */
-public class PostComparator implements Comparator<Post> {
+public class ImageGroup {
+
+    // the image URL
+    private String url;
+    
+    // the image name
+    private String name;
 
     /**
-     * Compares two objects and return the priority.
-     * @param o1 Object one.
-     * @param o2 Object two.
-     * @return The priority.
+     * Constructor method.
+     * @param imgURL The image URL.
      */
-    @Override
-    public int compare(Post o1, Post o2) {
-        
-        // if both are accepted
-        if (o1.isAccepted() && o2.isAccepted()) {
-            
-            // the highest score comes first
-            return ((o1.getVotes() > o2.getVotes() ? +1 : (o1.getVotes() < o2.getVotes() ? -1 : 0)) * -1);
-        }
-        else {
-            
-            // only the first one is accepted
-            if (o1.isAccepted()) {
-                
-                // it comes first
-                return -1;
-            }
-            else {
-                
-                // only the second one is accepted
-                if (o2.isAccepted()) {
-                    
-                    // it comes first
-                    return +1;
-                }
-                else {
-                    
-                    // the highest score comes first
-                    return ((o1.getVotes() > o2.getVotes() ? +1 : (o1.getVotes() < o2.getVotes() ? -1 : 0)) * -1);
-                }
-            }
-        }
+    public ImageGroup(String imgURL) {
+
+        // set the image URL
+        this.url = imgURL;
+
+        // and set the image name
+        this.name = getNameFromLink(imgURL);
     }
-    
+
+    /**
+     * Setter for the image name.
+     * @return The image name.
+     */
+    public String getName() {
+
+        // return the name
+        return name;
+    }
+
+    /**
+     * Setter for the image name.
+     * @param name The image name.
+     */
+    public void setName(String name) {
+
+        // set the image name
+        this.name = name;
+    }
+
+    /**
+     * Getter for the image URL.
+     * @return The image URL.
+     */
+    public String getURL() {
+
+        // return the image URL
+        return url;
+    }
+
+    /**
+     * Setter for the image URL.
+     * @param url The image URL.
+     */
+    public void setURL(String url) {
+
+        // set the image URL
+        this.url = url;
+    }
+
+    /**
+     * Get the image name from the image URL.
+     * @param link The image URL.
+     * @return The image name.
+     */
+    private static String getNameFromLink(String link) {
+
+        // split the image URL into several parts
+        String[] parts = link.split("/");
+
+        // get the last part
+        String imgName = parts[parts.length - 1];
+
+        // return the name
+        return imgName;
+    }
 }

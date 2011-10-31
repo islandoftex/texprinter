@@ -44,7 +44,7 @@
  * ********************************************************************
  * \endcond
  *
- * <b>User.java</b>: This class is a simple POJO to handle users.
+ * User.java: This class is a simple POJO to handle users.
  */
 
 // package definition
@@ -53,13 +53,14 @@ package net.sf.texprinter.model;
 /**
  * Provides a simple POJO to handle users.
  * @author Paulo Roberto Massa Cereda
- * @version 1.1
+ * @version 2.0
  * @since 1.0
  */
 public class User {
 
     // the user name
     private String name;
+    
     // the user reputation
     private String reputation;
 

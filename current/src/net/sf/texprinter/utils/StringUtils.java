@@ -44,8 +44,8 @@
  * ********************************************************************
  * \endcond
  *
- * <b>StringHelper.java</b>: This is a helper class that provides String
- * functions to the generator classes.
+ * StringUtils.java: This is a helper class that provides String functions
+ * to the generator classes.
  */
 
 // package definition
@@ -54,7 +54,13 @@ package net.sf.texprinter.utils;
 // needed imports
 import com.itextpdf.text.pdf.codec.Base64;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -64,17 +70,20 @@ import org.jsoup.select.Elements;
 /**
  * Provides String functions to the generator classes.
  * @author Paulo Roberto Massa Cereda
- * @version 1.1
+ * @version 2.0
  * @since 1.0
  */
-public class StringHelper {
+public class StringUtils {
 
+    // the application logger
+    private static final Logger log = Logger.getLogger(StringUtils.class.getCanonicalName());
+    
     /**
      * Escapes HTML entities and tags to a TeX format.
      * @param text The input text.
      * @return A new text formatted from HTML to TeX.
      */
-    public static String escapeHTMLtoTeX(String text, boolean isCommandLine) {
+    public static String escapeHTMLtoTeX(String text) {
 
         // replace bold tags
         String newText = text.replaceAll("<b>", "\\\\textbf{");
@@ -113,22 +122,40 @@ public class StringHelper {
         newText = newText.replaceAll("</blockquote>", "\\\\end{quotation}\n");
 
         // replace code tags
-        newText = newText.replaceAll("<pre><code>", "\\\\begin{lstlisting}\n");
-        newText = newText.replaceAll("<pre class=.*\"><code>", "\\\\begin{lstlisting}\n");
-        newText = newText.replaceAll("</code></pre>", "\\\\end{lstlisting}\n\n");
+        newText = newText.replaceAll("<pre><code>", "\\\\begin{TeXPrinterListing}\n");
+        newText = newText.replaceAll("<pre class=.*\"><code>", "\\\\begin{TeXPrinterListing}\n");
+        newText = newText.replaceAll("</code></pre>", "\\\\end{TeXPrinterListing}\n\n");
 
         // replace inline code tags
         newText = newText.replaceAll("<code>", "\\\\lstinline|");
         newText = newText.replaceAll("</code>", "|");
 
         // replace links tags
-        newText = newText.replaceAll("<a href=\"", "\\\\href{");
-        newText = newText.replaceAll("\\\" rel=\\\"nofollow\">", "}{");
-        newText = newText.replaceAll("</a>", "}");
         newText = newText.replaceAll("alt=\".*\" ", "");
 
+        // parse the text
+        Document docLinks = Jsoup.parse(newText);
+
+        // get all the links
+        Elements links = docLinks.getElementsByTag("a");
+        
+        // if there are links
+        if (links.size() > 0) {
+            
+            // for every link
+            for (Element link : links) {
+            
+                // get the outer HTML
+                String temp  = link.outerHtml();
+                
+                // replace it
+                newText = newText.replaceFirst(Pattern.quote(temp), "\\\\href{" + link.attr("href") + "}{" + link.text() + "}");
+            
+            }
+        }
+
         // create a list of images
-        ArrayList<ImageGroupHelper> images = new ArrayList<ImageGroupHelper>();
+        ArrayList<ImageGroup> images = new ArrayList<ImageGroup>();
 
         // parse the current text
         Document doc = Jsoup.parse(text);
@@ -143,7 +170,7 @@ public class StringHelper {
             if (m.tagName().equals("img")) {
 
                 // create a new image group with the image link
-                ImageGroupHelper image = new ImageGroupHelper(m.attr("abs:src"));
+                ImageGroup image = new ImageGroup(m.attr("abs:src"));
 
                 // add to the list of images
                 images.add(image);
@@ -152,58 +179,66 @@ public class StringHelper {
                 image = null;
             }
         }
+
+        // create a new loop saver
+        LoopSaver lps = null;
         
         // for every image in the list of images
-        for (ImageGroupHelper img : images) {
+        for (ImageGroup img : images) {
 
+            // create a new object
+            lps = new LoopSaver();
+            
             // while there are references for that image in the text
             while (newText.indexOf(img.getURL()) != -1) {
 
+                // tick loop
+                lps.tick();
+                
                 // replace the occurrence of that image
                 newText = newText.replaceFirst("<img src=\"" + img.getURL() + "\" />", "\\\\begin{figure}[h!]\n\\\\centering\n\\\\includegraphics[scale=0.5]{" + img.getName() + "}\n\\\\end{figure}");
             }
 
             // lets try
             try {
-                
+
                 // finally, download the image to the current directory
-                DownloadHelper.download(img.getURL(), img.getName());
-                
-            } catch (Exception e) {
+                Downloader.download(img.getURL(), img.getName());
+
+            } catch (Exception exception) {
+
+                // log message
+                log.log(Level.WARNING, "An error occurred while getting the current image. Trying to set the replacement image instead. MESSAGE: {0}", StringUtils.printStackTrace(exception));
                 
                 // image could not be downloaded for any reason
                 try {
-                    
+
                     // open a file stream
                     FileOutputStream f = new FileOutputStream(img.getName());
-                    
+
                     // write a replacement image
                     f.write(Base64.decode("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"));
-                    
+
                     // close the file
                     f.close();
+
+                } catch (IOException ioexception) {
                     
-                }catch(Exception ex) {
-                    // do nothing
-                }
-                
-                // if command line
-                if (isCommandLine) {
+                    // log message
+                   log.log(Level.SEVERE, "An IO exception occured while trying to create the image replacement. MESSAGE: {0}", StringUtils.printStackTrace(ioexception));  
+                   
+                } catch (Exception except) {
                     
-                    // print message
-                    System.out.println("For some reason, I couldn't download the following image:");
-                    System.out.println("--> " + img.getURL());
-                    System.out.println("Please, try to download this image. Don't panic, this is just\na friendly warning.\n");
+                    // log message
+                    log.log(Level.SEVERE, "An error occured while trying to create the image replacement. MESSAGE: {0}", StringUtils.printStackTrace(except));
                     
                 }
-                else {
-                    
-                    // graphical use
-                    MessagesHelper.info(null, "Don't panic!", "For some reason, I couldn't download the following image:\n\n<b>" + img.getURL() + "</b>\n\nPlease, try to download this image. Don't panic, this is just a friendly warning.");
-                }
-                
+
+                // display message
+                Dialogs.info(null, "Don't panic!", "For some reason, I couldn't download the following image:\n\n<b>" + img.getURL() + "</b>\n\nPlease, try to download this image. Don't panic, this is just a friendly warning.");
+
             }
-            
+
         }
 
         // unescape all HTML entities
@@ -222,7 +257,7 @@ public class StringHelper {
 
         // if there's no string to compare
         if (text == null || text.length() == 0) {
-            
+
             // return false
             return false;
         }
@@ -232,7 +267,7 @@ public class StringHelper {
 
             // if there's a char which is not a digit
             if (!Character.isDigit(text.charAt(i))) {
-                
+
                 // return false
                 return false;
             }
@@ -240,5 +275,34 @@ public class StringHelper {
 
         // everything is fine, return true
         return true;
+    }
+
+    /**
+     * Prints the stack trace to a string.
+     * @param exception The exception.
+     * @return 
+     */
+    public static String printStackTrace(Exception exception) {
+        
+        // lets try
+        try {
+            
+            // create a string writer
+            StringWriter stringWriter = new StringWriter();
+            
+            // create a print writer
+            PrintWriter printWriter = new PrintWriter(stringWriter);
+            
+            // set the stack trace to the writer
+            exception.printStackTrace(printWriter);
+            
+            // return the writer
+            return "M: " + exception.getMessage() + " S: " + stringWriter.toString();
+            
+        } catch (Exception except) {
+            
+            // error message
+            return "Error in printStackTrace: " + except.getMessage();
+        }
     }
 }

@@ -44,78 +44,73 @@
  * ********************************************************************
  * \endcond
  *
- * <b>ConfigurationRetriever.java</b>: This class retrieves the application
- * properties.
+ * OutputController.java: This class provides the output controller for
+ * command line usage.
  */
 
 // package definition
-package net.sf.texprinter.conf;
-
-// needed imports
-import java.io.InputStream;
-import java.util.Properties;
+package net.sf.texprinter.utils;
 
 /**
- * Retrieves the application properties.
+ * Provides the output controller for command line usage.
  * @author Paulo Roberto Massa Cereda
- * @version 1.1
- * @since 1.1
+ * @version 2.0
+ * @since 2.0
  */
-public class ConfigurationRetriever {
-    
-    // the properties
-    private Properties properties;
+public class OutputController {
+
+    // command line mode
+    private boolean commandLineMode;
+    // singleton reference
+    private static OutputController selfRef;
 
     /**
-     * Constructor method.
+     * Constructs the singleton instance.
      */
-    public ConfigurationRetriever() {
-        
-        // create a new properties object
-        properties = new Properties();
-        
-        // lets try to load the configuration
-        try {
-            
-            // get the configuration file
-            InputStream inStream = getClass().getResourceAsStream("/net/sf/texprinter/conf/texprinter.properties");
-            
-            // load it
-            properties.load(inStream);
-            
-            // close the stream
-            inStream.close();
-        }
-        catch (Exception e) {
-            // something bad happened
-            
-            // set a dummy app version number
-            properties.setProperty("AppVersionNumber","0.0");
-            
-            // and a dummy app version name
-            properties.setProperty("AppVersionName", "Lazy developer");
-        }
-        
+    private OutputController() {
+
+        // set self
+        selfRef = this;
+
+        // set the flag to false
+        commandLineMode = false;
     }
-    
+
     /**
-     * Gets the version number.
-     * @return The version number.
+     * Provides reference to singleton object of OutputController.
+     * @return The singleton instance.
      */
-    public String getAppVersionNumber() {
-        
-        // return the property
-        return properties.getProperty("AppVersionNumber");
+    public static final OutputController getInstance() {
+
+        // if it is not defined
+        if (selfRef == null) {
+
+            // call the private constructor
+            selfRef = new OutputController();
+        }
+
+        // return the reference
+        return selfRef;
     }
-    
+
     /**
-     * Gets the version name.
-     * @return The version name.
+     * Checks if the application is in command line mode.
+     * @return A boolean indicating command line mode or not.
      */
-    public String getAppVersionName() {
-        
-        // return the property
-        return properties.getProperty("AppVersionName");
+    public boolean isCommandLineMode() {
+
+        // return the flag
+        return commandLineMode;
+    }
+
+    /**
+     * Setter for the command line mode flag.
+     * @param commandLineMode The command line mode flag.
+     */
+    public void setCommandLineMode(boolean commandLineMode) {
+
+        // set the flag
+        this.commandLineMode = commandLineMode;
     }
     
 }

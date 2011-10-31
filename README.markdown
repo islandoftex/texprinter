@@ -1,6 +1,6 @@
 # TeXPrinter
 
-> **Current stable version:** 1.1 - Apple Pie
+> **Current stable version:** 2.0 - Epic cake
 
 ## The application
 
@@ -19,6 +19,24 @@ Please note that only the main [TeX.SX](http://tex.stackexchange.com/) website i
 This application is licensed under the [New BSD License](http://www.opensource.org/licenses/bsd-license.php). I want to call your attention to the fact that the New BSD License has been verified as a GPL-compatible free software license by the [Free Software Foundation](http://www.fsf.org/), and has been vetted as an open source license by the [Open Source Initiative](http://www.opensource.org/).
 
 ## Changelog
+
+### 2.x series
+
+### 2.0
+
++ `Question` was completely rewritten. Fixed bugs related to migrated questions and answers. Fixed bugs related to community wiki questions and answers.
+
++ Fixed minor annoyances.
+
++ Renamed `net.sf.texprinter.conf` to `net.sf.texprinter.config`. Renamed `ConfigurationRetriever` to `Configuration`. Added `changelog.html`.
+
++ Renamed `MessagesHelper` to `Dialogs`. Renamed `DownloadHelper` to `Downloader`. Renamed `StringHelper` to `StringUtils`. Added `ExecutionLogging`. Added `LoopSaver`. Added `OutputController`. Added `Reporter`. Added `StringHandler`. Added `UIUtils`. Added `VersionChecker`.
+
++ Added `net.sf.texprinter.ui.images`. Added images.
+
++ Added `net.sf.texprinter.ui`. Added `AboutPanel`. Added `ChangelogPanel`. Added `ExceptionPanel`. Added `InputPanel`.
+
+### 1.x series
 
 ### 1.1
 
