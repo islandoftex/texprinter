@@ -7,45 +7,43 @@
  * the LICENSE parameter into the provided DoxyFile.
  * ********************************************************************
  *
- * TeXPrinter - A TeX.SX question printer
- * Copyright (c) 2011, Paulo Roberto Massa Cereda
- * All rights reserved.
+ * TeXPrinter - A TeX.SX question printer Copyright (c) 2012, Paulo Roberto
+ * Massa Cereda All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or
- * without modification, are permitted provided that the following
- * conditions are met:
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
  *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
+ * 1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
  *
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the
- *    distribution.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
  *
- * 3. Neither the name of the project's author nor the names of its
- *    contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
+ * 3. Neither the name of the project's author nor the names of its contributors
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
- * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
- * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
- * USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
  *
  * ********************************************************************
  * End of the LICENSE conditional block
  * ********************************************************************
  * \endcond
  *
- * StringUtils.java: This is a helper class that provides String functions
- * to the generator classes.
+ * StringUtils.java: This is a helper class that provides String functions to
+ * the generator classes.
+ * Last revision: paulo at temperantia 26 Feb 2012 05:12
  */
 
 // package definition
@@ -68,18 +66,22 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 /**
- * Provides String functions to the generator classes.
+ * Provides String functions to the generator classes. Another helper class,
+ * but this one is specific to string manipulation.
+ *
  * @author Paulo Roberto Massa Cereda
- * @version 2.0
+ * @version 2.1
  * @since 1.0
  */
 public class StringUtils {
 
     // the application logger
     private static final Logger log = Logger.getLogger(StringUtils.class.getCanonicalName());
-    
+
     /**
-     * Escapes HTML entities and tags to a TeX format.
+     * Escapes HTML entities and tags to a TeX format. This method tries to
+     * replace HTML code by the TeX equivalent macros.
+     *
      * @param text The input text.
      * @return A new text formatted from HTML to TeX.
      */
@@ -138,19 +140,19 @@ public class StringUtils {
 
         // get all the links
         Elements links = docLinks.getElementsByTag("a");
-        
+
         // if there are links
         if (links.size() > 0) {
-            
+
             // for every link
             for (Element link : links) {
-            
+
                 // get the outer HTML
-                String temp  = link.outerHtml();
-                
+                String temp = link.outerHtml();
+
                 // replace it
                 newText = newText.replaceFirst(Pattern.quote(temp), "\\\\href{" + link.attr("href") + "}{" + link.text() + "}");
-            
+
             }
         }
 
@@ -182,19 +184,19 @@ public class StringUtils {
 
         // create a new loop saver
         LoopSaver lps = null;
-        
+
         // for every image in the list of images
         for (ImageGroup img : images) {
 
             // create a new object
             lps = new LoopSaver();
-            
+
             // while there are references for that image in the text
             while (newText.indexOf(img.getURL()) != -1) {
 
                 // tick loop
                 lps.tick();
-                
+
                 // replace the occurrence of that image
                 newText = newText.replaceFirst("<img src=\"" + img.getURL() + "\" />", "\\\\begin{figure}[h!]\n\\\\centering\n\\\\includegraphics[scale=0.5]{" + img.getName() + "}\n\\\\end{figure}");
             }
@@ -209,7 +211,7 @@ public class StringUtils {
 
                 // log message
                 log.log(Level.WARNING, "An error occurred while getting the current image. Trying to set the replacement image instead. MESSAGE: {0}", StringUtils.printStackTrace(exception));
-                
+
                 // image could not be downloaded for any reason
                 try {
 
@@ -223,19 +225,16 @@ public class StringUtils {
                     f.close();
 
                 } catch (IOException ioexception) {
-                    
+
                     // log message
-                   log.log(Level.SEVERE, "An IO exception occured while trying to create the image replacement. MESSAGE: {0}", StringUtils.printStackTrace(ioexception));  
-                   
+                    log.log(Level.SEVERE, "An IO exception occured while trying to create the image replacement. MESSAGE: {0}", StringUtils.printStackTrace(ioexception));
+
                 } catch (Exception except) {
-                    
+
                     // log message
                     log.log(Level.SEVERE, "An error occured while trying to create the image replacement. MESSAGE: {0}", StringUtils.printStackTrace(except));
-                    
-                }
 
-                // display message
-                Dialogs.info(null, "Don't panic!", "For some reason, I couldn't download the following image:\n\n<b>" + img.getURL() + "</b>\n\nPlease, try to download this image. Don't panic, this is just a friendly warning.");
+                }
 
             }
 
@@ -249,58 +248,32 @@ public class StringUtils {
     }
 
     /**
-     * Checks if the provided string only contains numbers
-     * @param text The string.
-     * @return A boolean to determine if the string only contains numbers.
-     */
-    public static boolean onlyNumbers(String text) {
-
-        // if there's no string to compare
-        if (text == null || text.length() == 0) {
-
-            // return false
-            return false;
-        }
-
-        // for every char in the string
-        for (int i = 0; i < text.length(); i++) {
-
-            // if there's a char which is not a digit
-            if (!Character.isDigit(text.charAt(i))) {
-
-                // return false
-                return false;
-            }
-        }
-
-        // everything is fine, return true
-        return true;
-    }
-
-    /**
-     * Prints the stack trace to a string.
+     * Prints the stack trace to a string. This method gets the exception
+     * and prints the stack trace to a string instead of the system default
+     * output.
+     *
      * @param exception The exception.
-     * @return 
+     * @return The string containg the whole stack trace.
      */
     public static String printStackTrace(Exception exception) {
-        
+
         // lets try
         try {
-            
+
             // create a string writer
             StringWriter stringWriter = new StringWriter();
-            
+
             // create a print writer
             PrintWriter printWriter = new PrintWriter(stringWriter);
-            
+
             // set the stack trace to the writer
             exception.printStackTrace(printWriter);
-            
+
             // return the writer
             return "M: " + exception.getMessage() + " S: " + stringWriter.toString();
-            
+
         } catch (Exception except) {
-            
+
             // error message
             return "Error in printStackTrace: " + except.getMessage();
         }

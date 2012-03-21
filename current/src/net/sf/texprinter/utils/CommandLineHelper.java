@@ -7,45 +7,43 @@
  * the LICENSE parameter into the provided DoxyFile.
  * ********************************************************************
  *
- * TeXPrinter - A TeX.SX question printer
- * Copyright (c) 2011, Paulo Roberto Massa Cereda
- * All rights reserved.
+ * TeXPrinter - A TeX.SX question printer Copyright (c) 2012, Paulo Roberto
+ * Massa Cereda All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or
- * without modification, are permitted provided that the following
- * conditions are met:
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
  *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
+ * 1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
  *
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the
- *    distribution.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
  *
- * 3. Neither the name of the project's author nor the names of its
- *    contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
+ * 3. Neither the name of the project's author nor the names of its contributors
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
- * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
- * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
- * USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
  *
  * ********************************************************************
  * End of the LICENSE conditional block
  * ********************************************************************
  * \endcond
  *
- * CommandLineHelper.java: This class provides command line features
- * for the main application.
+ * CommandLineHelper.java: This class provides command line features for the
+ * main application.
+ * Last revision: paulo at temperantia 26 Feb 2012 05:46
  */
 
 // package definition
@@ -53,34 +51,26 @@ package net.sf.texprinter.utils;
 
 // needed imports
 import net.sf.texprinter.config.Configuration;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.GnuParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.OptionBuilder;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.*;
 
 /**
  * Provides command line features for the main application.
+ *
  * @author Paulo Roberto Massa Cereda
- * @version 2.0
+ * @version 2.1
  * @since 1.0
  */
 public class CommandLineHelper {
 
     // flag to determine if the output will be PDF
     private boolean isPDF = true;
-    
     // the question id
     private String questionId;
-    
     // the command line options
     private Options commandLineOptions;
 
     /**
-     * Constructor method.
+     * Default constructor.
      */
     public CommandLineHelper() {
 
@@ -115,6 +105,7 @@ public class CommandLineHelper {
 
     /**
      * Getter for the question id.
+     *
      * @return The question id.
      */
     public String getQuestionId() {
@@ -125,6 +116,7 @@ public class CommandLineHelper {
 
     /**
      * Checks if the output format is set to PDF.
+     *
      * @return A boolean to determine if the output will be PDF.
      */
     public boolean isPDF() {
@@ -135,6 +127,7 @@ public class CommandLineHelper {
 
     /**
      * Parses the command line arguments.
+     *
      * @param args The command line arguments.
      */
     public void parse(String args[]) {
@@ -212,6 +205,7 @@ public class CommandLineHelper {
 
     /**
      * Prints an error message and exits the application.
+     *
      * @param message The message.
      */
     private void printErrorMessage(String message) {
@@ -245,7 +239,7 @@ public class CommandLineHelper {
 
         // print header
         System.out.println("TeXPrinter - A TeX.SX question printer");
-        System.out.println("Copyright (c) 2011, Paulo Roberto Massa Cereda");
+        System.out.println("Copyright (c) 2012, Paulo Roberto Massa Cereda");
         System.out.println("All rights reserved.\n");
     }
 }

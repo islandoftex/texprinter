@@ -1,6 +1,6 @@
 # TeXPrinter
 
-> **Current stable version:** 2.0 - Epic cake
+> **Current stable version:** 2.1 - Awesome Tiramisù
 
 ## The application
 
@@ -21,6 +21,20 @@ This application is licensed under the [New BSD License](http://www.opensource.o
 ## Changelog
 
 ### 2.x series
+
+### 2.1
+
++ Lots of classes added, renamed and removed.
+
++ `iText` PDF library updated to the last stable version.
+
++ Fixed several GUI font rendering issues.
+
++ New interface design, cross-platform look and feel, help messages.
+
++ Added support for Java 5, 6, 7 and OpenJDK 6.
+
++ GUI redesign for a better user experience.
 
 ### 2.0
 
@@ -59,3 +73,4 @@ This application is licensed under the [New BSD License](http://www.opensource.o
 ### 1.0
 
 + First release.
+

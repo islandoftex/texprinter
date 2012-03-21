@@ -7,37 +7,34 @@
  * the LICENSE parameter into the provided DoxyFile.
  * ********************************************************************
  *
- * TeXPrinter - A TeX.SX question printer
- * Copyright (c) 2011, Paulo Roberto Massa Cereda
- * All rights reserved.
+ * TeXPrinter - A TeX.SX question printer Copyright (c) 2012, Paulo Roberto
+ * Massa Cereda All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or
- * without modification, are permitted provided that the following
- * conditions are met:
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
  *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
+ * 1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
  *
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the
- *    distribution.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
  *
- * 3. Neither the name of the project's author nor the names of its
- *    contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
+ * 3. Neither the name of the project's author nor the names of its contributors
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
- * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
- * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
- * USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
  *
  * ********************************************************************
  * End of the LICENSE conditional block
@@ -46,44 +43,28 @@
  *
  * Reporter.java: This class provides the SOAP architecture to send the
  * execution plan to the application bugtracker webservice.
+ * Last revision: paulo at temperantia 26 Feb 2012 05:25
  */
 
 // package definition
 package net.sf.texprinter.utils;
 
 // needed imports
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.soap.MessageFactory;
-import javax.xml.soap.SOAPBody;
-import javax.xml.soap.SOAPConnection;
-import javax.xml.soap.SOAPConnectionFactory;
-import javax.xml.soap.SOAPElement;
-import javax.xml.soap.SOAPEnvelope;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPMessage;
-import javax.xml.soap.SOAPPart;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
 import net.sf.texprinter.config.Configuration;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
+import org.apache.axis.client.Call;
+import org.apache.axis.client.Service;
 
 /**
- * Provides the SOAP architecture to send the execution plan to the
- * application bugtracker webservice.
+ * Provides the SOAP architecture to send the execution plan to the application
+ * bugtracker webservice. This class will get the execution plan, connect to a
+ * webservice an then submit it. I had to use Apache Axis in order to support
+ * Java 5 series.
+ *
  * @author Paulo Roberto Massa Cereda
- * @version 2.0
+ * @version 2.1
  * @since 2.0
  */
 public class Reporter extends Thread {
@@ -93,23 +74,36 @@ public class Reporter extends Thread {
     
     // the message
     private String message;
+    
+    // the buttons
+    private JButton sendButton;
+    private JButton closeButton;
 
     /**
-     * Constructor method.
+     * Default constructor. It simply sets all private fields.
+     *
+     * @param sendButton The send button.
+     * @param closeButton The close button.
      * @param label The label.
      * @param message The message.
      */
-    public Reporter(JLabel label, String message) {
+    public Reporter(JButton sendButton, JButton closeButton, JLabel label, String message) {
 
         // set the label
         this.label = label;
 
         // set the message
         this.message = message;
+
+        // set the buttons
+        this.sendButton = sendButton;
+        this.closeButton = closeButton;
     }
 
     /**
-     * Sends the execution plan to the application bugtracker webservice.
+     * Sends the execution plan to the application bugtracker webservice. It
+     * relies on Apache Axis to submit the execution plan to the bugtracker
+     * webservice.
      */
     @Override
     public void run() {
@@ -129,164 +123,81 @@ public class Reporter extends Thread {
             // set text
             label.setText("Sending error report...");
 
-            // create the SOAP connection factory
-            SOAPConnectionFactory scf = SOAPConnectionFactory.newInstance();
+            // create and configure a call to the service
+            Call call = (Call) new Service().createCall();
+            
+            // set the address
+            call.setTargetEndpointAddress(config.getAppBugTrackerWebService());
+            
+            // set the method to be called
+            call.setOperationName(config.getAppBugTrackerMethod());
 
-            // create the connection
-            SOAPConnection conn = scf.createConnection();
-
-            // create a message factory
-            MessageFactory mf = MessageFactory.newInstance();
-
-            // then create a message
-            SOAPMessage msg = mf.createMessage();
-
-            // get the SOAP part
-            SOAPPart sp = msg.getSOAPPart();
-
-            // get the envelope
-            SOAPEnvelope env = sp.getEnvelope();
-
-            // add the namespaces
-            env.addNamespaceDeclaration("xsd", "http://www.w3.org/2001/XMLSchema");
-            env.addNamespaceDeclaration("xsi", "http://www.w3.org/2001/XMLSchema-instance");
-            env.addNamespaceDeclaration("enc", "http://schemas.xmlsoap.org/soap/encoding/");
-            env.addNamespaceDeclaration("env", "http://schemas.xmlsoap.org/soap/envelop/");
-
-            // set encoding
-            env.setEncodingStyle("http://schemas.xmlsoap.org/soap/encoding/");
-
-            // get body
-            SOAPBody bd = env.getBody();
-
-            // create a new element
-            SOAPElement be = bd.addChildElement(env.createName(config.getAppBugTrackerMethod(), "m", config.getAppBugTrackerWebService()));
-
-            // add the message to the body
-            be.addChildElement("message").addTextNode(message).setAttribute("xsi:type", "xsd:string");
-
-            // save it
-            msg.saveChanges();
-
-            // call it
-            SOAPMessage rp = conn.call(msg, config.getAppBugTrackerWebService());
-
-            // get the content
-            Source sc = rp.getSOAPPart().getContent();
-
-            // create a new result
-            StreamResult res = new StreamResult();
-
-            // create a output stream
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-            // set the result stream
-            res.setOutputStream(out);
-
-            // get a transformer
-            Transformer trans = TransformerFactory.newInstance().newTransformer();
-
-            // then transform
-            trans.transform(sc, res);
-
-            // create an input stream
-            ByteArrayInputStream is = new ByteArrayInputStream(out.toByteArray());
-
-            // close connection
-            conn.close();
-
-            // get the document builder factory
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-
-            // create a new document builder
-            DocumentBuilder db = dbf.newDocumentBuilder();
-
-            // set the document from the input stream
-            Document doc = db.parse(is);
-
-            // normalize it
-            doc.getDocumentElement().normalize();
-
-            // get the result of the webservice
-            String serviceReturn = (doc.getElementsByTagName("return")).item(0).getTextContent();
+            // add the parameters to be sent
+            Object[] param = new Object[]{message};
+            
+            // call it and get the return
+            String serviceReturn = (String) call.invoke(param);
 
             // check if it is an OK message
             if (serviceReturn.equals("ok")) {
 
                 // display success
                 displaySuccessMessage();
+                
             } else {
 
                 // display error
                 displayErrorMessage();
             }
 
-        } catch (SOAPException se) {
-
-            // display error
-            displayErrorMessage();
-            
-        } catch (TransformerConfigurationException tce) {
-            
-            // display error
-            displayErrorMessage();
-            
-        } catch (TransformerException te) {
-            
-            // display error
-            displayErrorMessage();
-            
-        } catch (ParserConfigurationException pce) {
-            
-            // display error
-            displayErrorMessage();
-            
-        } catch (SAXException se) {
-            
-            // display error
-            displayErrorMessage();
-            
-        } catch (IOException ioe) {
-            
-            // display error
-            displayErrorMessage();
-            
         } catch (Exception e) {
-            
+
             // display error
             displayErrorMessage();
         }
+
+        // set the send button to be invisible
+        sendButton.setVisible(false);
+        
+        // replace the text
+        closeButton.setText("Close");
+        
+        // and enable it again
+        closeButton.setEnabled(true);
+
     }
 
     /**
-     * Displays the success message.
+     * Displays the success message. Plain and simple, the JLabel will
+     * provide a visual feedback on what's going on.
      */
     private void displaySuccessMessage() {
-        
+
         // create an icon
         ImageIcon icon;
-        
+
         // get icon
         icon = UIUtils.createImageIcon(this.getClass(), "/net/sf/texprinter/ui/images/ok.png", "Success");
-        
+
         // set icon
         label.setIcon(icon);
-        
+
         // set text
         label.setText("Error report sent, thank you.");
     }
 
     /**
-     * Displays the error message.
+     * Displays the error message. In case of any error, a generic message
+     * will be provided.
      */
     private void displayErrorMessage() {
-        
+
         // create and get the icon
         ImageIcon icon = UIUtils.createImageIcon(this.getClass(), "/net/sf/texprinter/ui/images/error.png", "Error");
-        
+
         // set the icon
         label.setIcon(icon);
-        
+
         // set the text
         label.setText("An error occurred.");
     }

@@ -8,7 +8,7 @@
  * ********************************************************************
  *
  * TeXPrinter - A TeX.SX question printer
- * Copyright (c) 2011, Paulo Roberto Massa Cereda
+ * Copyright (c) 2012, Paulo Roberto Massa Cereda
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or
@@ -46,6 +46,7 @@
  *
  * Question.java: This class is a simple POJO to handle question.
  * Well, not so simple, but it aims at encapsulating the logic in it.
+ * Last revision: paulo at iustitia 20 Mar 2012 06:02
  */
 
 // package definition
@@ -59,6 +60,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.sf.texprinter.utils.Dialogs;
 import net.sf.texprinter.utils.PostComparator;
+import net.sf.texprinter.utils.ProgressMessage;
 import net.sf.texprinter.utils.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -68,8 +70,9 @@ import org.jsoup.select.Elements;
 /**
  * Provides a simple POJO to handle question. Well, not so simple, but it
  * aims at encapsulating the logic in it.
+ * 
  * @author Paulo Roberto Massa Cereda
- * @version 2.0
+ * @version 2.1
  * @since 1.0
  */
 public class Question {
@@ -84,12 +87,16 @@ public class Question {
     private ArrayList<Post> answers;
 
      /**
-     * Constructor method. It fetches the online question and sets the
+     * Default constructor. It fetches the online question and sets the
      * attributes defined above.
+     * 
      * @param questionLink The TeX.SX question link.
      */
     public Question(String questionLink) {
-
+        
+        // create a new progress message
+        ProgressMessage pm = new ProgressMessage("I'm fetching the question.");
+                
         // lets try to fetch data
         try {
 
@@ -548,27 +555,37 @@ public class Question {
                 log.log(Level.INFO, "There are no answers for this question.");
                 
             }
+            
+            // stop the wait window
+            pm.interrupt();
 
         } catch (IOException ioex) {
 
             // log message
             log.log(Level.SEVERE, "An IO error occurred while trying to fetch and set the question data. Possibly a 404 page. MESSAGE: {0}", StringUtils.printStackTrace(ioex));
             
-            Dialogs.info(null, "Hic Sunt Dracones", "I'm sorry to tell you this, but the question ID you provided\nseems to lead to a 404 page.\n\nPlease, correct the question ID and try again.");
+            // stop the wait window
+            pm.interrupt();
             
-            // exit application
-            System.exit(0);
+            // show dialog
+            Dialogs.showNotFoundWindow();
             
         } catch (Exception excep) {
             
             // log message
             log.log(Level.SEVERE, "A generic error occurred while trying to fetch and set the question data. MESSAGE: {0}", StringUtils.printStackTrace(excep));
             
+            // stop the wait window
+            pm.interrupt();
+            
+            Dialogs.showNotFoundWindow();
+            
         }
     }
 
     /**
      * Getter for the answers.
+     * 
      * @return A list of answers.
      */
     public ArrayList<Post> getAnswers() {
@@ -582,6 +599,7 @@ public class Question {
 
     /**
      * Setter for the answers.
+     * 
      * @param answers A list of answers.
      */
     public void setAnswers(ArrayList<Post> answers) {
@@ -592,6 +610,7 @@ public class Question {
 
     /**
      * Getter for the question, which happens to be a <code>Post</code> object.
+     * 
      * @return The question itself.
      */
     public Post getQuestion() {
@@ -602,6 +621,7 @@ public class Question {
 
     /**
      * Setter for the question.
+     * 
      * @param question The question.
      */
     public void setQuestion(Post question) {

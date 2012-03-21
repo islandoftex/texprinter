@@ -7,37 +7,34 @@
  * the LICENSE parameter into the provided DoxyFile.
  * ********************************************************************
  *
- * TeXPrinter - A TeX.SX question printer
- * Copyright (c) 2011, Paulo Roberto Massa Cereda
- * All rights reserved.
+ * TeXPrinter - A TeX.SX question printer Copyright (c) 2012, Paulo Roberto
+ * Massa Cereda All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or
- * without modification, are permitted provided that the following
- * conditions are met:
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
  *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
+ * 1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
  *
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the
- *    distribution.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
  *
- * 3. Neither the name of the project's author nor the names of its
- *    contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
+ * 3. Neither the name of the project's author nor the names of its contributors
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
- * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
- * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
- * USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
  *
  * ********************************************************************
  * End of the LICENSE conditional block
@@ -45,299 +42,439 @@
  * \endcond
  *
  * Dialogs.java: This class provides message features to the other classes.
+ * Last revision: paulo at temperantia 26 Feb 2012 05:57
+ * 
  */
 
 // package definition
 package net.sf.texprinter.utils;
 
 // needed imports
-import com.ezware.dialog.task.CommandLink;
-import com.ezware.dialog.task.TaskDialog;
-import com.ezware.dialog.task.TaskDialog.StandardCommand;
-import com.ezware.dialog.task.TaskDialogs;
-import java.awt.Window;
-import java.util.List;
-import javax.swing.UIManager;
-import net.sf.texprinter.config.Configuration;
-import net.sf.texprinter.ui.AboutPanel;
-import net.sf.texprinter.ui.ChangelogPanel;
-import net.sf.texprinter.ui.ExceptionPanel;
-import net.sf.texprinter.ui.InputPanel;
+import javax.swing.SwingUtilities;
+import net.sf.texprinter.ui.*;
 
 /**
  * Provides message features to the other classes.
+ *
  * @author Paulo Roberto Massa Cereda
- * @version 2.0
+ * @version 2.1
  * @since 1.0
  */
 public class Dialogs {
+    
+    private String strReturn = "";
+    private PrintingFormat prtReturn = PrintingFormat.NONE;
+    
+    //private Object result;
 
     // define the output controller
     private static OutputController outControl = OutputController.getInstance();
-    
-    /**
-     * Displays an info messagebox.
-     * @param window The window.
-     * @param title The title of the messagebox.
-     * @param text The text of the messagebox.
-     */
-    public static void info(Window window, String title, String text) {
 
-        // if it is GUI mode
-        if (!outControl.isCommandLineMode()) {
-            
-            // display the dialog
-            TaskDialogs.inform(window, title, text);
-        }
-        else {
-            
-            // display message
-            System.out.println(text);
-        }
+    public PrintingFormat getOutputFormat() {
+
+        // create a new window
+        //PrintingWindow pw = new PrintingWindow();
         
-        
-    }
-
-    /**
-     * Displays an error messagebox.
-     * @param window The window.
-     * @param title The title of the messagebox.
-     * @param text The text of the messagebox.
-     */
-    public static void error(Window window, String title, String text) {
-
-        // if it is GUI mode
-        if (!outControl.isCommandLineMode()) {
-            
-            // error window
-            TaskDialogs.error(window, title, text);
-            
-        } else {
-            
-            // display error
-            System.out.println(text);
-        }
-    }
-
-    /**
-     * Displays a question messagebox.
-     * @param window The window.
-     * @param title The title of the messagebox.
-     * @param text The text of the messagebox.
-     * @return A boolean with the chosen option.
-     */
-    public static boolean ask(Window window, String title, String text) {
-
         // return the result of the dialog
-        return TaskDialogs.ask(window, title, text);
-    }
-
-    /**
-     * Displays an input messagebox.
-     * @param window The window.
-     * @param title The title of the messagebox.
-     * @param text The text of the messagebox.
-     * @param defaultValue The default value.
-     * @return The typed value.
-     */
-    public static String input(Window window, String title, String text, String defaultValue) {
-
-        // return the typed value of the dialog
-        return TaskDialogs.input(window, title, text, defaultValue);
-    }
-
-    /**
-     * Displays a list of options.
-     * @param window The window.
-     * @param title The title of the messagebox.
-     * @param text The text of the messagebox.
-     * @param choice The default option.
-     * @param choices A list of options.
-     * @return The index of the chosen option.
-     */
-    public static int choices(Window window, String title, String text, int choice, List<CommandLink> choices) {
-
-        // return the result of the dialog
-        return TaskDialogs.choice(window, title, text, choice, choices);
-    }
-
-    /**
-     * Displays the exception.
-     */
-    public static void exception() {
-
-        // if it is GUI mode
-        if (!outControl.isCommandLineMode()) {
+        //return pw.show();
         
-            // create a new window
-            TaskDialog exceptionBox = new TaskDialog(null, "Exception");
+        try {
+        
+        
 
-            // create a new panel
-            ExceptionPanel exceptionPanel = new ExceptionPanel();
+        SwingUtilities.invokeAndWait(new Runnable() {
+            
+                @Override
+            public void run() {
+                //SimpleDialog sd = new SimpleDialog();
+                //sd.setVisible(true);
+                //PrintingWindow pw = new PrintingWindow();
+                //prtReturn = pw.show();
+                    
+                    NewPrintingWindow npw = new NewPrintingWindow();
+                    prtReturn = npw.show();
+                    //result = (PrintingFormat) npw.show();
 
-            // set icon
-            exceptionBox.setIcon(TaskDialog.StandardIcon.ERROR);
-
-            // set instruction
-            exceptionBox.setInstruction("Houston, we have a problem.");
-
-            // set text
-            exceptionBox.setText("Unfortunately, TeXPrinter raised an exception. It might be a bug, or\nsimply a temporary technical dificulty.\n\nTeXPrinter keeps track of every internal behaviour in order to ease\nthe debugging process. The generated error report does not include\nsensible data of any form neither operating system variables. Only\nthe walkthrough execution plan is sent.");
-
-            // set fixed component
-            exceptionBox.setFixedComponent(exceptionPanel);
-
-            // show window
-            exceptionBox.show();
-
-            // lets try
-            try {
-
-                // stop the error transmission
-                exceptionPanel.stop();
-
-            } catch (Exception ex) {
-
-                // don't do anything
             }
+        });
+        
+            //System.out.println("Retorno:? " + prtReturn.toString());
+        
+        return prtReturn;
+        //return ((PrintingFormat) result);
+        
+        }
+        catch (Exception e) {
+            return null;
+        }
+        
+    }
+
+    /**
+     * Displays the showExceptionWindow.
+     */
+    public static void showExceptionWindow() {
+
+        // if it is GUI mode
+        if (!outControl.isCommandLineMode()) {
+
+            // create a new window
+            //ExceptionWindow ew = new ExceptionWindow();
+            
+            // show
+            //ew.show();
 
             // exit application
-            System.exit(0);
+            //System.exit(0);
             
+            try {
+        
+        
+
+        SwingUtilities.invokeAndWait(new Runnable() {
+            
+                @Override
+            public void run() {
+                //SimpleDialog sd = new SimpleDialog();
+                //sd.setVisible(true);
+                //MainWindow mw = new MainWindow();
+                //strReturn = mw.show();
+                    ExceptionWindow ew = new ExceptionWindow();
+                    ew.show();
+                    System.exit(0);
+            }
+        });
+
+        
         }
-        else {
-            
-            // Display the exception
+        catch (Exception e) {
+        }
+
+        } else {
+
+            // Display the showExceptionWindow
             System.out.println("Unfortunately, TeXPrinter raised an exception. It might be a bug, or\nsimply a temporary technical dificulty.");
-            
+
             // exit the application
             System.exit(0);
         }
 
     }
 
-
-    /*
-     * Set the native look and feel according to the operating system.
-     */
-    public static void setNativeLookAndFeel() {
-
-        // let's try
-        try {
-
-            // set the default look and feel as the system look and feel
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-
-        } catch (Exception e) {
-            // something happened, but we won't do nothing
-        }
-    }
-
     /**
      * Show the about messagebox.
-     * @param window The window.
      */
-    public static void showAbout(Window window) {
-
-        // define the copyright symbol
-        final String COPYRIGHT = "\u00a9";
-
-        // create a new configuration
-        Configuration config = new Configuration();
+    public static void showAboutWindow() {
 
         // create a new window
-        TaskDialog aboutBox = new TaskDialog(window, "About");
-        
-        // create a new panel
-        AboutPanel aboutPanel = new AboutPanel();
-        
-        // set the icon
-        aboutBox.setIcon(TaskDialog.StandardIcon.INFO);
-        
-        // set the instruction
-        aboutBox.setInstruction("TeXPrinter");
-        
-        // set the text
-        aboutBox.setText("<i>Version " + config.getAppVersionNumber() + " - " + config.getAppVersionName() + "</i>\n\nCopyright " + COPYRIGHT + " 2011, Paulo Roberto Massa Cereda\nAll rights reserved.\n\nThis application is licensed under the <u>New BSD License</u>. I want to call your attention\nto the fact that the <i>New BSD License</i> has been verified as a <i>GPL-compatible free\nsoftware license</i> by the Free Software Foundation, and has been vetted as an <i>open\nsource license</i> by the Open Source Initiative.");
-        
-        // set the fixed component
-        aboutBox.setFixedComponent(aboutPanel);
+        AboutWindow aw = new AboutWindow();
         
         // show
-        aboutBox.show();
-        
-        // lets try to finish the version checker
-        try {
-            
-            // stop the version checker
-            aboutPanel.stop();
-        } catch (Exception e) {
-            
-            // something happened
-        }
+        aw.show();
 
+//        try {
+//        
+//        
+//
+//        SwingUtilities.invokeAndWait(new Runnable() {
+//            
+//                @Override
+//            public void run() {
+//                // create a new window
+//        AboutWindow aw = new AboutWindow();
+//        
+//        // show
+//        aw.show();
+//                    
+//                    
+//            }
+//        });
+//
+//        
+//        }
+//        catch (Exception e) {
+//        }
+        
     }
 
     /**
      * Show the changelog window.
-     * @param window The window.
      */
-    public static void showChangelog(Window window) {
-
-        // create a new configuration
-        Configuration config = new Configuration();
+    public static void showChangelogWindow() {
 
         // create a new window
-        TaskDialog changelogBox = new TaskDialog(window, "Changelog");
+        ChangelogWindow cw = new ChangelogWindow();
         
-        // create a new panel
-        ChangelogPanel changelogPanel = new ChangelogPanel();
+        // show
+        cw.show();
         
-        // set icon
-        changelogBox.setIcon(TaskDialog.StandardIcon.INFO);
-        
-        // set instruction
-        changelogBox.setInstruction("TeXPrinter " + config.getAppVersionNumber());
-        
-        // set text
-        changelogBox.setText("Changes in this version:");
-        
-        // set fixed component
-        changelogBox.setFixedComponent(changelogPanel);
-        
-        // show window
-        changelogBox.show();
+//        try {
+//        
+//        
+//
+//        SwingUtilities.invokeAndWait(new Runnable() {
+//            
+//                @Override
+//            public void run() {
+//                // create a new window
+//        ChangelogWindow cw = new ChangelogWindow();
+//        
+//        // show
+//        cw.show();
+//                    
+//                    
+//            }
+//        });
+//
+//        
+//        }
+//        catch (Exception e) {
+//        }
 
     }
 
     /**
      * Show the input dialog.
+     *
      * @return The textfield value.
      */
-    public static String inputQuestion() {
+    public String getQuestionID() {
         
-        // create new window
-        TaskDialog mainWindow = new TaskDialog(null, "TeXPrinter");
+
         
-        // set icon
-        mainWindow.setIcon(TaskDialog.StandardIcon.INFO);
-                
-        // set instruction
-        mainWindow.setInstruction("Welcome to TeXPrinter!");
+        try {
         
-        // set text
-        mainWindow.setText("Please type the question ID you want me to print.\nIf you want me to display the application version, type <b>?</b>.");
         
-        // create new panel
-        InputPanel inputPanel = new InputPanel();
+
+        SwingUtilities.invokeAndWait(new Runnable() {
+            
+                @Override
+            public void run() {
+                //SimpleDialog sd = new SimpleDialog();
+                //sd.setVisible(true);
+                MainWindow mw = new MainWindow();
+                strReturn = mw.show();
+                //result = (String) mw.show();
+            }
+        });
         
-        // set fixed component
-        mainWindow.setFixedComponent(inputPanel);
+        return strReturn;
+        //return ((String) result);
         
-        // set window buttons
-        mainWindow.setCommands(StandardCommand.OK, StandardCommand.CANCEL);
+        }
+        catch (Exception e) {
+            return null;
+        }
         
-        // return the proper value
-        return (mainWindow.show().equals(StandardCommand.OK) ? inputPanel.getTextValue() : null);
+        // create a new window
+        //MainWindow mw = new MainWindow();
+        
+        // return the value
+        //return mw.show();
+
+    }
+
+    /**
+     * Show the 404 error window.
+     */
+    public static void showNotFoundWindow() {
+
+        // create a new window.
+        //NotFoundWindow nfw = new NotFoundWindow();
+        
+        // show
+        //nfw.show();
+        
+        try {
+        
+        
+
+        SwingUtilities.invokeAndWait(new Runnable() {
+            
+                @Override
+            public void run() {
+                //SimpleDialog sd = new SimpleDialog();
+                //sd.setVisible(true);
+                //MainWindow mw = new MainWindow();
+                //strReturn = mw.show();
+                    //ExceptionWindow ew = new ExceptionWindow();
+                    //ew.show();
+                    //System.exit(0);
+                    NotFoundWindow nfw = new NotFoundWindow();
+                    nfw.show();
+                    
+                    
+            }
+        });
+
+        
+        }
+        catch (Exception e) {
+        }
+
+    }
+
+    /**
+     * Show a funny message when one of the steps is
+     * ignored.
+     */
+    public static void showKittenWindow() {
+
+        // create a new window.
+        //KittenWindow kw = new KittenWindow();
+        
+        // show
+        //kw.show();
+        
+        try {
+        
+        
+
+        SwingUtilities.invokeAndWait(new Runnable() {
+            
+                @Override
+            public void run() {
+                //SimpleDialog sd = new SimpleDialog();
+                //sd.setVisible(true);
+                //MainWindow mw = new MainWindow();
+                //strReturn = mw.show();
+                    //ExceptionWindow ew = new ExceptionWindow();
+                    //ew.show();
+                    //System.exit(0);
+                    // create a new window.
+        KittenWindow kw = new KittenWindow();
+        
+        // show
+        kw.show();
+                    
+                    
+            }
+        });
+
+        
+        }
+        catch (Exception e) {
+        }
+        
+        
+    }
+
+    /**
+     * Show a confirmation window when finished.
+     */
+    public static void showConfirmationWindow() {
+
+        // create a new window.
+        //ConfirmationWindow cw = new ConfirmationWindow();
+        
+        // show
+        //cw.show();
+        
+        try {
+        
+        
+
+        SwingUtilities.invokeAndWait(new Runnable() {
+            
+                @Override
+            public void run() {
+                //SimpleDialog sd = new SimpleDialog();
+                //sd.setVisible(true);
+                //MainWindow mw = new MainWindow();
+                //strReturn = mw.show();
+                    //ExceptionWindow ew = new ExceptionWindow();
+                    //ew.show();
+                    //System.exit(0);
+          // create a new window.
+        ConfirmationWindow cw = new ConfirmationWindow();
+        
+        // show
+        cw.show();
+                    
+                    
+            }
+        });
+
+        
+        }
+        catch (Exception e) {
+        }
+    }
+
+    /**
+     * Show help for formats.
+     */
+    public static void showHelpFormatWindow() {
+        
+        // create a new window.
+        HelpFormatWindow hfw = new HelpFormatWindow();
+        
+        // show
+        hfw.show();
+        
+//        try {
+//        
+//        
+//
+//        SwingUtilities.invokeAndWait(new Runnable() {
+//            
+//                @Override
+//            public void run() {
+//                //SimpleDialog sd = new SimpleDialog();
+//                //sd.setVisible(true);
+//                //MainWindow mw = new MainWindow();
+//                //strReturn = mw.show();
+//                    //ExceptionWindow ew = new ExceptionWindow();
+//                    //ew.show();
+//                    //System.exit(0);
+//          // create a new window.
+//        HelpFormatWindow hfw = new HelpFormatWindow();
+//        
+//        // show
+//        hfw.show();
+//                    
+//                    
+//            }
+//        });
+//
+//        
+//        }
+//        catch (Exception e) {
+//        }
+    }
+
+    /**
+     * Show help for error report.
+     */
+    public static void showHelpErrorReportWindow() {
+        
+        // create a new window.
+        HelpErrorReportWindow herw = new HelpErrorReportWindow();
+        
+        // show
+        herw.show();
+        
+//        try {
+//        
+//        
+//
+//        SwingUtilities.invokeAndWait(new Runnable() {
+//            
+//                @Override
+//            public void run() {
+//                // create a new window.
+//        HelpErrorReportWindow herw = new HelpErrorReportWindow();
+//        
+//        // show
+//        herw.show();
+//                    
+//                    
+//            }
+//        });
+//
+//        
+//        }
+//        catch (Exception e) {
+//        }
     }
 }

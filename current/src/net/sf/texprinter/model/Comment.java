@@ -8,7 +8,7 @@
  * ********************************************************************
  *
  * TeXPrinter - A TeX.SX question printer
- * Copyright (c) 2011, Paulo Roberto Massa Cereda
+ * Copyright (c) 2012, Paulo Roberto Massa Cereda
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or
@@ -45,6 +45,7 @@
  * \endcond
  *
  * Comment.java: This class is a simple POJO to handle comments.
+ * Last revision: paulo at temperantia 26 Feb 2012 05:58
  */
 
 // package definition
@@ -52,8 +53,9 @@ package net.sf.texprinter.model;
 
 /**
  * Provides a simple POJO to handle comments.
+ * 
  * @author Paulo Roberto Massa Cereda
- * @version 2.0
+ * @version 2.1
  * @since 1.0
  */
 public class Comment {
@@ -74,6 +76,7 @@ public class Comment {
      * Getter for the author name. I had to remove the diamond symbol when
      * found. A user which happens to be a moderator, by a design feature,
      * has a diamond symbol attached to his name.
+     * 
      * @return The author name.
      */
     public String getAuthor() {
@@ -87,6 +90,7 @@ public class Comment {
 
     /**
      * Setter for the author name.
+     * 
      * @param author The author name.
      */
     public void setAuthor(String author) {
@@ -97,6 +101,7 @@ public class Comment {
 
     /**
      * Getter for the date.
+     * 
      * @return The comment date.
      */
     public String getDate() {
@@ -108,6 +113,7 @@ public class Comment {
     /** 
      * Setter for the date.  Since StackOverflow displays dates in a pretty
      * nice format, I decide to leave the date String as it is.
+     * 
      * @param date The comment date.
      */
     public void setDate(String date) {
@@ -118,6 +124,7 @@ public class Comment {
 
     /**
      * Getter for the comment text.
+     * 
      * @return The comment text.
      */
     public String getText() {
@@ -128,6 +135,7 @@ public class Comment {
 
     /**
      * Setter for the comment text.  The text is hold in the HTML format.
+     * 
      * @param text The comment text.
      */
     public void setText(String text) {
@@ -138,6 +146,7 @@ public class Comment {
 
     /**
      * Getter for the comment votes.
+     * 
      * @return The comment votes.
      */
     public int getVotes() {
@@ -148,6 +157,7 @@ public class Comment {
 
     /**
      * Setter for the comment votes.
+     * 
      * @param votes The comment votes.
      */
     public void setVotes(int votes) {

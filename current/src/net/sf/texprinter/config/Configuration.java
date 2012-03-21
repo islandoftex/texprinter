@@ -8,7 +8,7 @@
  * ********************************************************************
  *
  * TeXPrinter - A TeX.SX question printer
- * Copyright (c) 2011, Paulo Roberto Massa Cereda
+ * Copyright (c) 2012, Paulo Roberto Massa Cereda
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or
@@ -45,6 +45,7 @@
  * \endcond
  *
  * Configuration.java: This class retrieves the application properties.
+ * Last revision: paulo at temperantia 26 Feb 2012 06:05
  */
 
 // package definition
@@ -59,8 +60,9 @@ import net.sf.texprinter.utils.StringUtils;
 
 /**
  * Retrieves the application properties.
+ * 
  * @author Paulo Roberto Massa Cereda
- * @version 2.0
+ * @version 2.1
  * @since 1.1
  */
 public class Configuration {
@@ -72,7 +74,7 @@ public class Configuration {
     private Properties properties;
 
     /**
-     * Constructor method.
+     * Default constructor.
      */
     public Configuration() {
 
@@ -115,6 +117,7 @@ public class Configuration {
 
     /**
      * Gets the version number.
+     * 
      * @return The version number.
      */
     public String getAppVersionNumber() {
@@ -125,6 +128,7 @@ public class Configuration {
 
     /**
      * Gets the version name.
+     * 
      * @return The version name.
      */
     public String getAppVersionName() {
@@ -135,6 +139,7 @@ public class Configuration {
 
     /**
      * Gets the version URL used to check for newer versions.
+     * 
      * @return The version URL.
      */
     public String getAppVersionURL() {
@@ -145,6 +150,7 @@ public class Configuration {
 
     /**
      * Gets the bugtracker webservice address.
+     * 
      * @return The webservice address.
      */
     public String getAppBugTrackerWebService() {
@@ -155,6 +161,7 @@ public class Configuration {
 
     /**
      * Gets the bugtracker webservice method name.
+     * 
      * @return The webservice method name.
      */
     public String getAppBugTrackerMethod() {

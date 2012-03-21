@@ -8,7 +8,7 @@
  * ********************************************************************
  *
  * TeXPrinter - A TeX.SX question printer
- * Copyright (c) 2011, Paulo Roberto Massa Cereda
+ * Copyright (c) 2012, Paulo Roberto Massa Cereda
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or
@@ -46,6 +46,7 @@
  *
  * Post.java: This class is a simple POJO to handle posts, which can be
  * a question or an answer.
+ * Last revision: paulo at temperantia 26 Feb 2012 06:00
  */
 // package definition
 package net.sf.texprinter.model;
@@ -56,8 +57,9 @@ import java.util.ArrayList;
 /**
  * Provides a simple POJO to handle posts, which can be a question or
  * an answer.
+ * 
  * @author Paulo Roberto Massa Cereda
- * @version 2.0
+ * @version 2.1
  * @since 1.0
  */
 public class Post {
@@ -97,6 +99,7 @@ public class Post {
 
     /**
      * Setter for the accepted flag.
+     * 
      * @param accepted The flag.
      */
     public void setAccepted(boolean accepted) {
@@ -107,6 +110,7 @@ public class Post {
 
     /**
      * Getter for the post date.
+     * 
      * @return The post date.
      */
     public String getDate() {
@@ -117,6 +121,7 @@ public class Post {
 
     /**
      * Setter for the post date.
+     * 
      * @param date The post date.
      */
     public void setDate(String date) {
@@ -127,6 +132,7 @@ public class Post {
 
     /**
      * Getter for the post text.
+     * 
      * @return The post text.
      */
     public String getText() {
@@ -137,6 +143,7 @@ public class Post {
 
     /**
      * Setter for the post text.
+     * 
      * @param text The post text.
      */
     public void setText(String text) {
@@ -147,6 +154,7 @@ public class Post {
 
     /**
      * Getter for the post title.
+     * 
      * @return The post title.
      */
     public String getTitle() {
@@ -157,6 +165,7 @@ public class Post {
 
     /**
      * Setter for the post title.
+     * 
      * @param title The post title.
      */
     public void setTitle(String title) {
@@ -167,6 +176,7 @@ public class Post {
 
     /**
      * Getter for the post user.
+     * 
      * @return The post user.
      */
     public User getUser() {
@@ -177,6 +187,7 @@ public class Post {
 
     /**
      * Setter for the post user.
+     * 
      * @param user The post user.
      */
     public void setUser(User user) {
@@ -187,6 +198,7 @@ public class Post {
 
     /**
      * Getter for the post comments, if any.
+     * 
      * @return An array with the post comments.
      */
     public ArrayList<Comment> getComments() {
@@ -197,6 +209,7 @@ public class Post {
 
     /**
      * Setter for the post comments, if any.
+     * 
      * @param comments An array with the post comments.
      */
     public void setComments(ArrayList<Comment> comments) {
@@ -207,6 +220,7 @@ public class Post {
 
     /**
      * Getter for the number of votes.
+     * 
      * @return The number of votes.
      */
     public int getVotes() {
@@ -217,6 +231,7 @@ public class Post {
 
     /**
      * Setter for the number of votes.
+     * 
      * @param votes The number of votes.
      */
     public void setVotes(int votes) {

@@ -8,7 +8,7 @@
  * ********************************************************************
  *
  * TeXPrinter - A TeX.SX question printer
- * Copyright (c) 2011, Paulo Roberto Massa Cereda
+ * Copyright (c) 2012, Paulo Roberto Massa Cereda
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or
@@ -46,21 +46,15 @@
  *
  * PDFGenerator.java: This class is responsible for generating a PDF file
  * from a Question object.
+ * Last revision: paulo at temperantia 26 Feb 2012 14:10
  */
 
 // package definition
 package net.sf.texprinter.generators;
 
 // needed imports
-import com.itextpdf.text.BaseColor;
-import com.itextpdf.text.Chunk;
-import com.itextpdf.text.DocListener;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.Element;
-import com.itextpdf.text.Font;
 import com.itextpdf.text.Font.FontFamily;
-import com.itextpdf.text.Image;
-import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.*;
 import com.itextpdf.text.html.simpleparser.ChainedProperties;
 import com.itextpdf.text.html.simpleparser.HTMLWorker;
 import com.itextpdf.text.html.simpleparser.ImageProvider;
@@ -81,13 +75,15 @@ import net.sf.texprinter.model.Comment;
 import net.sf.texprinter.model.Post;
 import net.sf.texprinter.model.Question;
 import net.sf.texprinter.utils.Dialogs;
+import net.sf.texprinter.utils.ProgressMessage;
 import net.sf.texprinter.utils.StringUtils;
 import org.apache.commons.codec.binary.Base64;
 
 /**
  * Provides the PDF generation from a Question object.
+ * 
  * @author Paulo Roberto Massa Cereda
- * @version 2.0
+ * @version 2.1
  * @since 1.0
  */
 public class PDFGenerator {
@@ -97,10 +93,17 @@ public class PDFGenerator {
 
     /**
      * Generates a PDF file from a Question object.
+     * 
      * @param question The question.
      * @param filename The filename.
      */
     public static void generate(Question question, String filename) {
+        
+        // wait window
+        ProgressMessage pm = new ProgressMessage("TeXPrinter is printing your PDF file.");
+        
+        // start wait window
+        //pm.start();
 
         // log message
         log.log(Level.INFO, "Starting PDF generation of {0}.", filename);
@@ -386,14 +389,20 @@ public class PDFGenerator {
 
             // close the document
             document.close();
+            
+            // stop wait window
+            pm.interrupt();
 
         } catch (IOException ioexception) {
+            
+            // stop wait window
+            pm.interrupt();
             
             // log message
             log.log(Level.SEVERE, "An IO error occurred while trying to create the PDF file. MESSAGE: {0}", StringUtils.printStackTrace(ioexception));
             
             // critical error, exit
-            Dialogs.exception();
+            Dialogs.showExceptionWindow();
             
         } catch (Exception exception) {
 
@@ -454,14 +463,18 @@ public class PDFGenerator {
                 
             }
 
+            // stop wait window
+            pm.interrupt();
+            
             // critical error, exit
-            Dialogs.exception();
+            Dialogs.showExceptionWindow();
             
         }
     }
 
     /**
      * Parses the HTML text to a list of elements.
+     * 
      * @param text The text.
      * @return A list of elements.
      * @throws IOException Throws an IOException if the StringReader couldn't
@@ -514,6 +527,7 @@ public class PDFGenerator {
 
         /**
          * Gets the image.
+         * 
          * @param string the image URL.
          * @param map A map.
          * @param cprops The properties.

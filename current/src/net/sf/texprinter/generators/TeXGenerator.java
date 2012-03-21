@@ -8,7 +8,7 @@
  * ********************************************************************
  *
  * TeXPrinter - A TeX.SX question printer
- * Copyright (c) 2011, Paulo Roberto Massa Cereda
+ * Copyright (c) 2012, Paulo Roberto Massa Cereda
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or
@@ -46,6 +46,7 @@
  *
  * TeXGenerator.java: This class is responsible for generating a TeX file
  * from a Question object.
+ * Last revision: paulo at temperantia 26 Feb 2012 14:15
  */
 
 // package definition
@@ -63,12 +64,14 @@ import net.sf.texprinter.model.Comment;
 import net.sf.texprinter.model.Post;
 import net.sf.texprinter.model.Question;
 import net.sf.texprinter.utils.Dialogs;
+import net.sf.texprinter.utils.ProgressMessage;
 import net.sf.texprinter.utils.StringUtils;
 
 /**
  * Provides the TeX generation from a Question object.
+ * 
  * @author Paulo Roberto Massa Cereda
- * @version 2.0
+ * @version 2.1
  * @since 1.0
  */
 public class TeXGenerator {
@@ -78,11 +81,18 @@ public class TeXGenerator {
 
     /**
      * Generates a TeX file from a Question object.
+     * 
      * @param question The question.
      * @param filename The filename.
      */
     public static void generate(Question question, String filename) {
 
+        // wait window
+        ProgressMessage pm = new ProgressMessage("TeXPrinter is printing your TeX file.");
+        
+        // start wait window
+        //pm.start();
+        
         // log message
         log.log(Level.INFO, "Starting TeX generation of {0}.", filename);
 
@@ -304,14 +314,20 @@ public class TeXGenerator {
 
             // close document
             document.close();
+            
+            // stop the wait window
+            pm.interrupt();
 
         } catch (IOException ioexception) {
-                        
+            
             // log message
             log.log(Level.SEVERE, "An IO exception was raised while trying to save the TeX file. MESSAGE: {0}", StringUtils.printStackTrace(ioexception));
             
+            // stop the wait window
+            pm.interrupt();
+            
             // critical error, exit
-            Dialogs.exception();
+            Dialogs.showExceptionWindow();
             
         } catch (Exception exception) {
             
@@ -369,8 +385,11 @@ public class TeXGenerator {
                 
             }
 
+            // stop the wait window
+            pm.interrupt();
+            
             // critical error, exit
-            Dialogs.exception();
+            Dialogs.showExceptionWindow();
 
         }
     }

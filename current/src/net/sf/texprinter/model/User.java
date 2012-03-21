@@ -8,7 +8,7 @@
  * ********************************************************************
  *
  * TeXPrinter - A TeX.SX question printer
- * Copyright (c) 2011, Paulo Roberto Massa Cereda
+ * Copyright (c) 2012, Paulo Roberto Massa Cereda
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or
@@ -45,6 +45,7 @@
  * \endcond
  *
  * User.java: This class is a simple POJO to handle users.
+ * Last revision: paulo at temperantia 26 Feb 2012 06:02
  */
 
 // package definition
@@ -52,8 +53,9 @@ package net.sf.texprinter.model;
 
 /**
  * Provides a simple POJO to handle users.
+ * 
  * @author Paulo Roberto Massa Cereda
- * @version 2.0
+ * @version 2.1
  * @since 1.0
  */
 public class User {
@@ -66,6 +68,7 @@ public class User {
 
     /**
      * Getter for the user name.
+     * 
      * @return The user name. 
      */
     public String getName() {
@@ -76,6 +79,7 @@ public class User {
 
     /**
      * Setter for the user name.
+     * 
      * @param name The user name.
      */
     public void setName(String name) {
@@ -86,6 +90,7 @@ public class User {
 
     /**
      * Getter for the user reputation.
+     * 
      * @return The user reputation.
      */
     public String getReputation() {
@@ -96,6 +101,7 @@ public class User {
 
     /**
      * Setter for the user reputation.
+     * 
      * @param reputation The user reputation.
      */
     public void setReputation(String reputation) {
