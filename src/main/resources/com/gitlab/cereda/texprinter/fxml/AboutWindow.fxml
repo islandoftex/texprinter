@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.web.WebView?>
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:id="aboutWindow"
+      fx:controller="com.gitlab.cereda.texprinter.ui.AboutWindowController"
+      prefHeight="300.0" prefWidth="400.0">
+    <TabPane prefWidth="${aboutWindow.width}" tabClosingPolicy="UNAVAILABLE">
+        <Tab text="About TeXPrinter">
+            <WebView fx:id="about"/>
+        </Tab>
+        <Tab text="Change log">
+            <WebView fx:id="changeLog"/>
+        </Tab>
+    </TabPane>
+</VBox>
