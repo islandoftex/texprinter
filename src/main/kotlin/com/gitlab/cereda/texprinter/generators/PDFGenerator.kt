@@ -94,14 +94,10 @@ object PDFGenerator {
      */
     fun addPostText(text: String, document: Document) {
       // TODO: styling
-      /*styles.loadTagStyle("ul", "indent", "10")
-      styles.loadTagStyle("li", "leading", "14")
-      // configure hyperlinks
-      styles.loadTagStyle("a", "color", "blue")*/
       val html = Jsoup.parse(text).body()
       html.select("img").apply {
-        if(attr("width").isNullOrBlank()) {
-          attr("width","100%")
+        if (attr("width").isNullOrBlank()) {
+          attr("width", "100%")
         }
       }
       HtmlConverter.convertToElements(html.html()).forEach {
@@ -236,7 +232,7 @@ object PDFGenerator {
                 // log message
                 logger.info { "This question has no answers." }
                 // add the paragraph to the document
-                doc.add(Paragraph("Sorry, this question has no answers yet.").apply{
+                doc.add(Paragraph("Sorry, this question has no answers yet.").apply {
                   setFontSize(16f)
                   setBold()
                   setFontColor(ColorConstants.BLACK)

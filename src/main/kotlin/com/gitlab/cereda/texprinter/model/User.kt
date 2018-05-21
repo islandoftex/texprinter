@@ -38,7 +38,7 @@ package com.gitlab.cereda.texprinter.model
  * @since 1.0
  */
 data class User(
-  // the user name
-  var name: String = "",
-  // the user reputation
-  var reputation: String = "")
+    // the user name
+    var name: String = "",
+    // the user reputation
+    var reputation: String = "")

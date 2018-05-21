@@ -86,7 +86,7 @@ class MainWindowController : Initializable {
   @FXML
   private lateinit var start: Button
 
-  private val digitListener = ChangeListener<String> {_, _, newValue ->
+  private val digitListener = ChangeListener<String> { _, _, newValue ->
     if (!newValue.matches("\\d*".toRegex()))
       questionID.text = newValue.replace("[^\\d]".toRegex(), "")
   }
@@ -107,8 +107,8 @@ class MainWindowController : Initializable {
   override fun initialize(p0: URL?, p1: ResourceBundle?) {
     // validate user input
     inputType.toggleGroup.selectedToggleProperty().addListener { _, _, newToggle ->
-      if(newToggle.userData == "id") {
-        if(questionID.text.contains("[^\\d]".toRegex()))
+      if (newToggle.userData == "id") {
+        if (questionID.text.contains("[^\\d]".toRegex()))
           questionID.text = ""
         questionID.textProperty().addListener(digitListener)
         questionID.promptText = "ID (only numbers)"
@@ -158,10 +158,10 @@ class MainWindowController : Initializable {
         statusLabel.text = "I'm fetching the question…"
       }
 
-      val url = if(inputType.toggleGroup.selectedToggle.userData == "url") {
+      val url = if (inputType.toggleGroup.selectedToggle.userData == "url") {
         val regex = "https://tex\\.stackexchange\\.com/([aq]|questions)/([\\d]*).*".toRegex()
         val id = regex.matchEntire(questionID.text.trim())?.groups?.get(2)?.value
-        if(id.isNullOrBlank()) {
+        if (id.isNullOrBlank()) {
           Platform.runLater {
             Alert(Alert.AlertType.ERROR, "ID is invalid!").showAndWait()
             executeWhenDone()
@@ -191,10 +191,14 @@ class MainWindowController : Initializable {
       }
 
       Platform.runLater {
-        Notifications.create().title("Success").owner(Screen.getPrimary()).hideAfter(Duration.seconds(60.0)).
-            text("Finished fetching and saving the requested question and answers.\n" +
-                 "If you have chosen TeX output, don't forget to compile.").
-            showInformation()
+        Notifications.create().apply {
+          title("Success")
+          owner(Screen.getPrimary())
+          hideAfter(Duration.seconds(60.0))
+          text("Finished fetching and saving the requested question and answers.\n" +
+               "If you have chosen TeX output, don't forget to compile.")
+          showInformation()
+        }
         executeWhenDone()
       }
     }.start()

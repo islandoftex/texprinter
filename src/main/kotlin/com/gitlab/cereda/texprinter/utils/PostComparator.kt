@@ -30,9 +30,8 @@
  ******************************************************************************/
 package com.gitlab.cereda.texprinter.utils
 
-import java.util.Comparator
-
 import com.gitlab.cereda.texprinter.model.Post
+import java.util.*
 
 /**
  * Implements a comparator for lists based on votes and acceptance marks. This
@@ -53,28 +52,21 @@ class PostComparator : Comparator<Post> {
    * @return The priority.
    */
   override fun compare(o1: Post, o2: Post): Int {
-
     // if both are accepted
     return if (o1.isAccepted && o2.isAccepted) {
-
       // the highest score comes first
       (if (o1.votes > o2.votes) +1 else if (o1.votes < o2.votes) -1 else 0) * -1
     } else {
-
       // only the first one is accepted
       if (o1.isAccepted) {
-
         // it comes first
         -1
       } else {
-
         // only the second one is accepted
         if (o2.isAccepted) {
-
           // it comes first
           +1
         } else {
-
           // the highest score comes first
           (if (o1.votes > o2.votes) +1 else if (o1.votes < o2.votes) -1 else 0) * -1
         }

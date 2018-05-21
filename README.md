@@ -21,13 +21,6 @@ Of course, you need to compile it.
 
 Please note that only the main [TeX.SX](http://tex.stackexchange.com/) website is supported.
 
-## License
-
-This application is licensed under the [New BSD License](http://www.opensource.org/licenses/bsd-license.php).
-I want to call your attention to the fact that the New BSD License has been verified as a GPL-compatible 
-free software license by the [Free Software Foundation](http://www.fsf.org/), and has been vetted as an 
-open source license by the [Open Source Initiative](http://www.opensource.org/).
-
 ## Highlights of Yummy pastéis (v3.0.0)
 
 * Huge performance boost due to upgrade of the PDF library
@@ -35,3 +28,20 @@ open source license by the [Open Source Initiative](http://www.opensource.org/).
 * Polished UI using JavaFX
 * New minimum system requirement: Java 8
 
+## License
+
+This application is licensed under the [New BSD License](http://www.opensource.org/licenses/bsd-license.php).
+I want to call your attention to the fact that the New BSD License has been verified as a GPL-compatible 
+free software license by the [Free Software Foundation](http://www.fsf.org/), and has been vetted as an 
+open source license by the [Open Source Initiative](http://www.opensource.org/).
+
+## Building the application
+
+TeXPrinter uses Gradle, so with any Java 9/Java 10 configuration and Gradle you are good to go.
+Please note that as JavaFX is used you are required to have it included in your JDK.
+
+If you're using Java 8 you need to run something like
+
+    mv src/main/kotlin/module-info.java src/main/kotlin/module-info.java_NOTSOURCE
+
+before executing gradle.

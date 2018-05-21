@@ -63,11 +63,8 @@ class ImageGroup
    * @return The image name.
    */
   private fun getNameFromLink(link: String): String {
-
-    // split the image URL into several parts
+    // split the image URL into several parts and get the last one
     val parts = link.split("/").dropLastWhile { it.isEmpty() }.toTypedArray()
-    // get the last part
-
     // return the name
     return parts[parts.size - 1]
   }
