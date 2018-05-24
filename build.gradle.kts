@@ -14,9 +14,10 @@ buildscript {
     classpath(kotlin("gradle-plugin", kotlin_version))
   }
 
-  if (JavaVersion.current() < JavaVersion.VERSION_1_8) {
+  if (JavaVersion.current() < JavaVersion.VERSION_1_8)
     throw Exception("Incompatible JAVA version")
-  }
+  else if (JavaVersion.current() >= JavaVersion.VERSION_11)
+    println("# BUILD WARNING: JDK 11 may miss JavaFX capabilities")
 }
 
 group = "com.gitlab.cereda"
@@ -93,28 +94,44 @@ tasks.withType<KotlinCompile> {
   // should set it for compileKotlin and compileTestKotlin
 }
 
-val jar: Jar by tasks
-jar.manifest {
-  attributes["Implementation-Title"] = ext["projectDisplayName"]
-  attributes["Implementation-Version"] = version
-  attributes["Main-Class"] = ext["mainClassName"]
-}
-
 val compileKotlin: KotlinCompile by tasks
 val compileJava: JavaCompile by tasks
 compileJava.destinationDir = compileKotlin.destinationDir
 
+task<Jar>("uberJar") {
+  dependsOn(":jar")
+  classifier = "with-deps"
+  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+  configurations["compileClasspath"].forEach { file: File ->
+    from(zipTree(file.absoluteFile))
+  }
+  from(compileKotlin.destinationDir)
+  from(java.sourceSets["resources"].allSource)
+}
+
+tasks.withType<Jar> {
+  doFirst {
+    manifest {
+      attributes["Implementation-Title"] = ext["projectDisplayName"]
+      attributes["Implementation-Version"] = version
+      attributes["Main-Class"] = ext["mainClassName"]
+    }
+  }
+}
+
 tasks {
   "compileKotlin" {
-    println("# BUILD Compiling for Kotlin JVM target ${compileKotlin.kotlinOptions.jvmTarget}")
-    println("# BUILD Compiling with source and target compatibility: ${java.sourceCompatibility}")
+    doFirst {
+      println("# BUILD Compiling for Kotlin JVM target ${compileKotlin.kotlinOptions.jvmTarget}")
+      println("# BUILD Compiling with source and target compatibility: ${java.sourceCompatibility}")
+    }
   }
   "compileJava" {
     dependsOn(":compileKotlin")
-    println("# BUILD Compiling module ${ext["moduleName"]}")
     if (JavaVersion.current() >= JavaVersion.VERSION_1_9) {
       inputs.property("moduleName", ext["moduleName"])
       doFirst {
+        println("# BUILD Compiling module ${ext["moduleName"]}")
         compileJava.options.compilerArgs = listOf(
             // include Gradle dependencies as modules
             "--module-path", java.sourceSets["main"].compileClasspath.asPath,
@@ -134,8 +151,17 @@ tasks {
     }
   }
   "run" {
-    println("# BUILD Starting to run ${ext["moduleName"]}")
+    doFirst { println("# BUILD Starting to run ${ext["moduleName"]}") }
     if (JavaVersion.current() >= JavaVersion.VERSION_1_9)
       inputs.property("moduleName", ext["moduleName"])
+  }
+  "jar" {
+    doFirst { println("# BUILD Packaging application") }
+  }
+  "uberJar" {
+    doFirst { println("# BUILD Packaging jar with dependencies") }
+  }
+  "assembleDist" {
+    dependsOn(":uberJar")
   }
 }

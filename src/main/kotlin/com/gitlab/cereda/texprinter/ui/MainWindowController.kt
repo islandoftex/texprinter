@@ -191,6 +191,7 @@ class MainWindowController : Initializable {
       }
 
       Platform.runLater {
+        // TODO: doesn't work if window is not focused
         Notifications.create().apply {
           title("Success")
           owner(Screen.getPrimary())
