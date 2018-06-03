@@ -212,7 +212,6 @@ class MainWindowController : Initializable {
     newStage.initModality(Modality.APPLICATION_MODAL)
     newStage.scene = Scene(root, 400.0, 300.0)
     newStage.title = "About TeXPrinter"
-    newStage.isResizable = false
     newStage.showAndWait()
   }
 }

@@ -76,7 +76,7 @@ java {
 
 tasks.withType<ProcessResources> {
   outputs.upToDateWhen { false } // always reprocess
-  filesMatching(listOf("**/*.html", "**/*.properties")) {
+  filesMatching(listOf("**/*.md", "**/AboutWindow.fxml", "**/*.properties")) {
     println("# BUILD Processing file: " + this.file.absolutePath)
     expand(mapOf(
         "application_name" to project.name,

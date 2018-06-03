@@ -32,8 +32,12 @@ package com.gitlab.cereda.texprinter.ui
 
 import javafx.fxml.FXML
 import javafx.fxml.Initializable
-import javafx.scene.web.WebView
+import javafx.scene.layout.VBox
+import javafx.scene.text.Font
+import javafx.scene.text.Text
+import javafx.scene.text.TextFlow
 import java.net.URL
+import java.nio.charset.Charset
 import java.util.*
 
 /**
@@ -45,12 +49,23 @@ import java.util.*
  */
 class AboutWindowController : Initializable {
   @FXML
-  private lateinit var changeLog: WebView
-  @FXML
-  private lateinit var about: WebView
+  private lateinit var changeLogBox: VBox
 
   override fun initialize(p0: URL?, p1: ResourceBundle?) {
-    about.engine.load(javaClass.getResource("/com/gitlab/cereda/texprinter/config/about.html").toExternalForm())
-    changeLog.engine.load(javaClass.getResource("/com/gitlab/cereda/texprinter/config/changelog.html").toExternalForm())
+    val changeLogMD = javaClass.getResource("/com/gitlab/cereda/texprinter/config/changelog.md").readText(Charset.defaultCharset())
+    changeLogMD.split("\n").forEach {
+      if (it.startsWith("#")) {
+        changeLogBox.children.add(TextFlow().apply {
+          children.add(Text(it.replace("#", "").trim()).apply {
+            font = Font.font(18.0)
+            underlineProperty().set(true)
+          })
+        })
+      } else if (it.isNotBlank()) {
+        changeLogBox.children.add(TextFlow().apply {
+          children.add(Text(it.replace("*", "").trim()))
+        })
+      }
+    }
   }
 }

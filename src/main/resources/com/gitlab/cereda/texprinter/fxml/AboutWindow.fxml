@@ -1,20 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.web.WebView?>
+<?import javafx.scene.text.*?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:id="aboutWindow"
       fx:controller="com.gitlab.cereda.texprinter.ui.AboutWindowController"
       prefHeight="300.0" prefWidth="400.0">
-    <TabPane prefWidth="${aboutWindow.width}" tabClosingPolicy="UNAVAILABLE">
-        <Tab text="About TeXPrinter">
-            <WebView fx:id="about"/>
+    <TabPane prefWidth="\${aboutWindow.width}" prefHeight="\${aboutWindow.height}" tabClosingPolicy="UNAVAILABLE">
+        <Tab fx:id="aboutTab" text="About TeXPrinter">
+            <VBox spacing="10" prefWidth="\${aboutWindow.width}" prefHeight="\${aboutTab.height}">
+                <padding>
+                    <Insets topRightBottomLeft="5.0"/>
+                </padding>
+                <TextFlow>
+                    <Text>Version ${application_version} (${application_releasename})</Text>
+                </TextFlow>
+                <TextFlow>
+                    <Text>Copyright 2012-${current_year} ${application_authorname}. All rights reserved.</Text>
+                </TextFlow>
+                <TextFlow>
+                    <Text>This application is licensed under the New BSD License. I want to call your attention to the
+                        fact that the New BSD License has been verified as a GPL-compatible free software license by the
+                        Free Software Foundation, and has been vetted as an open source license by the Open Source
+                        Initiative.
+                    </Text>
+                </TextFlow>
+            </VBox>
         </Tab>
         <Tab text="Change log">
-            <WebView fx:id="changeLog"/>
+            <ScrollPane fitToHeight="true" fitToWidth="true">
+                <VBox fx:id="changeLogBox" spacing="10" prefWidth="\${aboutWindow.width}"
+                      prefHeight="\${aboutTab.height}">
+                    <padding>
+                        <Insets topRightBottomLeft="5.0"/>
+                    </padding>
+                </VBox>
+            </ScrollPane>
         </Tab>
     </TabPane>
 </VBox>
