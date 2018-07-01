@@ -1,5 +1,5 @@
 # Currently we are building with JDK 8 to be able to use JavaFX
-image: openjdk:8u171-jdk
+image: openjdk:8-jdk
 
 # Disable the Gradle daemon for Continuous Integration servers
 variables:
@@ -12,12 +12,12 @@ build:
   stage: build
   before_script:
     - apt-get update -yq && apt-get install --no-install-recommends -y wget openjfx && rm -f /var/lib/apt/lists/*_dists_*
-    - wget --no-verbose --output-document=gradle.zip "https://services.gradle.org/distributions/gradle-4.7-bin.zip"
+    - wget --no-verbose --output-document=gradle.zip "https://services.gradle.org/distributions/gradle-4.8-bin.zip"
     - unzip gradle.zip
     - rm gradle.zip
-    - gradle-4.7/bin/gradle --version
+    - gradle-4.8/bin/gradle --version
     - if [ -f src/main/kotlin/module-info.java ]; then mv src/main/kotlin/module-info.java src/main/kotlin/module-info.java_NOSOURCE; fi
-  script: gradle-4.7/bin/gradle --build-cache assembleDist
+  script: gradle-4.8/bin/gradle --build-cache assembleDist
   after_script:
     - if [ -f src/main/kotlin/module-info.java_NOSOURCE ]; then mv src/main/kotlin/module-info.java_NOSOURCE src/main/kotlin/module-info.java; fi
   artifacts:

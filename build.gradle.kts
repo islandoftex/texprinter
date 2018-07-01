@@ -1,17 +1,13 @@
+import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.gradle.jvm.tasks.Jar
+import org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.text.SimpleDateFormat
 import java.util.Date
 
 buildscript {
-  var kotlin_version: String by extra
-  kotlin_version = "1.2.41"
-
   repositories {
     mavenCentral()
-  }
-  dependencies {
-    classpath(kotlin("gradle-plugin", kotlin_version))
   }
 
   if (JavaVersion.current() < JavaVersion.VERSION_1_8)
@@ -34,15 +30,14 @@ repositories {
 }
 
 plugins {
-  kotlin("jvm") version "1.2.41" // TODO: automate this variable
+  kotlin("jvm") version "1.2.50"
   application
 }
 
-val kotlin_version: String by extra
-
+val kotlinVersion = plugins.getPlugin(KotlinPluginWrapper::class.java).kotlinPluginVersion
 dependencies {
-  implementation(kotlin("stdlib", kotlin_version))
-  implementation(kotlin("stdlib-jdk8", kotlin_version))
+  implementation(kotlin("stdlib", kotlinVersion))
+  implementation(kotlin("stdlib-jdk8", kotlinVersion))
   implementation("com.itextpdf:itext7-core:7.1.2")
   implementation("com.itextpdf:html2pdf:2.0.2")
   implementation("org.jsoup:jsoup:1.11.3")
@@ -53,7 +48,7 @@ dependencies {
   } else {
     implementation("org.controlsfx:controlsfx:8.40.14")
   }
-  testImplementation("junit:junit:4.12")
+  testImplementation("io.kotlintest:kotlintest-runner-junit5:3.1.8")
 }
 
 application {
@@ -66,12 +61,19 @@ java {
   targetCompatibility = sourceCompatibility
   sourceSets {
     "main" {
-      java.srcDirs("src/main/kotlin")
+      java.setSrcDirs(listOf("src/main/kotlin"))
     }
     "resources" {
-      java.srcDirs("src/main/resources")
+      java.setSrcDirs(listOf("src/main/resources"))
+    }
+    "test" {
+      java.setSrcDirs(listOf("src/test/kotlin"))
     }
   }
+}
+
+tasks.withType<KotlinCompile> {
+  kotlinOptions.jvmTarget = "1.8"
 }
 
 tasks.withType<ProcessResources> {
@@ -89,9 +91,11 @@ tasks.withType<ProcessResources> {
   }
 }
 
-tasks.withType<KotlinCompile> {
-  kotlinOptions.jvmTarget = "1.8"
-  // should set it for compileKotlin and compileTestKotlin
+tasks.withType<Test> {
+  useJUnitPlatform()
+  testLogging {
+    events(TestLogEvent.FAILED, TestLogEvent.PASSED, TestLogEvent.SKIPPED)
+  }
 }
 
 val compileKotlin: KotlinCompile by tasks
