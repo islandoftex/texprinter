@@ -44,16 +44,21 @@ class ImageGroup
  *
  * @param imgURL The image URL.
  */
-(// the image URL
-    var url: String) {
+(
+    /**
+     * @property url The url associated with the img tag.
+     */
+    val url: String,
+    /**
+     * @property altText The alternative text associated with the img tag which
+     *  will be used as caption.
+     */
+    var altText: String = "") {
 
-  // the image name
-  var name: String? = null
-
-  init {
-    // and set the image name
-    this.name = getNameFromLink(url)
-  }// set the image URL
+  /**
+   * @property name The name of the image (file name with extension).
+   */
+  var name: String = getNameFromLink(url)
 
   /**
    * Gets the image name from the image URL. This method tries to retrieve
@@ -63,9 +68,6 @@ class ImageGroup
    * @return The image name.
    */
   private fun getNameFromLink(link: String): String {
-    // split the image URL into several parts and get the last one
-    val parts = link.split("/").dropLastWhile { it.isEmpty() }.toTypedArray()
-    // return the name
-    return parts[parts.size - 1]
+    return link.substringAfterLast("/")
   }
 }

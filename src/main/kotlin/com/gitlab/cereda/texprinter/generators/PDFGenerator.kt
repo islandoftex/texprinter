@@ -33,8 +33,8 @@ package com.gitlab.cereda.texprinter.generators
 import com.gitlab.cereda.texprinter.config.Configuration
 import com.gitlab.cereda.texprinter.model.Post
 import com.gitlab.cereda.texprinter.model.Question
+import com.gitlab.cereda.texprinter.utils.AppUtils
 import com.gitlab.cereda.texprinter.utils.Dialogs
-import com.gitlab.cereda.texprinter.utils.StringUtils
 import com.itextpdf.html2pdf.HtmlConverter
 import com.itextpdf.kernel.colors.ColorConstants
 import com.itextpdf.kernel.pdf.PdfDocument
@@ -93,7 +93,7 @@ object PDFGenerator {
      * @param document The document.
      */
     fun addPostText(text: String, document: Document) {
-      // TODO: styling
+      // TODO: check default image width (and maybe other styling)
       val html = Jsoup.parse(text).body()
       html.select("img").apply {
         if (attr("width").isNullOrBlank()) {
@@ -125,7 +125,10 @@ object PDFGenerator {
         try {
           p.add(it as BlockElement<*>)
         } catch (_: Exception) {
-          logger.error { "The post's comments are no comments. Somebody has answered here!" }
+          logger.error {
+            "The post's comments are no comments. " +
+            "Somebody has answered here!"
+          }
         }
       }
       doc.add(p)
@@ -283,7 +286,10 @@ object PDFGenerator {
         Dialogs.showExceptionWindow(ioexception)
       } catch (exception: Exception) {
         // log message
-        logger.error { "A generic error occurred while trying to create the PDF file. MESSAGE: ${StringUtils.printStackTrace(exception)}" }
+        logger.error {
+          "A generic error occurred while trying to create the PDF file. " +
+          "MESSAGE: ${AppUtils.printStackTrace(exception)}"
+        }
         // log message
         logger.info { "I will try to remove the remaining PDF file." }
 
@@ -307,7 +313,10 @@ object PDFGenerator {
           }
         } catch (ex: Exception) {
           // log message
-          logger.error { "A exception was raised. MESSAGE: ${StringUtils.printStackTrace(ex)}" }
+          logger.error {
+            "A exception was raised. " +
+            "MESSAGE: ${AppUtils.printStackTrace(ex)}"
+          }
         }
 
         // critical error, exit

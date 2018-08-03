@@ -191,14 +191,18 @@ class MainWindowController : Initializable {
       }
 
       Platform.runLater {
-        // TODO: doesn't work if window is not focused
-        Notifications.create().apply {
-          title("Success")
-          owner(Screen.getPrimary())
-          hideAfter(Duration.seconds(60.0))
-          text("Finished fetching and saving the requested question and answers.\n" +
-               "If you have chosen TeX output, don't forget to compile.")
-          showInformation()
+        try {
+          Notifications.create().apply {
+            title("Success")
+            owner(Screen.getPrimary())
+            hideAfter(Duration.seconds(60.0))
+            text("Finished fetching and saving the requested question and answers.\n" +
+                 "If you have chosen TeX output, don't forget to compile.")
+            showInformation()
+          }
+        } catch(_: Exception) {
+          // ignored on purpose, because:
+          // TODO: doesn't work if window is not focused
         }
         executeWhenDone()
       }

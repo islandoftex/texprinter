@@ -31,8 +31,9 @@
 package com.gitlab.cereda.texprinter.model
 
 import com.gitlab.cereda.texprinter.TeXPrinter
+import com.gitlab.cereda.texprinter.utils.AppUtils
 import com.gitlab.cereda.texprinter.utils.PostComparator
-import com.gitlab.cereda.texprinter.utils.StringUtils
+import javafx.application.Platform
 import javafx.scene.control.Alert
 import javafx.scene.control.ButtonType
 import mu.KotlinLogging
@@ -49,6 +50,7 @@ import java.util.*
  * @version 3.0
  * @since 1.0
  */
+// TODO: check handling of community-wiki posts, should the revisions appear?
 class Question
 /**
  * Default constructor. It fetches the online question and sets the
@@ -86,7 +88,8 @@ class Question
       val q = Post()
 
       // get the question title
-      val questionTitle = doc.select("div#question-header").first().select("h1").first().select("a").first()
+      val questionTitle = doc.select("div#question-header").first()
+          .select("h1").first().select("a").first()
       // log message
       logger.info { "Setting the question title." }
       // set the title
@@ -95,10 +98,12 @@ class Question
       // trying to get the question date
       val questionDate = try {
         // handles this possibility
-        doc.select(".post-signature.owner").first().select("span.relativetime").first()
+        doc.select(".post-signature.owner").first()
+            .select("span.relativetime").first()
       } catch (_: Exception) {
         // in case of failure, try this one instead
-        doc.select(".post-signature").first().select("span.relativetime").first()
+        doc.select(".post-signature").first()
+            .select("span.relativetime").first()
       }
       // log message
       logger.info { "Setting the question date." }
@@ -113,14 +118,17 @@ class Question
       q.text = questionText.html()
 
       // get the question votes
-      val questionVote = doc.select("div#question").first().select("div.vote").first().select("span.vote-count-post").first()
+      val questionVote = doc.select("div#question").first()
+          .select("div.vote").first()
+          .select("span.vote-count-post").first()
       // log message
       logger.info { "Setting the question votes." }
       // set the votes
       q.votes = Integer.parseInt(questionVote.text())
 
       // get the question comments
-      val questionCommentElements = doc.select("div.comments").first().select("li.comment")
+      val questionCommentElements = doc.select("div.comments").first()
+          .select("li.comment")
       // create an array for comments
       val questionComments = ArrayList<Comment>()
       // if there are comments
@@ -132,16 +140,20 @@ class Question
           // create a new comment object
           val c = Comment()
           // get the text
-          c.text = questionCommentElement.select("span.comment-copy").first().html()
+          c.text = questionCommentElement.select("span.comment-copy")
+              .first().html()
           // get the author
-          c.author = questionCommentElement.select(".comment-user").first().text()
+          c.author = questionCommentElement.select(".comment-user")
+              .first().text()
           // get the date
-          c.date = questionCommentElement.select("span.comment-date").first().text()
+          c.date = questionCommentElement.select("span.comment-date")
+              .first().text()
 
           // the comment votes
           val votes: Int = try {
             // parse the votes
-            Integer.parseInt(questionCommentElement.select("span.cool").first().text())
+            Integer.parseInt(questionCommentElement.select("span.cool")
+                .first().text())
           } catch (_: Exception) {
             // an error happened, set it to zero
             0
@@ -169,12 +181,16 @@ class Question
       // lets try
       try {
         // get the name
-        authorName = doc.select(".post-signature.owner").first().select("div.user-details").first()
+        authorName = doc.select(".post-signature.owner").first()
+            .select("div.user-details").first()
         // get the reputation
-        authorReputation = doc.select(".post-signature.owner").first().select("div.user-details").first().select("span.reputation-score").first()
+        authorReputation = doc.select(".post-signature.owner").first()
+            .select("div.user-details").first()
+            .select("span.reputation-score").first()
       } catch (_: Exception) {
         // something wrong happened, trying to get the name again
-        authorName = doc.select(".post-signature")[1].select("div.user-details")[1]
+        authorName = doc.select(".post-signature")[1]
+            .select("div.user-details")[1]
       }
 
       // set the temp author name
@@ -263,7 +279,7 @@ class Question
         // log message
         logger.info { "Answers found, retrieving them." }
         // get the authors block
-        val answerAuthorsBlock = answersBlock.select("div.fw-wrap")//("table.fw")
+        val answerAuthorsBlock = answersBlock.select("div.fw-wrap")
 
         // counter for the loop
         var counter = 0
@@ -279,18 +295,21 @@ class Question
           // the temp author name
           var answerAuthorNameStr: String
           // check if it is a valid entry
-          // TODO: community wiki posts like 1319 contain <br>
-          answerAuthorNameStr = if (currentAnswerAuthor.select("div.user-details").last().getElementsByTag("a").isEmpty()) {
-            // set the value
-            currentAnswerAuthor.select("div.user-details").last().text()
+          answerAuthorNameStr = if (currentAnswerAuthor.select("div.user-details")
+                  .first().getElementsByTag("a").isEmpty()) {
+            // set the value (it is community wiki and the author is in the second tag)
+            currentAnswerAuthor.select("div.user-details").last()
+                .getElementsByTag("a").last().html()
           } else {
-            // try another approach
-            currentAnswerAuthor.select("div.user-details").last().getElementsByTag("a").first().html()
+            // try another approach (it is not community wiki)
+            currentAnswerAuthor.select("div.user-details").last()
+                .getElementsByTag("a").first().html()
           }
           // check if user name has to be trimmed
           if ("/>" in answerAuthorNameStr) {
             // get the substring
-            answerAuthorNameStr = answerAuthorNameStr.substring(answerAuthorNameStr.indexOf("/>") + 2)
+            answerAuthorNameStr = answerAuthorNameStr
+                .substring(answerAuthorNameStr.indexOf("/>") + 2)
           }
           // log message
           logger.info { "Setting the author name for answer ${counter + 1}." }
@@ -298,7 +317,8 @@ class Question
           ua.name = answerAuthorNameStr
 
           // check if it has reputation
-          if (currentAnswerAuthor.select("div.user-details").last().select("span.reputation-score").isEmpty()) {
+          if (currentAnswerAuthor.select("div.user-details")
+                  .last().select("span.reputation-score").isEmpty()) {
             // it is a community wiki
             if (currentAnswerAuthor.select("span.community-wiki").isNotEmpty()) {
               // log message
@@ -315,7 +335,8 @@ class Question
             // log message
             logger.info { "Answer ${counter + 1} is a normal answer." }
             // normal answer
-            ua.reputation = currentAnswerAuthor.select("div.user-details").last().select("span.reputation-score").first().text()
+            ua.reputation = currentAnswerAuthor.select("div.user-details")
+                .last().select("span.reputation-score").first().text()
           }
 
           // log message
@@ -326,7 +347,8 @@ class Question
           // log message
           logger.info { "Adding date for answer ${counter + 1}." }
           // add date
-          a.date = currentAnswerAuthor.select("div.user-info").select("span.relativetime").first().text()
+          a.date = currentAnswerAuthor.select("div.user-info")
+              .select("span.relativetime").first().text()
 
           // log message
           logger.info { "Adding text for answer ${counter + 1}." }
@@ -340,7 +362,8 @@ class Question
           // log message
           logger.info { "Adding votes for answer ${counter + 1}." }
           // set the votes
-          a.votes = Integer.parseInt(theVotes[counter].select("span.vote-count-post").first().text())
+          a.votes = theVotes[counter].select("span.vote-count-post")
+              .first().text().toInt()
 
           // check if it is accepted
           if (!theVotes[counter].getElementsByClass("vote-accepted-on").isEmpty()) {
@@ -353,7 +376,8 @@ class Question
           // create the comments array
           val currentAnswerComments = ArrayList<Comment>()
           // answers comments
-          val currentAnswerCommentsElements = answersBlock[counter].select("div.comments").first().select("li.comment")
+          val currentAnswerCommentsElements = answersBlock[counter]
+              .select("div.comments").first().select("li.comment")
           // log message
           logger.info { "Checking comments for answer ${counter + 1}." }
           // if the answer has comments
@@ -362,27 +386,32 @@ class Question
             logger.info { "Adding comments for answer ${counter + 1}." }
 
             // iterate
-            currentAnswerCommentsElements.forEach { currentAnswerCommentElement ->
+            currentAnswerCommentsElements.forEach { answerCommentElement ->
               // create a new comment
               val ca = Comment()
 
               // set the text
-              ca.text = currentAnswerCommentElement.select("span.comment-copy").first().html()
+              ca.text = answerCommentElement.select("span.comment-copy")
+                  .first().html()
               ca.author = try {
                 // try to set the author
-                currentAnswerCommentElement.select("a.comment-user").first().text()
+                answerCommentElement.select("a.comment-user")
+                    .first().text()
               } catch (_: Exception) {
                 // fix it
-                currentAnswerCommentElement.select("span.comment-user").first().text()
+                answerCommentElement.select("span.comment-user")
+                    .first().text()
               }
 
               // set date
-              ca.date = currentAnswerCommentElement.select("span.comment-date").first().text()
+              ca.date = answerCommentElement.select("span.comment-date")
+                  .first().text()
 
               // the comment votes
               val votes: Int = try {
                 // try to parse it
-                Integer.parseInt(currentAnswerCommentElement.select("span.cool").first().text())
+                Integer.parseInt(answerCommentElement.select("span.cool")
+                    .first().text())
               } catch (e: Exception) {
                 // set default to zero
                 0
@@ -414,16 +443,27 @@ class Question
     } catch (ex: Exception) {
       // log message
       if (ex is IOException) {
-        logger.error { "An IO error occurred while trying to fetch and set the question data. Possibly a 404 page. MESSAGE: ${StringUtils.printStackTrace(ex)}" }
+        logger.error {
+          "An IO error occurred while trying to fetch and set the question " +
+          "data. Possibly a 404 page. MESSAGE: ${AppUtils.printStackTrace(ex)}"
+        }
       } else {
-        logger.error { "A generic error occurred while trying to fetch and set the question data. MESSAGE: ${StringUtils.printStackTrace(ex)}" }
+        logger.error {
+          "A generic error occurred while trying to fetch and set " +
+          "the question data. MESSAGE: ${AppUtils.printStackTrace(ex)}"
+        }
       }
 
       // show dialog
       if (!TeXPrinter.isConsoleApplication) {
-        Alert(Alert.AlertType.ERROR, "I'm sorry to tell you this, but the question ID you provided seems to lead to a 404 page. " +
-                                     "Another possible cause is a very unstable internet connection, so the request timed out.\n\n" +
-                                     "Please, correct the question ID and try again.", ButtonType.OK).showAndWait()
+        Platform.runLater {
+          Alert(Alert.AlertType.ERROR,
+              "I'm sorry to tell you this, but the question ID you " +
+              "provided seems to lead to a 404 page. Another possible cause is a " +
+              "very unstable internet connection, so the request timed out.\n\n" +
+              "Please, correct the question ID and try again.",
+              ButtonType.OK).showAndWait()
+        }
       }
     }
 

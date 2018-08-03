@@ -33,8 +33,8 @@ package com.gitlab.cereda.texprinter.generators
 import com.gitlab.cereda.texprinter.config.Configuration
 import com.gitlab.cereda.texprinter.model.Post
 import com.gitlab.cereda.texprinter.model.Question
+import com.gitlab.cereda.texprinter.utils.AppUtils
 import com.gitlab.cereda.texprinter.utils.Dialogs
-import com.gitlab.cereda.texprinter.utils.StringUtils
 import mu.KotlinLogging
 import java.io.File
 import java.io.FileWriter
@@ -153,7 +153,7 @@ object TeXGenerator {
             // for each comment
             post.comments.forEach { postComment ->
               // add it as a list item
-              document.write("\\item " + StringUtils.escapeHTMLtoTeX(postComment.text) + " -- \\emph{" +
+              document.write("\\item " + AppUtils.escapeHTMLtoTeX(postComment.text) + " -- \\emph{" +
                              postComment.author + " on " + postComment.date + " (" + postComment.votes +
                              (if (postComment.votes == 1) " vote" else " votes") + ")." + "}\n")
             }
@@ -186,7 +186,7 @@ object TeXGenerator {
         document.write("\\section*{The question}\n\n")
         // get the question text
         question.question.xhtml = true
-        document.write(StringUtils.escapeHTMLtoTeX(question.question.text) + "\n\n")
+        document.write(AppUtils.escapeHTMLtoTeX(question.question.text) + "\n\n")
 
         addPostComments(question.question)
 
@@ -229,7 +229,7 @@ object TeXGenerator {
 
             // write the answer
             answer.xhtml = true
-            document.write(StringUtils.escapeHTMLtoTeX(answer.text) + "\n\n")
+            document.write(AppUtils.escapeHTMLtoTeX(answer.text) + "\n\n")
 
             // if the answer has comments
             addPostComments(answer)
@@ -243,7 +243,10 @@ object TeXGenerator {
       }
     } catch (exception: Exception) {
       // log message
-      logger.error { "A generic error occured while trying to save the TeX file. MESSAGE: ${StringUtils.printStackTrace(exception)}" }
+      logger.error {
+        "A generic error occured while trying to save the TeX file. " +
+        "MESSAGE: ${AppUtils.printStackTrace(exception)}"
+      }
       // log message
       logger.info { "I will try to remove the remaining TeX file." }
 
@@ -268,7 +271,10 @@ object TeXGenerator {
         }
       } catch (se: SecurityException) {
         // log message
-        logger.error { "A security exception was raised. MESSAGE: ${StringUtils.printStackTrace(se)}" }
+        logger.error {
+          "A security exception was raised. " +
+          "MESSAGE: ${AppUtils.printStackTrace(se)}"
+        }
       }
 
       // critical error, exit

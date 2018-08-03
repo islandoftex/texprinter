@@ -70,12 +70,10 @@ object Dialogs {
         System.exit(0)
       }
     } else {
-      // Display the showExceptionWindow
-      println("Unfortunately, TeXPrinter raised an exception. It might be a bug, or\nsimply a temporary technical dificulty.")
       logger.error {
         "Unfortunately, TeXPrinter raised an exception. " +
         "It might be a bug, or simply a temporary technical dificulty.\n" +
-        "MESSAGE: ${StringUtils.printStackTrace(Exception(e))}"
+        "MESSAGE: ${AppUtils.printStackTrace(Exception(e))}"
       }
       // exit the application
       System.exit(0)

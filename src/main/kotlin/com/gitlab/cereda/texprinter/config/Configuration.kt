@@ -31,7 +31,7 @@
 
 package com.gitlab.cereda.texprinter.config
 
-import com.gitlab.cereda.texprinter.utils.StringUtils
+import com.gitlab.cereda.texprinter.utils.AppUtils
 import mu.KotlinLogging
 import java.util.*
 
@@ -95,7 +95,10 @@ class Configuration {
       }
     } catch (exception: Exception) {
       // something bad happened
-      logger.error { "No configuration properties file was found. Probably a typo or wrong path? MESSAGE: ${StringUtils.printStackTrace(exception)}" }
+      logger.error {
+        "No configuration properties file was found. Probably a typo or " +
+        "wrong path? MESSAGE: ${AppUtils.printStackTrace(exception)}"
+      }
       // set a dummy app author
       properties.setProperty("AppAuthor", "Deep thought")
       // set a dummy app version number

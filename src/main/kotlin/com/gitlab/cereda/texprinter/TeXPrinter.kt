@@ -70,7 +70,6 @@ class TeXPrinter : Application() {
       System.setProperty("org.slf4j.simpleLogger.defaultLogLevel",
           if (DEBUG) "DEBUG" else "ERROR")
       logger = KotlinLogging.logger { }
-      // TODO: make logger record things for later bug report (StringHandler)
 
       // the question id
       var questionId = ""

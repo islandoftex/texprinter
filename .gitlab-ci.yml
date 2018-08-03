@@ -4,20 +4,18 @@ image: openjdk:8-jdk
 # Disable the Gradle daemon for Continuous Integration servers
 variables:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
-
-before_script:
-  - export GRADLE_USER_HOME=`pwd`/.gradle
+  GRADLE_STRING: "gradle-4.9"
 
 build:
   stage: build
   before_script:
     - apt-get update -yq && apt-get install --no-install-recommends -y wget openjfx && rm -f /var/lib/apt/lists/*_dists_*
-    - wget --no-verbose --output-document=gradle.zip "https://services.gradle.org/distributions/gradle-4.8-bin.zip"
+    - wget --no-verbose --output-document=gradle.zip "https://services.gradle.org/distributions/$GRADLE_STRING-bin.zip"
     - unzip gradle.zip
     - rm gradle.zip
-    - gradle-4.8/bin/gradle --version
+    - $GRADLE_STRING/bin/gradle --version
     - if [ -f src/main/kotlin/module-info.java ]; then mv src/main/kotlin/module-info.java src/main/kotlin/module-info.java_NOSOURCE; fi
-  script: gradle-4.8/bin/gradle --build-cache assembleDist
+  script: $GRADLE_STRING/bin/gradle --build-cache assembleDist
   after_script:
     - if [ -f src/main/kotlin/module-info.java_NOSOURCE ]; then mv src/main/kotlin/module-info.java_NOSOURCE src/main/kotlin/module-info.java; fi
   artifacts:

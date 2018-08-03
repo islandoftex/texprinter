@@ -46,3 +46,5 @@ If you're using Java 8 you need to run something like
     mv src/main/kotlin/module-info.java src/main/kotlin/module-info.java_NOTSOURCE
 
 before executing gradle.
+
+Our typical test cases involve posts 101, 1319 and 57141.

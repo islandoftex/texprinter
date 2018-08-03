@@ -30,7 +30,7 @@ repositories {
 }
 
 plugins {
-  kotlin("jvm") version "1.2.50"
+  kotlin("jvm") version "1.2.51"
   application
 }
 
@@ -41,7 +41,7 @@ dependencies {
   implementation("com.itextpdf:itext7-core:7.1.2")
   implementation("com.itextpdf:html2pdf:2.0.2")
   implementation("org.jsoup:jsoup:1.11.3")
-  implementation("io.github.microutils:kotlin-logging:1.5.4")
+  implementation("io.github.microutils:kotlin-logging:1.5.8")
   implementation("org.slf4j:slf4j-simple:1.8.0-beta2") // needed for kotlin-logging
   if (JavaVersion.current() >= JavaVersion.VERSION_1_9) {
     implementation("org.controlsfx:controlsfx:9.0.0")
