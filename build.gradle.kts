@@ -113,6 +113,17 @@ task<Jar>("uberJar") {
   from(java.sourceSets["resources"].allSource)
 }
 
+task<Exec>("createStandaloneRuntime") {
+  dependsOn(":uberJar")
+  workingDir("build")
+  commandLine(
+      "jlink --module-path libs:${org.gradle.internal.jvm.Jvm.current().javaHome}/jmods:" +
+      "${java.sourceSets["main"].compileClasspath.asPath} " +
+      "--add-modules ${ext["moduleName"]} " +
+      "--launcher ${ext["moduleName"]}=${ext["moduleName"]}/${ext["mainClassName"]} " +
+      "--output dist --strip-debug --compress 2 --no-header-files --no-man-pages")
+}
+
 tasks.withType<Jar> {
   doFirst {
     manifest {

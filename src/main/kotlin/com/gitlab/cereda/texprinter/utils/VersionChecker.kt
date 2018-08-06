@@ -85,7 +85,7 @@ class VersionChecker : Thread() {
           Alert(Alert.AlertType.INFORMATION).apply {
             buttonTypes.setAll(ButtonType.YES, ButtonType.NO)
             headerText = "Update available"
-            contentText = "Your current version of TeXPrinter is outdated. The latest release is ${versionNumber}.\n" +
+            contentText = "Your current version of TeXPrinter is outdated. The latest release is $versionNumber.\n" +
                 "Do you want to update your installation?"
             if (showAndWait().get() == ButtonType.YES) {
               // TODO: update

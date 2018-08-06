@@ -38,13 +38,7 @@ package com.gitlab.cereda.texprinter.utils
  * @version 3.0
  * @since 1.0
  */
-class ImageGroup
-/**
- * Default constructor. It simply sets some parameters.
- *
- * @param imgURL The image URL.
- */
-(
+class ImageGroup(
     /**
      * @property url The url associated with the img tag.
      */

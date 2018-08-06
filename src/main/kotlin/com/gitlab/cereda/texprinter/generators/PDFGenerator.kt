@@ -199,15 +199,15 @@ object PDFGenerator {
       }
     }
 
-    FileOutputStream(filename).use {
+    FileOutputStream(filename).use { fos ->
       try {
         // define a new PDF writer
-        PdfWriter(it, WriterProperties().apply {
+        PdfWriter(fos, WriterProperties().apply {
           this.setPdfVersion(PdfVersion.PDF_1_7)
           this.setCompressionLevel(9)
-        }).use {
+        }).use { pdfwriter ->
           // define a new PDF document
-          val pdfDocument = PdfDocument(it)
+          val pdfDocument = PdfDocument(pdfwriter)
           pdfDocument.use {
             val config = Configuration()
             it.documentInfo.apply {
