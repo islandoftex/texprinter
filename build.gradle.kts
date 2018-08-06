@@ -43,6 +43,7 @@ dependencies {
   implementation("org.jsoup:jsoup:1.11.3")
   implementation("io.github.microutils:kotlin-logging:1.5.8")
   implementation("org.slf4j:slf4j-simple:1.8.0-beta2") // needed for kotlin-logging
+  implementation("no.tornado:tornadofx:1.7.16")
   if (JavaVersion.current() >= JavaVersion.VERSION_1_9) {
     implementation("org.controlsfx:controlsfx:9.0.0")
   } else {
@@ -78,7 +79,7 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<ProcessResources> {
   outputs.upToDateWhen { false } // always reprocess
-  filesMatching(listOf("**/*.md", "**/AboutWindow.fxml", "**/*.properties")) {
+  filesMatching(listOf("**/*.md", "**/*.properties")) {
     println("# BUILD Processing file: " + this.file.absolutePath)
     expand(mapOf(
         "application_name" to project.name,

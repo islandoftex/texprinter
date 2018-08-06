@@ -34,17 +34,14 @@ import com.gitlab.cereda.texprinter.config.Configuration
 import com.gitlab.cereda.texprinter.generators.PDFGenerator
 import com.gitlab.cereda.texprinter.generators.TeXGenerator
 import com.gitlab.cereda.texprinter.model.Question
+import com.gitlab.cereda.texprinter.ui.MainWindowLayout
 import com.gitlab.cereda.texprinter.utils.Dialogs
-import javafx.application.Application
-import javafx.fxml.FXMLLoader
-import javafx.scene.Parent
-import javafx.scene.Scene
 import javafx.scene.image.Image
 import javafx.stage.Stage
-import mu.KLogger
 import mu.KotlinLogging
-import java.text.SimpleDateFormat
-import java.util.*
+import tornadofx.App
+import tornadofx.launch
+import java.time.LocalDate
 
 /**
  * The main class.
@@ -53,12 +50,18 @@ import java.util.*
  * @version 3.0
  * @since 1.0
  */
-class TeXPrinter : Application() {
+class TeXPrinter : App(MainWindowLayout::class) {
+  override fun start(stage: Stage) {
+    stage.isResizable = false
+    stage.icons += Image("/com/gitlab/cereda/texprinter/images/printer.png")
+    super.start(stage)
+  }
+
   companion object {
     var isConsoleApplication: Boolean = false
+    val config = Configuration()
     private const val DEBUG: Boolean = true
-    private val config = Configuration()
-    private lateinit var logger: KLogger
+    private val logger = KotlinLogging.logger { }
     /**
      * The main method.
      *
@@ -69,7 +72,6 @@ class TeXPrinter : Application() {
       // configure the logger
       System.setProperty("org.slf4j.simpleLogger.defaultLogLevel",
           if (DEBUG) "DEBUG" else "ERROR")
-      logger = KotlinLogging.logger { }
 
       // the question id
       var questionId = ""
@@ -111,8 +113,8 @@ class TeXPrinter : Application() {
           // set the flag
           isConsoleApplication = true
           println("\u001b[1mTeXPrinter v${config.appVersionNumber} - A TeX.SX question printer\u001b[0m\n")
-          println("\u001b[2mCopyright (c) 2012-${SimpleDateFormat("yyyy").format(Date())}, Paulo Roberto Massa Cereda\u001B[0m")
-          println("\u001B[2mCopyright (c) 2018-${SimpleDateFormat("yyyy").format(Date())}, Ben Frank\u001B[0m")
+          println("\u001b[2mCopyright (c) 2012-${LocalDate.now().year}, Paulo Roberto Massa Cereda\u001B[0m")
+          println("\u001B[2mCopyright (c) 2018-${LocalDate.now().year}, Ben Frank\u001B[0m")
           println("\u001B[2mAll rights reserved.\u001B[0m\n")
 
           // fetch the question
@@ -138,19 +140,10 @@ class TeXPrinter : Application() {
         }
       }
       try {
-        Application.launch(TeXPrinter::class.java)
+        launch<TeXPrinter>(args)
       } catch (ex: Exception) {
         Dialogs.showExceptionWindow(ex)
       }
     }
-  }
-
-  override fun start(primaryStage: Stage) {
-    val root = FXMLLoader.load<Parent>(javaClass.getResource("/com/gitlab/cereda/texprinter/fxml/MainWindow.fxml"))
-    primaryStage.icons.setAll(Image(javaClass.getResourceAsStream("/com/gitlab/cereda/texprinter/images/printer.png")))
-    primaryStage.scene = Scene(root, 600.0, 350.0)
-    primaryStage.title = "TeXPrinter"
-    primaryStage.isResizable = false
-    primaryStage.show()
   }
 }

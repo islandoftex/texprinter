@@ -10,6 +10,7 @@ module com.gitlab.cereda.texprinter {
   requires javafx.fxml;
   requires javafx.web;
   requires controlsfx;
+  requires tornadofx;
   // post analysis
   requires org.jsoup;
   requires java.xml;

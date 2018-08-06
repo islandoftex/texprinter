@@ -58,6 +58,7 @@ class Configuration {
    */
   val appAuthor: String
     get() = properties.getProperty("AppAuthor")
+        .toByteArray(Charsets.ISO_8859_1).toString(Charsets.UTF_8)
 
   /**
    * Gets the version number.
@@ -66,6 +67,7 @@ class Configuration {
    */
   val appVersionNumber: String
     get() = properties.getProperty("AppVersionNumber")
+        .toByteArray(Charsets.ISO_8859_1).toString(Charsets.UTF_8)
 
   /**
    * Gets the version name.
@@ -74,6 +76,7 @@ class Configuration {
    */
   val appVersionName: String
     get() = properties.getProperty("AppVersionName")
+        .toByteArray(Charsets.ISO_8859_1).toString(Charsets.UTF_8)
 
   /**
    * Gets the version URL used to check for newer versions.
