@@ -38,9 +38,11 @@ import com.gitlab.cereda.texprinter.ui.MainWindowLayout
 import com.gitlab.cereda.texprinter.utils.Dialogs
 import javafx.scene.image.Image
 import javafx.stage.Stage
+import kotlinx.serialization.json.JSON
 import mu.KotlinLogging
 import tornadofx.App
 import tornadofx.launch
+import java.io.File
 import java.time.LocalDate
 
 /**
@@ -59,9 +61,13 @@ class TeXPrinter : App(MainWindowLayout::class) {
 
   companion object {
     var isConsoleApplication: Boolean = false
-    val config = Configuration()
+    val config = JSON.parse<Configuration>(File(this::class.java
+        .getResource("/com/gitlab/cereda/texprinter/config/texprinter.json")
+        .toURI()).readText())
+
     private const val DEBUG: Boolean = true
     private val logger = KotlinLogging.logger { }
+
     /**
      * The main method.
      *
@@ -83,7 +89,6 @@ class TeXPrinter : App(MainWindowLayout::class) {
         var outputFormat = ""
 
         if ("version" in args) {
-          val config = Configuration()
           println("TeXPrinter " + config.appVersionNumber + " - " + config.appVersionName)
           System.exit(0)
         } else if ("help" in args) {

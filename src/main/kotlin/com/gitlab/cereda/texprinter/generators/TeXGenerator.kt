@@ -30,7 +30,7 @@
  ******************************************************************************/
 package com.gitlab.cereda.texprinter.generators
 
-import com.gitlab.cereda.texprinter.config.Configuration
+import com.gitlab.cereda.texprinter.TeXPrinter
 import com.gitlab.cereda.texprinter.model.Post
 import com.gitlab.cereda.texprinter.model.Question
 import com.gitlab.cereda.texprinter.utils.AppUtils
@@ -65,7 +65,7 @@ object TeXGenerator {
     try {
       FileWriter(File(filename)).use { document ->
         // create a new configuration retriever
-        val config = Configuration()
+        val config = TeXPrinter.config
         // log message
         logger.info { "Creating LaTeX headers." }
         // create the header

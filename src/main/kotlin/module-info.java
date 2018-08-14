@@ -1,14 +1,13 @@
 module com.gitlab.cereda.texprinter {
   // Kotlin compatibility
   requires kotlin.stdlib;
+  requires kotlinx.serialization.runtime;
   // logging
   requires kotlin.logging;
   requires org.slf4j;
   // resources and JavaFX interface
   requires javafx.controls;
   requires javafx.graphics;
-  requires javafx.fxml;
-  requires javafx.web;
   requires controlsfx;
   requires tornadofx;
   // post analysis
@@ -20,6 +19,4 @@ module com.gitlab.cereda.texprinter {
   requires kernel;
   // module
   exports com.gitlab.cereda.texprinter;
-  exports com.gitlab.cereda.texprinter.ui to javafx.fxml;
-  opens com.gitlab.cereda.texprinter.ui to javafx.fxml;
 }

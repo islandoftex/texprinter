@@ -31,7 +31,7 @@ Please note that only the main [TeX.SX](http://tex.stackexchange.com/) website i
 
 ## License
 
-This application is licensed under the [New BSD License](http://www.opensource.org/licenses/bsd-license.php).
+This application is licensed under the [New BSD License](https://opensource.org/licenses/BSD-3-Clause).
 I want to call your attention to the fact that the New BSD License has been verified as a GPL-compatible 
 free software license by the [Free Software Foundation](http://www.fsf.org/), and has been vetted as an 
 open source license by the [Open Source Initiative](http://www.opensource.org/).

@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright 2012-2018 Paulo Roberto Massa Cereda                             *
+ * Copyright 2012-2018 Paulo Roberto Massa Cereda and Ben Frank               *
  *                                                                            *
  * Redistribution and use in source and binary forms, with or                 *
  *  without modification, are permitted provided that the following           *
@@ -28,88 +28,26 @@
  *  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE    *
  *  USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  *
  ******************************************************************************/
-
 package com.gitlab.cereda.texprinter.config
 
-import com.gitlab.cereda.texprinter.utils.AppUtils
-import mu.KotlinLogging
-import java.util.*
+import kotlinx.serialization.Optional
+import kotlinx.serialization.Serializable
 
 /**
- * Retrieves the application properties.
+ * Retrieves the application properties by JSON serialization.
  *
- * @author Paulo Roberto Massa Cereda
+ * @author Ben Frank
  * @version 3.0
- * @since 1.1
+ * @since 3.0
  */
-class Configuration {
-  companion object {
-    // the application logger
-    private val logger = KotlinLogging.logger { }
-  }
-
-  // the properties
-  private val properties: Properties = Properties()
-
-  /**
-   * Gets the author names.
-   *
-   * @return The author names.
-   */
-  val appAuthor: String
-    get() = properties.getProperty("AppAuthor")
-        .toByteArray(Charsets.ISO_8859_1).toString(Charsets.UTF_8)
-
-  /**
-   * Gets the version number.
-   *
-   * @return The version number.
-   */
-  val appVersionNumber: String
-    get() = properties.getProperty("AppVersionNumber")
-        .toByteArray(Charsets.ISO_8859_1).toString(Charsets.UTF_8)
-
-  /**
-   * Gets the version name.
-   *
-   * @return The version name.
-   */
-  val appVersionName: String
-    get() = properties.getProperty("AppVersionName")
-        .toByteArray(Charsets.ISO_8859_1).toString(Charsets.UTF_8)
-
-  /**
-   * Gets the version URL used to check for newer versions.
-   *
-   * @return The version URL.
-   */
-  val appVersionURL: String
-    get() = properties.getProperty("AppVersionURL")
-
-  /**
-   * Default constructor.
-   */
-  init {
-    // lets try to load the configuration
-    try {
-      // get the configuration file
-      javaClass.getResourceAsStream("/com/gitlab/cereda/texprinter/config/texprinter.properties").use {
-        properties.load(it)
-      }
-    } catch (exception: Exception) {
-      // something bad happened
-      logger.error {
-        "No configuration properties file was found. Probably a typo or " +
-        "wrong path? MESSAGE: ${AppUtils.printStackTrace(exception)}"
-      }
-      // set a dummy app author
-      properties.setProperty("AppAuthor", "Deep thought")
-      // set a dummy app version number
-      properties.setProperty("AppVersionNumber", "0.0")
-      // and a dummy app version name
-      properties.setProperty("AppVersionName", "Lazy developer")
-      // set a dummy app version URL to fetch
-      properties.setProperty("AppVersionURL", "Dummy URL")
-    }
-  }
-}
+@Serializable
+data class Configuration(
+    @Optional
+    val appAuthor: String = "Deep thought",
+    @Optional
+    val appVersionNumber: String = "0.0",
+    @Optional
+    val appVersionName: String = "Lazy developer",
+    @Optional
+    val appVersionURL: String = "http://example.com"
+)

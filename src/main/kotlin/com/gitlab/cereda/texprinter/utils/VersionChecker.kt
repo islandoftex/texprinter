@@ -30,7 +30,7 @@
  ******************************************************************************/
 package com.gitlab.cereda.texprinter.utils
 
-import com.gitlab.cereda.texprinter.config.Configuration
+import com.gitlab.cereda.texprinter.TeXPrinter
 import javafx.scene.control.Alert
 import javafx.scene.control.ButtonType
 import java.net.URL
@@ -60,7 +60,7 @@ class VersionChecker : Thread() {
     // lets try
     try {
       // create a new configuration
-      val config = Configuration()
+      val config = TeXPrinter.config
       // create a new URL from config
       val url = URL(config.appVersionURL)
       // open stream

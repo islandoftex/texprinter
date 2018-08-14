@@ -30,7 +30,7 @@
  ******************************************************************************/
 package com.gitlab.cereda.texprinter.generators
 
-import com.gitlab.cereda.texprinter.config.Configuration
+import com.gitlab.cereda.texprinter.TeXPrinter
 import com.gitlab.cereda.texprinter.model.Post
 import com.gitlab.cereda.texprinter.model.Question
 import com.gitlab.cereda.texprinter.utils.AppUtils
@@ -209,7 +209,7 @@ object PDFGenerator {
           // define a new PDF document
           val pdfDocument = PdfDocument(pdfwriter)
           pdfDocument.use {
-            val config = Configuration()
+            val config = TeXPrinter.config
             it.documentInfo.apply {
               this.author = "TeXPrinter v${config.appVersionNumber}"
               this.title = "Printed result of post " + filename.replace(".pdf", "")

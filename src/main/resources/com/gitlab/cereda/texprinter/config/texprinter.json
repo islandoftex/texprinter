@@ -1,0 +1,6 @@
+{
+  "appAuthor": "${application_authorname}",
+  "appVersionNumber": "${application_version}",
+  "appVersionName": "${application_releasename}",
+  "appVersionURL": ""
+}

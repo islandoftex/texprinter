@@ -8,6 +8,7 @@ import java.util.Date
 buildscript {
   repositories {
     mavenCentral()
+    maven("https://kotlin.bintray.com/kotlinx")
   }
 
   if (JavaVersion.current() < JavaVersion.VERSION_1_8)
@@ -22,34 +23,37 @@ ext["projectDisplayName"] = "TeXPrinter"
 ext["projectName"] = ext["projectDisplayName"].toString().toLowerCase()
 ext["moduleName"] = "$group.${ext["projectName"]}"
 ext["mainClassName"] = "${ext["moduleName"]}.${ext["projectDisplayName"]}"
-ext["releasename"] = "Yummy past\u00e9is"
+ext["releasename"] = "Yummy pastéis"
 ext["authorname"] = "Paulo Roberto Massa Cereda and Ben Frank"
 
 repositories {
   mavenCentral()
+  maven("https://kotlin.bintray.com/kotlinx")
 }
 
 plugins {
-  kotlin("jvm") version "1.2.51"
+  kotlin("jvm") version "1.2.60"
   application
+  id("kotlinx-serialization") version "0.6.1"
 }
 
 val kotlinVersion = plugins.getPlugin(KotlinPluginWrapper::class.java).kotlinPluginVersion
 dependencies {
-  implementation(kotlin("stdlib", kotlinVersion))
-  implementation(kotlin("stdlib-jdk8", kotlinVersion))
-  implementation("com.itextpdf:itext7-core:7.1.2")
-  implementation("com.itextpdf:html2pdf:2.0.2")
-  implementation("org.jsoup:jsoup:1.11.3")
-  implementation("io.github.microutils:kotlin-logging:1.5.8")
-  implementation("org.slf4j:slf4j-simple:1.8.0-beta2") // needed for kotlin-logging
-  implementation("no.tornado:tornadofx:1.7.16")
+  implementation(kotlin("stdlib", kotlinVersion)) // Apache 2.0
+  implementation(kotlin("stdlib-jdk8", kotlinVersion)) // Apache 2.0
+  implementation("com.itextpdf:itext7-core:7.1.2") // AGPL 3.0
+  implementation("com.itextpdf:html2pdf:2.0.2") // AGPL 3.0
+  implementation("org.jsoup:jsoup:1.11.3") // MIT
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.6.1") // Apache 2.0
+  implementation("io.github.microutils:kotlin-logging:1.5.9") // Apache 2.0
+  implementation("org.slf4j:slf4j-simple:1.8.0-beta2") // MIT
+  implementation("no.tornado:tornadofx:1.7.16") // Apache 2.0
   if (JavaVersion.current() >= JavaVersion.VERSION_1_9) {
-    implementation("org.controlsfx:controlsfx:9.0.0")
+    implementation("org.controlsfx:controlsfx:9.0.0") // BSD 3-clause
   } else {
-    implementation("org.controlsfx:controlsfx:8.40.14")
+    implementation("org.controlsfx:controlsfx:8.40.14") // BSD 3-clause
   }
-  testImplementation("io.kotlintest:kotlintest-runner-junit5:3.1.8")
+  testImplementation("io.kotlintest:kotlintest-runner-junit5:3.1.9") // Apache 2.0
 }
 
 application {
@@ -79,7 +83,7 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<ProcessResources> {
   outputs.upToDateWhen { false } // always reprocess
-  filesMatching(listOf("**/*.md", "**/*.properties")) {
+  filesMatching(listOf("**/*.md", "**/*.json")) {
     println("# BUILD Processing file: " + this.file.absolutePath)
     expand(mapOf(
         "application_name" to project.name,
@@ -159,8 +163,7 @@ tasks {
             "--add-exports=javafx.controls/com.sun.javafx.scene.control.inputmap=ALL-UNNAMED",
             "--add-exports=javafx.base/com.sun.javafx.event=ALL-UNNAMED",
             "--add-exports=javafx.base/com.sun.javafx.collections=ALL-UNNAMED",
-            "--add-exports=javafx.base/com.sun.javafx.runtime=ALL-UNNAMED",
-            "--add-exports=javafx.web/com.sun.webkit=ALL-UNNAMED"
+            "--add-exports=javafx.base/com.sun.javafx.runtime=ALL-UNNAMED"
         )
         java.sourceSets["main"].compileClasspath = files()
       }
