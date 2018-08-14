@@ -30,15 +30,12 @@
  ******************************************************************************/
 package com.gitlab.cereda.texprinter.ui
 
-import javafx.fxml.FXML
-import javafx.fxml.Initializable
-import javafx.scene.layout.VBox
+import javafx.scene.Node
 import javafx.scene.text.Font
 import javafx.scene.text.Text
 import javafx.scene.text.TextFlow
-import java.net.URL
-import java.nio.charset.Charset
-import java.util.*
+import tornadofx.Controller
+import tornadofx.observableList
 
 /**
  * Provides the JavaFX controller for the about/changelog window.
@@ -47,22 +44,22 @@ import java.util.*
  * @version 3.0
  * @since 3.0
  */
-class AboutWindowController : Initializable {
-  @FXML
-  private lateinit var changeLogBox: VBox
-
-  override fun initialize(p0: URL?, p1: ResourceBundle?) {
-    val changeLogMD = javaClass.getResource("/com/gitlab/cereda/texprinter/config/changelog.md").readText(Charset.defaultCharset())
+class AboutWindowController : Controller() {
+  val changelogItems = observableList<Node>()
+  init {
+    val changeLogMD = javaClass
+        .getResource("/com/gitlab/cereda/texprinter/config/changelog.md")
+        .readText()
     changeLogMD.split("\n").forEach {
       if (it.startsWith("#")) {
-        changeLogBox.children.add(TextFlow().apply {
+        changelogItems.add(TextFlow().apply {
           children.add(Text(it.replace("#", "").trim()).apply {
             font = Font.font(18.0)
             underlineProperty().set(true)
           })
         })
       } else if (it.isNotBlank()) {
-        changeLogBox.children.add(TextFlow().apply {
+        changelogItems.add(TextFlow().apply {
           children.add(Text(it.replace("*", "").trim()))
         })
       }
