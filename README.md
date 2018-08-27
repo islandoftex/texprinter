@@ -41,10 +41,8 @@ open source license by the [Open Source Initiative](http://www.opensource.org/).
 TeXPrinter uses Gradle, so with any Java 9/Java 10 configuration and Gradle you are good to go.
 Please note that as JavaFX is used you are required to have it included in your JDK.
 
-If you're using Java 8 you need to run something like
-
-    mv src/main/kotlin/module-info.java src/main/kotlin/module-info.java_NOTSOURCE
-
-before executing gradle.
+Please note that you might need adapt the source compatibility in the Gradle file to Java 9 if you are
+running anything above JDK 8. This enables the `module-info.java` file, disables a manifest workaround
+and uses the appropriate library versions, if available.
 
 Our typical test cases involve posts 101, 1319 and 57141.
