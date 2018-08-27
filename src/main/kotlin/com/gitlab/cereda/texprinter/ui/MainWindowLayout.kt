@@ -68,32 +68,6 @@ class MainWindowLayout : View("TeXPrinter") {
     }
   }
   var urlOrId: TextField by singleAssign()
-  val inputType = SegmentedButton().apply {
-    prefHeight = 26.0
-    styleClass.add(SegmentedButton.STYLE_CLASS_DARK)
-    buttons.setAll(ToggleButton("By URL").apply {
-      userData = "url"
-      prefHeight = 23.0
-      isSelected = true
-    }, ToggleButton("By ID (number)").apply {
-      userData = "id"
-      prefHeight = 23.0
-    })
-    toggleGroup.selectedToggleProperty().addListener { _, _, newToggle ->
-      if (newToggle.userData == "id") {
-        if (urlOrId.text.contains("[^\\d]".toRegex()))
-          urlOrId.text = ""
-        urlOrId.textProperty().addListener(controller.digitListener)
-        urlOrId.promptText = "ID (only numbers)"
-        controller.inputType = MainWindowController.InputType.ID
-      } else {
-        urlOrId.textProperty().removeListener(controller.digitListener)
-        urlOrId.promptText = "URL (pointing to a TeX.SX post)"
-        controller.inputType = MainWindowController.InputType.URL
-      }
-    }
-    disableProperty().bind(controller.processing)
-  }
   override val root = vbox {
     prefHeight = 350.0
     prefWidth = 600.0
@@ -129,7 +103,32 @@ class MainWindowLayout : View("TeXPrinter") {
           }
         }
         pane { hgrow = Priority.ALWAYS }
-        add(inputType)
+        add(SegmentedButton().apply {
+          prefHeight = 26.0
+          styleClass.add(SegmentedButton.STYLE_CLASS_DARK)
+          buttons.setAll(ToggleButton("By URL").apply {
+            userData = "url"
+            prefHeight = 23.0
+            isSelected = true
+          }, ToggleButton("By ID (number)").apply {
+            userData = "id"
+            prefHeight = 23.0
+          })
+          toggleGroup.selectedToggleProperty().addListener { _, _, newToggle ->
+            if (newToggle.userData == "id") {
+              if (urlOrId.text.contains("[^\\d]".toRegex()))
+                urlOrId.text = ""
+              urlOrId.textProperty().addListener(controller.digitListener)
+              urlOrId.promptText = "ID (only numbers)"
+              controller.inputType = MainWindowController.InputType.ID
+            } else {
+              urlOrId.textProperty().removeListener(controller.digitListener)
+              urlOrId.promptText = "URL (pointing to a TeX.SX post)"
+              controller.inputType = MainWindowController.InputType.URL
+            }
+          }
+          disableProperty().bind(controller.processing)
+        })
       }
       urlOrId = textfield {
         promptText = "URL (pointing to a TeX.SX post)"

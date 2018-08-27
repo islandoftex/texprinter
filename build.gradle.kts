@@ -1,3 +1,6 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.gradle.api.internal.project.ProjectInternal
+import org.gradle.api.java.archives.internal.DefaultManifest
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.gradle.jvm.tasks.Jar
 import org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper
@@ -32,9 +35,36 @@ repositories {
 }
 
 plugins {
-  kotlin("jvm") version "1.2.60"
+  kotlin("jvm") version "1.2.61"
   application
-  id("kotlinx-serialization") version "0.6.1"
+  id("com.github.johnrengelman.shadow") version "2.0.4" // Apache 2.0
+  id("kotlinx-serialization") version "0.6.1" // Apache 2.0
+}
+
+application {
+  applicationName = ext["projectDisplayName"].toString()
+  mainClassName = ext["mainClassName"].toString()
+}
+
+java {
+  sourceCompatibility = JavaVersion.VERSION_1_8
+  targetCompatibility = sourceCompatibility
+  sourceSets {
+    "main" {
+      java {
+        setSrcDirs(listOf("src/main/kotlin"))
+        if (sourceCompatibility >= JavaVersion.VERSION_1_9) {
+          srcDir("src/main/jpms")
+        }
+      }
+    }
+    "resources" {
+      java.setSrcDirs(listOf("src/main/resources"))
+    }
+    "test" {
+      java.setSrcDirs(listOf("src/test/kotlin"))
+    }
+  }
 }
 
 val kotlinVersion = plugins.getPlugin(KotlinPluginWrapper::class.java).kotlinPluginVersion
@@ -47,34 +77,13 @@ dependencies {
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.6.1") // Apache 2.0
   implementation("io.github.microutils:kotlin-logging:1.5.9") // Apache 2.0
   implementation("org.slf4j:slf4j-simple:1.8.0-beta2") // MIT
-  implementation("no.tornado:tornadofx:1.7.16") // Apache 2.0
-  if (JavaVersion.current() >= JavaVersion.VERSION_1_9) {
+  implementation("no.tornado:tornadofx:1.7.17") // Apache 2.0
+  if (java.sourceCompatibility >= JavaVersion.VERSION_1_9) {
     implementation("org.controlsfx:controlsfx:9.0.0") // BSD 3-clause
   } else {
     implementation("org.controlsfx:controlsfx:8.40.14") // BSD 3-clause
   }
   testImplementation("io.kotlintest:kotlintest-runner-junit5:3.1.9") // Apache 2.0
-}
-
-application {
-  applicationName = ext["projectDisplayName"].toString()
-  mainClassName = ext["mainClassName"].toString()
-}
-
-java {
-  sourceCompatibility = JavaVersion.current()
-  targetCompatibility = sourceCompatibility
-  sourceSets {
-    "main" {
-      java.setSrcDirs(listOf("src/main/kotlin"))
-    }
-    "resources" {
-      java.setSrcDirs(listOf("src/main/resources"))
-    }
-    "test" {
-      java.setSrcDirs(listOf("src/test/kotlin"))
-    }
-  }
 }
 
 tasks.withType<KotlinCompile> {
@@ -107,37 +116,38 @@ val compileKotlin: KotlinCompile by tasks
 val compileJava: JavaCompile by tasks
 compileJava.destinationDir = compileKotlin.destinationDir
 
-task<Jar>("uberJar") {
-  dependsOn(":jar")
-  classifier = "with-deps"
-  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-  configurations["compileClasspath"].forEach { file: File ->
-    from(zipTree(file.absoluteFile))
+if (JavaVersion.current() >= JavaVersion.VERSION_1_9) {
+  task<Exec>("createStandaloneRuntime") {
+    dependsOn(":uberJar")
+    workingDir("build")
+    commandLine(
+        "jlink --module-path libs:${org.gradle.internal.jvm.Jvm.current().javaHome}/jmods:" +
+        "${java.sourceSets["main"].compileClasspath.asPath} " +
+        "--add-modules ${ext["moduleName"]} " +
+        "--launcher ${ext["moduleName"]}=${ext["moduleName"]}/${ext["mainClassName"]} " +
+        "--output dist --strip-debug --compress 2 --no-header-files --no-man-pages")
   }
-  from(compileKotlin.destinationDir)
-  from(java.sourceSets["resources"].allSource)
 }
 
-task<Exec>("createStandaloneRuntime") {
-  dependsOn(":uberJar")
-  workingDir("build")
-  commandLine(
-      "jlink --module-path libs:${org.gradle.internal.jvm.Jvm.current().javaHome}/jmods:" +
-      "${java.sourceSets["main"].compileClasspath.asPath} " +
-      "--add-modules ${ext["moduleName"]} " +
-      "--launcher ${ext["moduleName"]}=${ext["moduleName"]}/${ext["mainClassName"]} " +
-      "--output dist --strip-debug --compress 2 --no-header-files --no-man-pages")
-}
-
-tasks.withType<Jar> {
-  doFirst {
-    manifest {
+val mainManifest: Manifest = DefaultManifest((project as ProjectInternal).fileResolver)
+    .apply {
       attributes["Implementation-Title"] = ext["projectDisplayName"]
       attributes["Implementation-Version"] = version
       attributes["Main-Class"] = ext["mainClassName"]
+      if (java.sourceCompatibility < JavaVersion.VERSION_1_9) {
+        attributes["Automatic-Module-Name"] = ext["moduleName"]
+      }
     }
-  }
+tasks.withType<Jar> {
+  doFirst { manifest.attributes.putAll(mainManifest.attributes) }
+  appendix = "jdk" + java.targetCompatibility.majorVersion
 }
+tasks.withType<ShadowJar> {
+  doFirst { manifest.attributes.putAll(mainManifest.attributes) }
+  appendix = "jdk" + java.targetCompatibility.majorVersion + "-with-deps"
+  classifier = ""
+}
+tasks.getByName("assembleDist").dependsOn("shadowJar")
 
 tasks {
   "compileKotlin" {
@@ -148,7 +158,7 @@ tasks {
   }
   "compileJava" {
     dependsOn(":compileKotlin")
-    if (JavaVersion.current() >= JavaVersion.VERSION_1_9) {
+    if (java.sourceCompatibility >= JavaVersion.VERSION_1_9) {
       inputs.property("moduleName", ext["moduleName"])
       doFirst {
         println("# BUILD Compiling module ${ext["moduleName"]}")
@@ -171,16 +181,7 @@ tasks {
   }
   "run" {
     doFirst { println("# BUILD Starting to run ${ext["moduleName"]}") }
-    if (JavaVersion.current() >= JavaVersion.VERSION_1_9)
+    if (java.sourceCompatibility >= JavaVersion.VERSION_1_9)
       inputs.property("moduleName", ext["moduleName"])
-  }
-  "jar" {
-    doFirst { println("# BUILD Packaging application") }
-  }
-  "uberJar" {
-    doFirst { println("# BUILD Packaging jar with dependencies") }
-  }
-  "assembleDist" {
-    dependsOn(":uberJar")
   }
 }

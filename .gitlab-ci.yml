@@ -1,23 +1,23 @@
-# Currently we are building with JDK 8 to be able to use JavaFX
-image: openjdk:8-jdk
-
 # Disable the Gradle daemon for Continuous Integration servers
 variables:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
   GRADLE_STRING: "gradle-4.9"
 
-build:
+stages:
+  - build
+  - test
+
+before_script:
+  - apt-get update -yq && apt-get install --no-install-recommends -y wget openjfx && rm -f /var/lib/apt/lists/*_dists_*
+  - wget --no-verbose --output-document=gradle.zip "https://services.gradle.org/distributions/$GRADLE_STRING-bin.zip"
+  - unzip gradle.zip
+  - rm gradle.zip
+  - $GRADLE_STRING/bin/gradle --version
+
+buildjdk8:
+  image: openjdk:8-jdk # currently we are building with JDK 8 to be able to use JavaFX
   stage: build
-  before_script:
-    - apt-get update -yq && apt-get install --no-install-recommends -y wget openjfx && rm -f /var/lib/apt/lists/*_dists_*
-    - wget --no-verbose --output-document=gradle.zip "https://services.gradle.org/distributions/$GRADLE_STRING-bin.zip"
-    - unzip gradle.zip
-    - rm gradle.zip
-    - $GRADLE_STRING/bin/gradle --version
-    - if [ -f src/main/kotlin/module-info.java ]; then mv src/main/kotlin/module-info.java src/main/kotlin/module-info.java_NOSOURCE; fi
   script: $GRADLE_STRING/bin/gradle --build-cache assembleDist
-  after_script:
-    - if [ -f src/main/kotlin/module-info.java_NOSOURCE ]; then mv src/main/kotlin/module-info.java_NOSOURCE src/main/kotlin/module-info.java; fi
   artifacts:
     paths:
       - build/libs/*.jar
@@ -29,3 +29,14 @@ build:
     paths:
       - build
       - .gradle
+
+testjdk8:
+  image: openjdk:8-jdk # currently we are building with JDK 8 to be able to use JavaFX
+  stage: test
+  script: $GRADLE_STRING/bin/gradle --build-cache test
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: push
+    paths:
+    - build
+    - .gradle

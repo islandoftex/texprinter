@@ -72,7 +72,9 @@ class MainWindowController : Controller() {
   fun fetchIt() {
     val questionID = urlOrId.value
     if (questionID.isBlank()) {
-      Alert(Alert.AlertType.ERROR, "You didn't provide enough information to fetch a post.", ButtonType.OK).showAndWait()
+      Alert(Alert.AlertType.ERROR,
+          "You didn't provide enough information to fetch a post.",
+          ButtonType.OK).showAndWait()
       return
     }
 

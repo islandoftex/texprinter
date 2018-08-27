@@ -42,7 +42,6 @@ import kotlinx.serialization.json.JSON
 import mu.KotlinLogging
 import tornadofx.App
 import tornadofx.launch
-import java.io.File
 import java.time.LocalDate
 
 /**
@@ -61,11 +60,11 @@ class TeXPrinter : App(MainWindowLayout::class) {
 
   companion object {
     var isConsoleApplication: Boolean = false
-    val config = JSON.parse<Configuration>(File(this::class.java
+    val config = JSON.parse<Configuration>(this::class.java
         .getResource("/com/gitlab/cereda/texprinter/config/texprinter.json")
-        .toURI()).readText())
+        .readText())
 
-    private const val DEBUG: Boolean = true
+    private const val DEBUG: Boolean = false
     private val logger = KotlinLogging.logger { }
 
     /**
@@ -147,6 +146,9 @@ class TeXPrinter : App(MainWindowLayout::class) {
       try {
         launch<TeXPrinter>(args)
       } catch (ex: Exception) {
+        if (DEBUG) {
+          ex.printStackTrace()
+        }
         Dialogs.showExceptionWindow(ex)
       }
     }
