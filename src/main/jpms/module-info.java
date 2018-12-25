@@ -6,8 +6,11 @@ module com.gitlab.cereda.texprinter {
   requires kotlin.logging;
   requires org.slf4j;
   // resources and JavaFX interface
+  requires javafx.base;
   requires javafx.controls;
   requires javafx.graphics;
+  requires javafx.media;
+  requires javafx.web;
   requires controlsfx;
   requires tornadofx;
   // post analysis

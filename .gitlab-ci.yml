@@ -1,42 +1,72 @@
 # Disable the Gradle daemon for Continuous Integration servers
 variables:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
-  GRADLE_STRING: "gradle-4.9"
+  GRADLE_STRING: "gradle-5.0"
 
 stages:
   - build
   - test
 
 before_script:
-  - apt-get update -yq && apt-get install --no-install-recommends -y wget openjfx && rm -f /var/lib/apt/lists/*_dists_*
+  - apt-get update -yq && apt-get install --no-install-recommends -y wget openjfx && rm -rf /var/lib/apt/lists/*
   - wget --no-verbose --output-document=gradle.zip "https://services.gradle.org/distributions/$GRADLE_STRING-bin.zip"
   - unzip gradle.zip
   - rm gradle.zip
   - $GRADLE_STRING/bin/gradle --version
 
-buildjdk8:
-  image: openjdk:8-jdk # currently we are building with JDK 8 to be able to use JavaFX
+.buildtemplate: &builddefinition
   stage: build
-  script: $GRADLE_STRING/bin/gradle --build-cache assembleDist
+  script:
+    - $GRADLE_STRING/bin/gradle --build-cache assembleDist --info
+    - mkdir bin
+    - cp build/libs/*.jar bin/
+    - cp build/distributions/*.zip bin/
   artifacts:
+    name: "$CI_COMMIT_REF_NAME-snapshot"
     paths:
-      - build/libs/*.jar
-      - build/distributions/*.zip
+      - bin
     expire_in: 1 week
   cache:
-    key: "$CI_COMMIT_REF_NAME"
+    key: "$CI_COMMIT_REF_NAME-$JAVA_VERSION"
     policy: push
     paths:
       - build
       - .gradle
 
-testjdk8:
-  image: openjdk:8-jdk # currently we are building with JDK 8 to be able to use JavaFX
+build:linux:jdk8:
+  image: openjdk:8-jdk
+  variables:
+    JAVA_VERSION: "8"
+  <<: *builddefinition
+
+build:linux:jdk11:
+  image: openjdk:11-jdk
+  variables:
+    JAVA_VERSION: "11"
+  <<: *builddefinition
+
+.testtemplate: &testdefinition
   stage: test
-  script: $GRADLE_STRING/bin/gradle --build-cache test
+  script: $GRADLE_STRING/bin/gradle test
   cache:
-    key: "$CI_COMMIT_REF_NAME"
-    policy: push
+    key: "$CI_COMMIT_REF_NAME-$JAVA_VERSION"
+    policy: pull
     paths:
-    - build
-    - .gradle
+      - build
+      - .gradle
+
+test:linux:jdk8:
+  dependencies:
+    - build:linux:jdk8
+  image: openjdk:8-jdk
+  variables:
+    JAVA_VERSION: "8"
+  <<: *testdefinition
+
+test:linux:jdk11:
+  dependencies:
+    - build:linux:jdk11
+  image: openjdk:11-jdk
+  variables:
+    JAVA_VERSION: "11"
+  <<: *testdefinition

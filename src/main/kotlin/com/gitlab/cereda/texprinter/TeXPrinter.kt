@@ -60,9 +60,10 @@ class TeXPrinter : App(MainWindowLayout::class) {
 
   companion object {
     var isConsoleApplication: Boolean = false
-    val config = JSON.parse<Configuration>(this::class.java
-        .getResource("/com/gitlab/cereda/texprinter/config/texprinter.json")
-        .readText())
+    val config = JSON.parse(Configuration.serializer(),
+        this::class.java
+            .getResource("/com/gitlab/cereda/texprinter/config/texprinter.json")
+            .readText())
 
     private const val DEBUG: Boolean = false
     private val logger = KotlinLogging.logger { }
