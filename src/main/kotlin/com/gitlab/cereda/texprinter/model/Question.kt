@@ -119,8 +119,8 @@ class Question
 
       // get the question votes
       val questionVote = doc.select("div#question").first()
-          .select("div.vote").first()
-          .select("span.vote-count-post").first()
+          .select("div.js-voting-container").first()
+          .select("div.js-vote-count").first()
       // log message
       logger.info { "Setting the question votes." }
       // set the votes
@@ -358,11 +358,11 @@ class Question
           a.text = answersTexts[counter].html()
 
           // get the votes
-          val theVotes = answersBlock.select("div.vote")
+          val theVotes = answersBlock.select("div.js-voting-container")
           // log message
           logger.info { "Adding votes for answer ${counter + 1}." }
           // set the votes
-          a.votes = theVotes[counter].select("span.vote-count-post")
+          a.votes = theVotes[counter].select("div.js-vote-count")
               .first().text().toInt()
 
           // check if it is accepted

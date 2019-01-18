@@ -34,7 +34,7 @@ plugins {
   val kotlinVersion = "1.3.11"
   kotlin("jvm") version kotlinVersion
   application
-  id("com.github.johnrengelman.shadow") version "4.0.2" // Apache 2.0
+  id("com.github.johnrengelman.shadow") version "4.0.3" // Apache 2.0
   id("kotlinx-serialization") version kotlinVersion // Apache 2.0
 }
 
@@ -74,7 +74,7 @@ dependencies {
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.9.1") // Apache 2.0
   implementation("io.github.microutils:kotlin-logging:1.6.22") // Apache 2.0
   implementation("org.slf4j:slf4j-simple:1.8.0-beta2") // MIT
-  implementation("no.tornado:tornadofx:1.7.17") // Apache 2.0
+  implementation("no.tornado:tornadofx:1.7.18") // Apache 2.0
   if (JavaVersion.current() >= JavaVersion.VERSION_1_9) {
     implementation("org.controlsfx:controlsfx:9.0.0") // BSD 3-clause
   } else {

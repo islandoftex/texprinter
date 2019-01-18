@@ -1,7 +1,7 @@
 # Disable the Gradle daemon for Continuous Integration servers
 variables:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
-  GRADLE_STRING: "gradle-5.0"
+  GRADLE_STRING: "gradle-5.1"
 
 stages:
   - build
