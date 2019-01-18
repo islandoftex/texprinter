@@ -84,7 +84,7 @@ dependencies {
 }
 
 group = "com.gitlab.cereda"
-version = "3.0.0"
+version = "3.0.1"
 val projectDisplayName = "TeXPrinter"
 val projectName = projectDisplayName.toLowerCase()
 val moduleName = "$group.$projectName"
@@ -209,12 +209,12 @@ compileJava.apply {
 tasks {
   named<Jar>("jar") {
     manifest.attributes.putAll(mainManifest.attributes)
-    appendix = "jdk" + java.targetCompatibility.majorVersion
+    archiveAppendix.set("jdk" + java.targetCompatibility.majorVersion)
   }
   named<ShadowJar>("shadowJar") {
     manifest.attributes.putAll(mainManifest.attributes)
-    appendix = "jdk" + java.targetCompatibility.majorVersion + "-with-deps"
-    classifier = ""
+    archiveAppendix.set("jdk" + java.targetCompatibility.majorVersion + "-with-deps")
+    archiveClassifier.set("")
   }
   named<JavaExec>("run") {
     main = mainClass // TODO: why?
@@ -223,10 +223,10 @@ tasks {
         logger.info("Appending JVM arguments for external JavaFX")
         jvmArgs = listOf(
             "--module-path", classpath.asPath,
-            "--add-modules", javafxModules.joinToString(",")/*,
-            "--add-exports", "javafx.graphics/com.sun.javafx.text=ALL-UNNAMED",
-            "--add-opens", "javafx.graphics/javafx.scene=ALL-UNNAMED",
-            "--add-opens", "javafx.graphics/javafx.scene.text=ALL-UNNAMED"*/
+            "--add-modules", javafxModules.joinToString(","),
+            "--add-exports=javafx.base/com.sun.javafx.runtime=ALL-UNNAMED",
+            "--add-exports=javafx.graphics/com.sun.javafx.css=ALL-UNNAMED",
+            "--add-exports=javafx.graphics/com.sun.javafx.geom=ALL-UNNAMED"
         )
       }
     }

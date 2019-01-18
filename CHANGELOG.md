@@ -2,6 +2,11 @@
 
 ## 3.x series
 
+### 3.0.1
+
+* Adapt to changes in SX page model
+* Fix smaller annoyances with JavaFX on JDK 11
+
 ### 3.0.0
 
 * Huge performance boost due to upgrade of the PDF library

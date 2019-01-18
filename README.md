@@ -1,6 +1,6 @@
 # TeXPrinter
 
-> **Current stable version:** 3.0.0 - Yummy pastéis  
+> **Current stable version:** 3.0.1 - Yummy pastéis  
 > [![build status](https://gitlab.com/benfrank/texprinter/badges/master/pipeline.svg)](https://gitlab.com/benfrank/texprinter/commits/master)
 
 ## The application
@@ -22,12 +22,22 @@ Of course, you need to compile it.
 
 Please note that only the main [TeX.SX](http://tex.stackexchange.com/) website is supported.
 
-## Highlights of Yummy pastéis (v3.0.0)
+## Highlights of Yummy pastéis (v3.0)
 
 * Huge performance boost due to upgrade of the PDF library
 * Completely rewritten in Kotlin for better maintenance and user experience.
 * Polished UI using JavaFX
 * New minimum system requirement: Java 8
+
+## System requirements
+
+TeXPrinter ships as ZIP file (JAR and a library folder with dependencies) and as a JAR with dependencies.
+If you are using Java 8 you are good to go. On Linux you might need to install the `openjfx` package of
+your distribution.
+
+Should you be one of the Java 11 users please note that you will be required to invoke the JAR file with
+additional arguments as done in our build file. We strongly recommend to use the stable Java 8 build for now.
+Hence, we do not provide the (expert) guide for executing TeXPrinter on Java 11.
 
 ## License
 
