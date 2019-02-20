@@ -1,7 +1,7 @@
 # TeXPrinter
 
-> **Current stable version:** 3.0.1 - Yummy pastéis  
-> [![build status](https://gitlab.com/benfrank/texprinter/badges/master/pipeline.svg)](https://gitlab.com/benfrank/texprinter/commits/master)
+> **Current stable version:** 3.0.2 – Yummy pastéis  
+> [![build status](https://gitlab.com/islandoftex/texprinter/badges/master/pipeline.svg)](https://gitlab.com/islandoftex/texprinter/commits/master)
 
 ## The application
 

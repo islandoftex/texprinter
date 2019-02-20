@@ -1,4 +1,4 @@
-module com.gitlab.cereda.texprinter {
+module org.islandoftex.texprinter {
   // Kotlin compatibility
   requires kotlin.stdlib;
   requires kotlinx.serialization.runtime;
@@ -21,5 +21,5 @@ module com.gitlab.cereda.texprinter {
   requires html2pdf;
   requires kernel;
   // module
-  exports com.gitlab.cereda.texprinter;
+  exports org.islandoftex.texprinter;
 }

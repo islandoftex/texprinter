@@ -2,6 +2,10 @@
 
 ## 3.x series
 
+### 3.0.2
+
+* Move to the new home on the Island of TeX (Gitlab group)
+
 ### 3.0.1
 
 * Adapt to changes in SX page model
