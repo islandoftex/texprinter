@@ -1,7 +1,9 @@
 # TeXPrinter
 
-> **Current stable version:** 3.0.2 – Yummy pastéis  
-> [![build status](https://gitlab.com/islandoftex/texprinter/badges/master/pipeline.svg)](https://gitlab.com/islandoftex/texprinter/commits/master)
+> **Current stable version:**
+> [![current version](https://img.shields.io/badge/dynamic/json.svg?style=for-the-badge&color=lightgray&label=Yummy%20pastéis&query=%24.0.name&url=https%3A%2F%2Fgitlab.com%2Fapi%2Fv4%2Fprojects%2F6431709%2Frepository%2Ftags)](https://gitlab.com/islandoftex/texprinter/tags)
+> [![build status](https://img.shields.io/gitlab/pipeline/islandoftex/texprinter.svg?style=for-the-badge)](https://gitlab.com/islandoftex/texprinter/commits/master)
+> [Download TeXPrinter](https://gitlab.com/islandoftex/texprinter/tags)
 
 ## The application
 
@@ -29,7 +31,7 @@ Please note that only the main [TeX.SX](http://tex.stackexchange.com/) website i
 * Polished UI using JavaFX
 * New minimum system requirement: Java 8
 
-## System requirements
+## System requirements and Installation
 
 TeXPrinter ships as ZIP file (JAR and a library folder with dependencies) and as a JAR with dependencies.
 If you are using Java 8 you are good to go. On Linux you might need to install the `openjfx` package of
@@ -38,6 +40,9 @@ your distribution.
 Should you be one of the Java 11 users please note that you will be required to invoke the JAR file with
 additional arguments as done in our build file. We strongly recommend to use the stable Java 8 build for now.
 Hence, we do not provide the (expert) guide for executing TeXPrinter on Java 11.
+
+TeXPrinter does not need to be installed. Simply [download the JAR file](https://gitlab.com/islandoftex/texprinter/tags)
+and execute it.
 
 ## License
 

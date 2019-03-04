@@ -37,7 +37,8 @@ import org.islandoftex.texprinter.utils.AppUtils
 import org.islandoftex.texprinter.utils.Dialogs
 import mu.KotlinLogging
 import java.io.File
-import java.io.FileWriter
+import java.io.FileOutputStream
+import java.io.OutputStreamWriter
 
 /**
  * Provides the TeX generation from a Question object.
@@ -63,7 +64,7 @@ object TeXGenerator {
 
     // define the file writer
     try {
-      FileWriter(File(filename)).use { document ->
+      OutputStreamWriter(FileOutputStream(filename), Charsets.UTF_8).use { document ->
         // create a new configuration retriever
         val config = TeXPrinter.config
         // log message

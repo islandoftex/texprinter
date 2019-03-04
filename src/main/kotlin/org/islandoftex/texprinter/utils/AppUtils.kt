@@ -62,6 +62,13 @@ object AppUtils {
    */
   fun escapeHTMLtoTeX(text: String): String {
     var newText = text
+        // replace headings
+        .replace("<h1>","\\subsubsubsection*{")
+        .replace("</h1>","}")
+        .replace("<h2>","\\paragraph*{")
+        .replace("</h2>","}")
+        .replace("<h3>","\\par\\emph{")
+        .replace("</h3>","} -- ")
         // replace bold tags
         .replace("<b>", "\\textbf{")
         .replace("</b>", "}")
@@ -91,7 +98,7 @@ object AppUtils {
         .replace("</blockquote>", "\\end{quotation}\n")
         // replace code tags
         .replace("<pre><code>", "\\begin{TeXPrinterListing}\n")
-        .replace("<pre class=.*\"><code>", "\\begin{TeXPrinterListing}\n")
+        .replace("<pre class=.*\">\\s*<code>".toRegex(), "\\begin{TeXPrinterListing}\n")
         .replace("</code></pre>", "\\end{TeXPrinterListing}\n\n")
         .replace("<pre>", "\\begin{TeXPrinterListing}\n")
         .replace("</pre>", "\\end{TeXPrinterListing}\n")
@@ -102,11 +109,13 @@ object AppUtils {
         .replace("</font>", "|")
         // replace links tags
         .replace("rel=\".*\"\\s*".toRegex(), "")
-        // replace spurious spaces
-        .replace("\"\\s>".toRegex(), "\">")
-        .replace("\"/>", "\" />")
+        // unify spaces
+        .replace("\"\\s*/>".toRegex(), "\" />")
+        .replace("\"\\s*>".toRegex(), "\">")
         // replace line breaks
-        .replace("<br/>", "")
+        .replace("<br\\s*/>".toRegex(), "\n")
+        // replace horizontal rules
+        .replace("<hr\\s*/>".toRegex(), "\\\\par\\\\hrulefill\\\\par")
 
     // parse the text
     val docLinks = Jsoup.parse(newText)
