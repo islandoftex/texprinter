@@ -11,6 +11,7 @@ hs_err_pid*
 *.iml
 .idea/
 .gradle
+.kotlintest
 gradlew
 gradlew.bat
 ./*.xml

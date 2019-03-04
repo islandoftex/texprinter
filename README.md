@@ -1,9 +1,8 @@
 # TeXPrinter
 
 > **Current stable version:**
-> [![current version](https://img.shields.io/badge/dynamic/json.svg?style=for-the-badge&color=lightgray&label=Yummy%20pastéis&query=%24.0.name&url=https%3A%2F%2Fgitlab.com%2Fapi%2Fv4%2Fprojects%2F6431709%2Frepository%2Ftags)](https://gitlab.com/islandoftex/texprinter/tags)
-> [![build status](https://img.shields.io/gitlab/pipeline/islandoftex/texprinter.svg?style=for-the-badge)](https://gitlab.com/islandoftex/texprinter/commits/master)
-> [Download TeXPrinter](https://gitlab.com/islandoftex/texprinter/tags)
+> [![current version](https://img.shields.io/badge/dynamic/json.svg?style=for-the-badge&color=lightgray&label=Yummy%20pastéis&query=%24.0.name&url=https%3A%2F%2Fgitlab.com%2Fapi%2Fv4%2Fprojects%2F6431709%2Frepository%2Ftags)](https://gitlab.com/islandoftex/texprinter/tags) – [Download TeXPrinter](https://gitlab.com/islandoftex/texprinter/tags)  
+> **Development version:** [![build status](https://img.shields.io/gitlab/pipeline/islandoftex/texprinter.svg?style=for-the-badge)](https://gitlab.com/islandoftex/texprinter/commits/master)
 
 ## The application
 

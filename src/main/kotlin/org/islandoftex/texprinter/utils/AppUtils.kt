@@ -63,12 +63,12 @@ object AppUtils {
   fun escapeHTMLtoTeX(text: String): String {
     var newText = text
         // replace headings
-        .replace("<h1>","\\subsubsubsection*{")
-        .replace("</h1>","}")
-        .replace("<h2>","\\paragraph*{")
-        .replace("</h2>","}")
-        .replace("<h3>","\\par\\emph{")
-        .replace("</h3>","} -- ")
+        .replace("<h1>", "\\subsubsubsection*{")
+        .replace("</h1>", "}")
+        .replace("<h2>", "\\paragraph*{")
+        .replace("</h2>", "}")
+        .replace("<h3>", "\\par\\emph{")
+        .replace("</h3>", "} -- ")
         // replace bold tags
         .replace("<b>", "\\textbf{")
         .replace("</b>", "}")
@@ -154,19 +154,19 @@ object AppUtils {
         img.name = "example-image.pdf"
       }
 
-      // TODO: insufficient, because of alt-text
       val caption = if (img.altText.isNotBlank() &&
                         !img.altText.startsWith("enter image") &&
-                        img.altText != "alt text") "\n\\\\caption{${img.altText}}"
+                        img.altText != "alt text") "\n\\caption{${img.altText}}"
       else ""
+      val figure = """
+\begin{figure}
+\centering
+\includegraphics[scale=0.5]{${img.name}}$caption
+\end{figure}
+"""
       newText = newText
-          .replace((if (img.altText.isBlank()) "<img src=\"${img.url}\" />"
-          else "<img src=\"${img.url}\" alt=\"${img.altText}\" />")
-              .toRegex(), """\\begin{figure}[htbp]
-\\centering
-\\includegraphics[scale=0.5]{${img.name}}$caption
-\\end{figure}
-""")
+          .replace("<img src=\"${img.url}\" />", figure)
+          .replace("<img src=\"${img.url}\" alt=\"${img.altText}\" />", figure)
     }
 
     // unescape all HTML entities

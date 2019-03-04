@@ -39,7 +39,7 @@ plugins {
 }
 
 val kotlinVersion = plugins.getPlugin(KotlinPluginWrapper::class.java).kotlinPluginVersion
-val javafxVersion = "11.0.1"
+val javafxVersion = "11.0.2"
 val javafxPlatform = org.gradle.internal.os.OperatingSystem.current().let {
   when {
     it.isWindows -> "win"
@@ -80,7 +80,7 @@ dependencies {
   } else {
     implementation("org.controlsfx:controlsfx:8.40.14") // BSD 3-clause
   }
-  testImplementation("io.kotlintest:kotlintest-runner-junit5:3.2.1") // Apache 2.0
+  testImplementation("io.kotlintest:kotlintest-runner-junit5:3.3.0") // Apache 2.0
 }
 
 group = "org.islandoftex"
