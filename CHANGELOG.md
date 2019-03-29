@@ -2,6 +2,11 @@
 
 ## 3.x series
 
+### 3.0.3
+
+* UTF-8 encoding is now enforced (even on non-UTF-8 platforms)
+* HTML to TeX conversion is a bit more robust (especially image handling)
+
 ### 3.0.2
 
 * Move to the new home on the Island of TeX (Gitlab group)
