@@ -1,18 +1,10 @@
-# Disable the Gradle daemon for Continuous Integration servers
 variables:
+  # disable the Gradle daemon for Continuous Integration servers
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
-  GRADLE_STRING: "gradle-5.2.1"
 
 stages:
   - build
   - test
-
-before_script:
-  - apt-get update -yq && apt-get install --no-install-recommends -y wget openjfx && rm -rf /var/lib/apt/lists/*
-  - wget --no-verbose --output-document=gradle.zip "https://services.gradle.org/distributions/$GRADLE_STRING-bin.zip"
-  - unzip gradle.zip
-  - rm gradle.zip
-  - $GRADLE_STRING/bin/gradle --version
 
 .buildtemplate: &builddefinition
   stage: build
@@ -34,20 +26,21 @@ before_script:
       - .gradle
 
 build:linux:jdk8:
-  image: openjdk:8-jdk
+  image: registry.gitlab.com/islandoftex/images/javafx-gradle:jdk8-latest
   variables:
     JAVA_VERSION: "8"
   <<: *builddefinition
 
 build:linux:jdk11:
-  image: openjdk:11-jdk
+  image: registry.gitlab.com/islandoftex/images/javafx-gradle:jdk11-latest
   variables:
     JAVA_VERSION: "11"
   <<: *builddefinition
 
 .testtemplate: &testdefinition
   stage: test
-  script: $GRADLE_STRING/bin/gradle test
+  script:
+    - $GRADLE_STRING/bin/gradle test
   cache:
     key: "$CI_COMMIT_REF_NAME-$JAVA_VERSION"
     policy: pull
@@ -58,7 +51,7 @@ build:linux:jdk11:
 test:linux:jdk8:
   dependencies:
     - build:linux:jdk8
-  image: openjdk:8-jdk
+  image: registry.gitlab.com/islandoftex/images/javafx-gradle:jdk8-latest
   variables:
     JAVA_VERSION: "8"
   <<: *testdefinition
@@ -66,7 +59,7 @@ test:linux:jdk8:
 test:linux:jdk11:
   dependencies:
     - build:linux:jdk11
-  image: openjdk:11-jdk
+  image: registry.gitlab.com/islandoftex/images/javafx-gradle:jdk11-latest
   variables:
     JAVA_VERSION: "11"
   <<: *testdefinition

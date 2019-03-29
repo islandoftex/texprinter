@@ -10,23 +10,32 @@ import java.util.Date
 
 buildscript {
   repositories {
-    mavenCentral()
+    jcenter()
     maven("https://kotlin.bintray.com/kotlinx")
   }
 
+  logger.lifecycle("Checking JDK compatibility")
+  // everything older than Java 8 is unsupported
   if (JavaVersion.current() < JavaVersion.VERSION_1_8) {
-    throw Exception("Incompatible JAVA version")
-  } else if (JavaVersion.current() >= JavaVersion.VERSION_11) {
-    logger.warn("# BUILD WARNING: JDK 11 uses external JavaFX components!")
-    logger.info("# BUILD INFO: We are expecting a JDK 11 build to happen on " +
-                "a JDK that does not include the JavaFX components. If they " +
-                "are present in your classpath the behavior may be undefined.")
+    throw Exception("Incompatible Java version")
   }
-
+  // Java 8 is supported and does not need special attention, let's look at the
+  // more recent versions where currently only Java 11 is supported
+  else if (JavaVersion.current() == JavaVersion.VERSION_11) {
+    logger.warn("# BUILD WARNING: JDK 11 may use external JavaFX components!")
+  }
+  // check non-LTS versions
+  else if (JavaVersion.current() == JavaVersion.VERSION_1_9 ||
+           JavaVersion.current() == JavaVersion.VERSION_1_10 ||
+           JavaVersion.current() > JavaVersion.VERSION_11) {
+    logger.warn("# BUILD WARNING: You are using an intermediate Java version. " +
+                "This build script will silently fail on unexpected behavior. " +
+                "Make sure you have JavaFX set up properly.")
+  }
 }
 
 repositories {
-  mavenCentral()
+  jcenter()
   maven("https://kotlin.bintray.com/kotlinx")
 }
 
@@ -34,8 +43,8 @@ plugins {
   val kotlinVersion = "1.3.21"
   kotlin("jvm") version kotlinVersion
   application
-  id("com.github.johnrengelman.shadow") version "4.0.3" // Apache 2.0
-  id("kotlinx-serialization") version kotlinVersion     // Apache 2.0
+  id("com.github.johnrengelman.shadow") version "4.0.3"  // Apache 2.0
+  id("kotlinx-serialization") version kotlinVersion      // Apache 2.0
 }
 
 val kotlinVersion = plugins.getPlugin(KotlinPluginWrapper::class.java).kotlinPluginVersion
@@ -73,14 +82,14 @@ dependencies {
   implementation("org.jsoup:jsoup:1.11.3") // MIT
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.10.0") // Apache 2.0
   implementation("io.github.microutils:kotlin-logging:1.6.25") // Apache 2.0
-  implementation("org.slf4j:slf4j-simple:1.8.0-beta2") // MIT
+  implementation("org.slf4j:slf4j-simple:1.8.0-beta4") // MIT
   implementation("no.tornado:tornadofx:1.7.18") // Apache 2.0
   if (JavaVersion.current() >= JavaVersion.VERSION_1_9) {
     implementation("org.controlsfx:controlsfx:9.0.0") // BSD 3-clause
   } else {
     implementation("org.controlsfx:controlsfx:8.40.14") // BSD 3-clause
   }
-  testImplementation("io.kotlintest:kotlintest-runner-junit5:3.3.0") // Apache 2.0
+  testImplementation("io.kotlintest:kotlintest-runner-junit5:3.3.1") // Apache 2.0
 }
 
 group = "org.islandoftex"
@@ -147,19 +156,6 @@ tasks.withType<Test> {
   useJUnitPlatform()
   testLogging {
     events(TestLogEvent.FAILED, TestLogEvent.PASSED, TestLogEvent.SKIPPED)
-  }
-}
-
-if (JavaVersion.current() >= JavaVersion.VERSION_1_9) {
-  task<Exec>("createStandaloneRuntime") {
-    dependsOn(":uberJar")
-    workingDir("build")
-    commandLine(
-        "jlink --module-path libs:${org.gradle.internal.jvm.Jvm.current().javaHome}/jmods:" +
-        "${sourceSets["main"].compileClasspath.asPath} " +
-        "--add-modules $moduleName " +
-        "--launcher $moduleName=$moduleName/$mainClass " +
-        "--output dist --strip-debug --compress 2 --no-header-files --no-man-pages")
   }
 }
 
