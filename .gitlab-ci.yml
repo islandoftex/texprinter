@@ -9,7 +9,7 @@ stages:
 .buildtemplate: &builddefinition
   stage: build
   script:
-    - $GRADLE_STRING/bin/gradle --build-cache assembleDist --info
+    - gradle --build-cache assembleDist --info
     - mkdir bin
     - cp build/libs/*.jar bin/
     - cp build/distributions/*.zip bin/
@@ -40,7 +40,7 @@ build:linux:jdk11:
 .testtemplate: &testdefinition
   stage: test
   script:
-    - $GRADLE_STRING/bin/gradle test
+    - gradle test
   cache:
     key: "$CI_COMMIT_REF_NAME-$JAVA_VERSION"
     policy: pull
