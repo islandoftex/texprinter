@@ -53,13 +53,15 @@ import java.time.LocalDate
  */
 class TeXPrinter : App(MainWindowLayout::class) {
   override fun start(stage: Stage) {
-    stage.isResizable = false
+    stage.maxHeight = 375.0
+    stage.minWidth = 600.0
     stage.icons += Image("/org/islandoftex/texprinter/images/printer.png")
     super.start(stage)
   }
 
   companion object {
     var isConsoleApplication: Boolean = false
+
     val config = Json.parse(Configuration.serializer(),
         this::class.java
             .getResource("/org/islandoftex/texprinter/config/texprinter.json")

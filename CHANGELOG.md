@@ -2,6 +2,10 @@
 
 ## 3.x series
 
+### WIP: 3.0.4
+
+* Update dependencies to support Java 11
+
 ### 3.0.3
 
 * UTF-8 encoding is now enforced (even on non-UTF-8 platforms)

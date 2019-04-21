@@ -5,8 +5,9 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.gradle.jvm.tasks.Jar
 import org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.io.ByteArrayOutputStream
 import java.text.SimpleDateFormat
-import java.util.Date
+import java.util.*
 
 buildscript {
   repositories {
@@ -40,15 +41,42 @@ repositories {
 }
 
 plugins {
-  val kotlinVersion = "1.3.21"
+  val kotlinVersion = "1.3.30"
   kotlin("jvm") version kotlinVersion
   application
-  id("com.github.johnrengelman.shadow") version "4.0.3"  // Apache 2.0
+  id("com.github.johnrengelman.shadow") version "5.0.0"  // Apache 2.0
   id("kotlinx-serialization") version kotlinVersion      // Apache 2.0
 }
 
-val kotlinVersion = plugins.getPlugin(KotlinPluginWrapper::class.java).kotlinPluginVersion
-val javafxVersion = "11.0.2"
+val kotlinVersion = plugins.getPlugin(KotlinPluginWrapper::class).kotlinPluginVersion
+val externalJFXVersion = "11.0.2"
+
+val javafxModules = file("src/main/jpms/module-info.java")
+    .readLines().asSequence().filter {
+      it.contains("javafx.")
+    }.map {
+      it.trim().substringBeforeLast(";").substringAfterLast("requires ")
+    }.toList()
+val useExternalJFX: Boolean = if (JavaVersion.current() < JavaVersion.VERSION_11)
+  false
+else {
+  val modules = ByteArrayOutputStream().use {
+    logger.info("Fetching available java modules")
+    exec {
+      commandLine("java", "--list-modules")
+      standardOutput = it
+      errorOutput = it
+      isIgnoreExitValue = true
+    }
+    it.toString().trim()
+  }
+  var external = false
+  javafxModules.forEach {
+    if (!modules.contains(it)) external = true
+  }
+  logger.info("Resorting to external JFX modules: $external")
+  external
+}
 val javafxPlatform = org.gradle.internal.os.OperatingSystem.current().let {
   when {
     it.isWindows -> "win"
@@ -60,36 +88,30 @@ val javafxPlatform = org.gradle.internal.os.OperatingSystem.current().let {
     }
   }
 }
-val javafxModules = file("src/main/jpms/module-info.java")
-    .readLines().asSequence().filter {
-      it.contains("javafx.")
-    }.map {
-      it.trim().substringBeforeLast(";").substringAfterLast("requires ")
-    }.toList()
 
 dependencies {
-  if (JavaVersion.current() >= JavaVersion.VERSION_11) {
-    logger.info("Using external JavaFX components")
+  if (useExternalJFX) {
+    logger.warn("# BUILD WARNING: Using external JavaFX components")
     javafxModules.forEach {
-      implementation("org.openjfx:${it.replace(".", "-")}:$javafxVersion:$javafxPlatform")
+      implementation("org.openjfx:${it
+          .replace(".", "-")}:$externalJFXVersion:$javafxPlatform")
     }
   }
-  implementation(kotlin("stdlib", kotlinVersion)) // Apache 2.0
-  implementation(kotlin("stdlib-jdk8", kotlinVersion)) // Apache 2.0
-  implementation(kotlin("reflect", kotlinVersion)) // Apache 2.0
-  implementation("com.itextpdf:itext7-core:7.1.5") // AGPL 3.0
-  implementation("com.itextpdf:html2pdf:2.1.2") // AGPL 3.0
-  implementation("org.jsoup:jsoup:1.11.3") // MIT
-  implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.10.0") // Apache 2.0
-  implementation("io.github.microutils:kotlin-logging:1.6.25") // Apache 2.0
-  implementation("org.slf4j:slf4j-simple:1.8.0-beta4") // MIT
-  implementation("no.tornado:tornadofx:1.7.18") // Apache 2.0
-  if (JavaVersion.current() >= JavaVersion.VERSION_1_9) {
-    implementation("org.controlsfx:controlsfx:9.0.0") // BSD 3-clause
-  } else {
-    implementation("org.controlsfx:controlsfx:8.40.14") // BSD 3-clause
-  }
-  testImplementation("io.kotlintest:kotlintest-runner-junit5:3.3.1") // Apache 2.0
+  implementation(kotlin("stdlib", kotlinVersion))                              // Apache 2.0
+  implementation(kotlin("stdlib-jdk8", kotlinVersion))                         // Apache 2.0
+  implementation(kotlin("reflect", kotlinVersion))                             // Apache 2.0
+  implementation("com.itextpdf:itext7-core:7.1.5")                             // AGPL 3.0
+  implementation("com.itextpdf:html2pdf:2.1.2")                                // AGPL 3.0
+  implementation("org.jsoup:jsoup:1.11.3")                                     // MIT
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.11.0") // Apache 2.0
+  implementation("io.github.microutils:kotlin-logging:1.6.26")                 // Apache 2.0
+  implementation("org.slf4j:slf4j-simple:1.8.0-beta4")                         // MIT
+  implementation("no.tornado:tornadofx:1.7.18")                                // Apache 2.0
+  implementation("org.controlsfx:controlsfx:${                                 // BSD 3-clause
+  if (JavaVersion.current() >= JavaVersion.VERSION_11) "11.0.0"
+  else "8.40.15"
+  }")
+  testImplementation("io.kotlintest:kotlintest-runner-junit5:3.3.2")           // Apache 2.0
 }
 
 group = "org.islandoftex"
@@ -107,8 +129,8 @@ application {
 }
 
 java {
-  sourceCompatibility = if (JavaVersion.current() > JavaVersion.VERSION_1_8)
-    JavaVersion.VERSION_1_9
+  sourceCompatibility = if (JavaVersion.current() == JavaVersion.VERSION_11)
+    JavaVersion.VERSION_11
   else
     JavaVersion.VERSION_1_8
   targetCompatibility = sourceCompatibility
@@ -134,7 +156,14 @@ sourceSets {
 }
 
 tasks.withType<KotlinCompile> {
-  kotlinOptions.jvmTarget = "1.8"
+  kotlinOptions.apply {
+    apiVersion = "1.3"
+    languageVersion = "1.3"
+    jvmTarget = if (JavaVersion.current() == JavaVersion.VERSION_11)
+      "11"
+    else
+      "1.8"
+  }
 }
 
 tasks.withType<ProcessResources> {
@@ -213,7 +242,6 @@ tasks {
     archiveClassifier.set("")
   }
   named<JavaExec>("run") {
-    main = mainClass // TODO: why?
     if (JavaVersion.current() >= JavaVersion.VERSION_11) {
       doFirst {
         logger.info("Appending JVM arguments for external JavaFX")

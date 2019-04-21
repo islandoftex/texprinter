@@ -9,10 +9,14 @@ stages:
 .buildtemplate: &builddefinition
   stage: build
   script:
+    # create the executables for distribution
     - gradle --build-cache assembleDist --info
     - mkdir bin
     - cp build/libs/*.jar bin/
     - cp build/distributions/*.zip bin/
+    # create checksum file to make sure we're distributing the right thing
+    - cd bin
+    - md5sum *.{jar,zip} > checksums.txt
   artifacts:
     name: "$CI_COMMIT_REF_NAME-snapshot"
     paths:

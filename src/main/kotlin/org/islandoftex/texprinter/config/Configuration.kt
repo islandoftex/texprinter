@@ -30,7 +30,6 @@
  ******************************************************************************/
 package org.islandoftex.texprinter.config
 
-import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 
 /**
@@ -42,12 +41,8 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class Configuration(
-    @Optional
-    val appAuthor: String = "Deep thought",
-    @Optional
-    val appVersionNumber: String = "0.0",
-    @Optional
-    val appVersionName: String = "Lazy developer",
-    @Optional
-    val appVersionURL: String = "http://example.com"
+    val appAuthor: String,
+    val appVersionNumber: String,
+    val appVersionName: String,
+    val appVersionURL: String
 )
