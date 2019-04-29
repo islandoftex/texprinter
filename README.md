@@ -32,16 +32,15 @@ Please note that only the main [TeX.SX](http://tex.stackexchange.com/) website i
 
 ## System requirements and Installation
 
-TeXPrinter ships as ZIP file (JAR and a library folder with dependencies) and as a JAR with dependencies.
-If you are using Java 8 you are good to go. On Linux you might need to install the `openjfx` package of
-your distribution.
+TeXPrinter ships as a JAR with dependencies (recommended download) and as ZIP file (JAR and a
+library folder with dependencies). If you are using Java 8 it should run out of the box.
+On Linux you might need to install the `openjfx` package of your distribution.
 
 Should you be one of the Java 11 users please note that you will be required to invoke the JAR file with
 additional arguments as done in our build file. We strongly recommend to use the stable Java 8 build for now.
 Hence, we do not provide the (expert) guide for executing TeXPrinter on Java 11.
 
-TeXPrinter does not need to be installed. Simply [download the JAR file](https://gitlab.com/islandoftex/texprinter/tags)
-and execute it.
+TeXPrinter does not need to be installed. Simply [download the JAR file](https://gitlab.com/islandoftex/texprinter/tags) and execute it.
 
 ## License
 
@@ -52,11 +51,7 @@ open source license by the [Open Source Initiative](http://www.opensource.org/).
 
 ## Building the application
 
-TeXPrinter uses Gradle, so with any Java 9/Java 10 configuration and Gradle you are good to go.
+TeXPrinter uses Gradle, so with any Java development configuration (JDK 8 or higher) you should be good to go.
 Please note that as JavaFX is used you are required to have it included in your JDK.
-
-Please note that you might need adapt the source compatibility in the Gradle file to Java 9 if you are
-running anything above JDK 8. This enables the `module-info.java` file, disables a manifest workaround
-and uses the appropriate library versions, if available.
 
 Our typical test cases involve posts 101, 1319 and 57141.
