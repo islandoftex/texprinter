@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: BSD-3-Clause
+
 module org.islandoftex.texprinter {
   // Kotlin compatibility
   requires kotlin.stdlib;
