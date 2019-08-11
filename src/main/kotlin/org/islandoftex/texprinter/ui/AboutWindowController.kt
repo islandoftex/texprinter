@@ -35,7 +35,7 @@ import javafx.scene.text.Font
 import javafx.scene.text.Text
 import javafx.scene.text.TextFlow
 import tornadofx.Controller
-import tornadofx.observableList
+import tornadofx.observableListOf
 
 /**
  * Provides the JavaFX controller for the about/changelog window.
@@ -45,7 +45,7 @@ import tornadofx.observableList
  * @since 3.0
  */
 class AboutWindowController : Controller() {
-  val changelogItems = observableList<Node>()
+  val changelogItems = observableListOf<Node>()
   init {
     val changeLogMD = javaClass
         .getResource("/org/islandoftex/texprinter/config/changelog.md")

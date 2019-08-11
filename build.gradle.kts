@@ -41,10 +41,10 @@ repositories {
 }
 
 plugins {
-  val kotlinVersion = "1.3.30"
+  val kotlinVersion = "1.3.41"
   kotlin("jvm") version kotlinVersion
   application
-  id("com.github.johnrengelman.shadow") version "5.0.0"  // Apache 2.0
+  id("com.github.johnrengelman.shadow") version "5.1.0"  // Apache 2.0
   id("kotlinx-serialization") version kotlinVersion      // Apache 2.0
 }
 
@@ -100,22 +100,22 @@ dependencies {
   implementation(kotlin("stdlib", kotlinVersion))                              // Apache 2.0
   implementation(kotlin("stdlib-jdk8", kotlinVersion))                         // Apache 2.0
   implementation(kotlin("reflect", kotlinVersion))                             // Apache 2.0
-  implementation("com.itextpdf:itext7-core:7.1.5")                             // AGPL 3.0
-  implementation("com.itextpdf:html2pdf:2.1.2")                                // AGPL 3.0
-  implementation("org.jsoup:jsoup:1.11.3")                                     // MIT
-  implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.11.0") // Apache 2.0
-  implementation("io.github.microutils:kotlin-logging:1.6.26")                 // Apache 2.0
+  implementation("com.itextpdf:itext7-core:7.1.7")                             // AGPL 3.0
+  implementation("com.itextpdf:html2pdf:2.1.4")                                // AGPL 3.0
+  implementation("org.jsoup:jsoup:1.12.1")                                     // MIT
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.11.1") // Apache 2.0
+  implementation("io.github.microutils:kotlin-logging:1.7.4")                  // Apache 2.0
   implementation("org.slf4j:slf4j-simple:1.8.0-beta4")                         // MIT
-  implementation("no.tornado:tornadofx:1.7.18")                                // Apache 2.0
+  implementation("no.tornado:tornadofx:1.7.19")                                // Apache 2.0
   implementation("org.controlsfx:controlsfx:${                                 // BSD 3-clause
   if (JavaVersion.current() >= JavaVersion.VERSION_11) "11.0.0"
   else "8.40.15"
   }")
-  testImplementation("io.kotlintest:kotlintest-runner-junit5:3.3.2")           // Apache 2.0
+  testImplementation("io.kotlintest:kotlintest-runner-junit5:3.4.0")           // Apache 2.0
 }
 
 group = "org.islandoftex"
-version = "3.0.3"
+version = "3.0.4"
 val projectDisplayName = "TeXPrinter"
 val projectName = projectDisplayName.toLowerCase()
 val moduleName = "$group.$projectName"
