@@ -1,8 +1,12 @@
 # TeXPrinter
 
 > **Current stable version:**
-> [![current version](https://img.shields.io/badge/dynamic/json.svg?style=for-the-badge&color=lightgray&label=Yummy%20pastéis&query=%24.0.name&url=https%3A%2F%2Fgitlab.com%2Fapi%2Fv4%2Fprojects%2F6431709%2Frepository%2Ftags)](https://gitlab.com/islandoftex/texprinter/tags) – [Download TeXPrinter](https://gitlab.com/islandoftex/texprinter/tags)  
-> **Development version:** [![build status](https://img.shields.io/gitlab/pipeline/islandoftex/texprinter.svg?style=for-the-badge)](https://gitlab.com/islandoftex/texprinter/commits/master)
+>   [![current version](https://img.shields.io/badge/dynamic/json.svg?style=for-the-badge&color=lightgray&label=Yummy%20pastéis&query=%24.0.name&url=https%3A%2F%2Fgitlab.com%2Fapi%2Fv4%2Fprojects%2F6431709%2Frepository%2Ftags)](https://gitlab.com/islandoftex/texprinter/tags)
+>   – [Download TeXPrinter](https://gitlab.com/islandoftex/texprinter/tags)  
+> **Development version:** [![build status](https://img.shields.io/gitlab/pipeline/islandoftex/texprinter.svg?style=for-the-badge)](https://gitlab.com/islandoftex/texprinter/commits/master)  
+
+> **Please note:** Our main repository is on GitLab (https://gitlab.com/islandoftex/texprinter).
+> Issues, feature requests and merge requests are only handled on GitLab.
 
 ## The application
 
@@ -44,7 +48,7 @@ TeXPrinter does not need to be installed. Simply [download the JAR file](https:/
 
 ## License
 
-This application is licensed under the [New BSD License](https://opensource.org/licenses/BSD-3-Clause).
+This application is licensed under the [BSD 3-Clause license](https://opensource.org/licenses/BSD-3-Clause).
 I want to call your attention to the fact that the New BSD License has been verified as a GPL-compatible 
 free software license by the [Free Software Foundation](http://www.fsf.org/), and has been vetted as an 
 open source license by the [Open Source Initiative](http://www.opensource.org/).
