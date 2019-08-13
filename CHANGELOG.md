@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+
+## [3.0.4] – 2019-08-13
+
 ### Added
 
 * Update dependencies to support Java 11
@@ -102,7 +106,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * First release.
 
-[Unreleased]: https://gitlab.com/islandoftex/texprinter/compare/v3.0.3...master
+[Unreleased]: https://gitlab.com/islandoftex/texprinter/compare/v3.0.4...master
+[3.0.3]: https://gitlab.com/islandoftex/texprinter/compare/v3.0.2...v3.0.4
 [3.0.3]: https://gitlab.com/islandoftex/texprinter/compare/v3.0.2...v3.0.3
 [3.0.2]: https://gitlab.com/islandoftex/texprinter/compare/v3.0.1...v3.0.2
 [3.0.1]: https://gitlab.com/islandoftex/texprinter/compare/v3.0.0...v3.0.1
