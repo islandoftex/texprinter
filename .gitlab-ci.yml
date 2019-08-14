@@ -17,8 +17,6 @@ stages:
     # create checksum file to make sure we're distributing the right thing
     - cd bin
     - md5sum *.{jar,zip} > checksums.txt
-    - _TEXPRINTER_COMPLETE=zsh java -jar TeXPrinter-*-with-deps-*.jar > zsh-completion.sh
-    - _TEXPRINTER_COMPLETE=bash java -jar build/libs/TeXPrinter-*-with-deps-*.jar > bash-completion.sh
   artifacts:
     name: "$CI_COMMIT_REF_NAME-snapshot"
     paths:
