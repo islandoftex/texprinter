@@ -17,6 +17,7 @@ stages:
     # create checksum file to make sure we're distributing the right thing
     - cd bin
     - md5sum *.{jar,zip} > checksums.txt
+    - ls -lisa
     - _TEXPRINTER_COMPLETE=zsh java -jar texprinter-*-with-deps-*.jar > zsh-completion.sh
     - _TEXPRINTER_COMPLETE=bash java -jar texprinter-*-with-deps-*.jar > bash-completion.sh
   artifacts:
