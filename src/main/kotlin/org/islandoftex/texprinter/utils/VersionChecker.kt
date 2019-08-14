@@ -2,9 +2,9 @@
 
 package org.islandoftex.texprinter.utils
 
-import org.islandoftex.texprinter.TeXPrinter
 import javafx.scene.control.Alert
 import javafx.scene.control.ButtonType
+import org.islandoftex.texprinter.AppMain
 import java.net.URL
 import javax.xml.parsers.DocumentBuilderFactory
 
@@ -32,7 +32,7 @@ class VersionChecker : Thread() {
     // lets try
     try {
       // create a new configuration
-      val config = TeXPrinter.config
+      val config = AppMain.config
       // create a new URL from config
       val url = URL(config.appVersionURL)
       // open stream
@@ -58,7 +58,7 @@ class VersionChecker : Thread() {
             buttonTypes.setAll(ButtonType.YES, ButtonType.NO)
             headerText = "Update available"
             contentText = "Your current version of TeXPrinter is outdated. The latest release is $versionNumber.\n" +
-                "Do you want to update your installation?"
+                          "Do you want to update your installation?"
             if (showAndWait().get() == ButtonType.YES) {
               // TODO: update
             }

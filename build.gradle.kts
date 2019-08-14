@@ -100,6 +100,7 @@ dependencies {
   implementation(kotlin("stdlib", kotlinVersion))                              // Apache 2.0
   implementation(kotlin("stdlib-jdk8", kotlinVersion))                         // Apache 2.0
   implementation(kotlin("reflect", kotlinVersion))                             // Apache 2.0
+  implementation("com.github.ajalt:clikt:2.1.0")                               // Apache 2.0
   implementation("com.itextpdf:itext7-core:7.1.7")                             // AGPL 3.0
   implementation("com.itextpdf:html2pdf:2.1.4")                                // AGPL 3.0
   implementation("org.jsoup:jsoup:1.12.1")                                     // MIT
@@ -115,11 +116,11 @@ dependencies {
 }
 
 group = "org.islandoftex"
-version = "3.0.4"
+version = "3.1.0"
 val projectDisplayName = "TeXPrinter"
 val projectName = projectDisplayName.toLowerCase()
 val moduleName = "$group.$projectName"
-val mainClass = "$moduleName.$projectDisplayName"
+val mainClass = "$moduleName.AppMain"
 val releasename = "Yummy pastéis"
 val authorname = "Paulo Roberto Massa Cereda and Ben Frank"
 

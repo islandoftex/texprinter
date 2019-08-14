@@ -1,4 +1,4 @@
-rootProject.name = "TeXPrinter"
+rootProject.name = "texprinter"
 
 pluginManagement {
   resolutionStrategy {

@@ -2,10 +2,10 @@
 
 package org.islandoftex.texprinter.ui
 
-import org.islandoftex.texprinter.TeXPrinter
 import javafx.geometry.Insets
 import javafx.scene.control.TabPane
 import javafx.scene.layout.Priority
+import org.islandoftex.texprinter.AppMain
 import tornadofx.*
 import java.time.LocalDate
 
@@ -27,10 +27,10 @@ class AboutWindowLayout : View("About") {
       spacing = 10.0
       padding = Insets(5.0)
       textflow {
-        text("Version ${TeXPrinter.config.appVersionNumber} " +
-             "(${TeXPrinter.config.appVersionName})\n")
+        text("Version ${AppMain.config.appVersionNumber} " +
+             "(${AppMain.config.appVersionName})\n")
         text("Copyright 2012-${LocalDate.now().year} " +
-             "${TeXPrinter.config.appAuthor}. All rights reserved.")
+             "${AppMain.config.appAuthor}. All rights reserved.")
       }
       textflow {
         text("This application is licensed under the New BSD License. " +

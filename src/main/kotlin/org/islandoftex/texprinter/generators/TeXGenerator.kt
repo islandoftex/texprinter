@@ -8,6 +8,7 @@ import org.islandoftex.texprinter.model.Question
 import org.islandoftex.texprinter.utils.AppUtils
 import org.islandoftex.texprinter.utils.Dialogs
 import mu.KotlinLogging
+import org.islandoftex.texprinter.AppMain
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStreamWriter
@@ -38,7 +39,7 @@ object TeXGenerator {
     try {
       OutputStreamWriter(FileOutputStream(filename), Charsets.UTF_8).use { document ->
         // create a new configuration retriever
-        val config = TeXPrinter.config
+        val config = AppMain.config
         // log message
         logger.info { "Creating LaTeX headers." }
         // create the header

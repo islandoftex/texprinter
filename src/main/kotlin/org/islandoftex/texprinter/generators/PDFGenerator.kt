@@ -2,11 +2,6 @@
 
 package org.islandoftex.texprinter.generators
 
-import org.islandoftex.texprinter.TeXPrinter
-import org.islandoftex.texprinter.model.Post
-import org.islandoftex.texprinter.model.Question
-import org.islandoftex.texprinter.utils.AppUtils
-import org.islandoftex.texprinter.utils.Dialogs
 import com.itextpdf.html2pdf.HtmlConverter
 import com.itextpdf.kernel.colors.ColorConstants
 import com.itextpdf.kernel.pdf.PdfDocument
@@ -22,11 +17,15 @@ import com.itextpdf.layout.element.Paragraph
 import com.itextpdf.layout.property.TextAlignment
 import com.itextpdf.layout.property.UnitValue
 import mu.KotlinLogging
+import org.islandoftex.texprinter.AppMain
+import org.islandoftex.texprinter.model.Post
+import org.islandoftex.texprinter.model.Question
+import org.islandoftex.texprinter.utils.AppUtils
+import org.islandoftex.texprinter.utils.Dialogs
 import org.jsoup.Jsoup
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-
 
 /**
  * Provides the PDF generation from a Question object.
@@ -181,7 +180,7 @@ object PDFGenerator {
           // define a new PDF document
           val pdfDocument = PdfDocument(pdfwriter)
           pdfDocument.use {
-            val config = TeXPrinter.config
+            val config = AppMain.config
             it.documentInfo.apply {
               this.author = "TeXPrinter v${config.appVersionNumber}"
               this.title = "Printed result of post " + filename.replace(".pdf", "")
@@ -190,9 +189,9 @@ object PDFGenerator {
             }
             Document(it).use { doc ->
               question.question.userString = "Asked by " + question.question.user.name +
-                  " (" + question.question.user.reputation + ") on " +
-                  question.question.date + " (" + question.question.votes.toString() +
-                  (if (question.question.votes == 1) " vote" else " votes") + ")"
+                                             " (" + question.question.user.reputation + ") on " +
+                                             question.question.date + " (" + question.question.votes.toString() +
+                                             (if (question.question.votes == 1) " vote" else " votes") + ")"
               addPostToDoc(question.question, doc)
 
               // add a line separator
@@ -236,8 +235,8 @@ object PDFGenerator {
 
                   // user string
                   answer.userString = "Answered by " + answer.user.name + " (" +
-                      answer.user.reputation + ") on " + answer.date + answerAccepted +
-                      " (" + answer.votes.toString() + (if (answer.votes == 1) " vote" else " votes") + ")"
+                                      answer.user.reputation + ") on " + answer.date + answerAccepted +
+                                      " (" + answer.votes.toString() + (if (answer.votes == 1) " vote" else " votes") + ")"
 
                   addPostToDoc(answer, doc)
 

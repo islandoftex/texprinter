@@ -2,129 +2,73 @@
 
 package org.islandoftex.texprinter
 
-import javafx.scene.image.Image
-import javafx.stage.Stage
-import kotlinx.serialization.json.Json
-import mu.KotlinLogging
-import org.islandoftex.texprinter.config.Configuration
+import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.parameters.options.default
+import com.github.ajalt.clikt.parameters.options.flag
+import com.github.ajalt.clikt.parameters.options.option
+import com.github.ajalt.clikt.parameters.types.choice
+import com.github.ajalt.clikt.parameters.types.file
+import com.github.ajalt.clikt.parameters.types.int
+import org.islandoftex.texprinter.AppMain.config
 import org.islandoftex.texprinter.generators.PDFGenerator
 import org.islandoftex.texprinter.generators.TeXGenerator
 import org.islandoftex.texprinter.model.Question
-import org.islandoftex.texprinter.ui.MainWindowLayout
-import org.islandoftex.texprinter.utils.Dialogs
-import tornadofx.App
+import org.islandoftex.texprinter.ui.GUI
 import tornadofx.launch
+import java.io.File
 import java.time.LocalDate
+import kotlin.system.exitProcess
 
 /**
- * The main class.
+ * The CLI.
  *
  * @author Paulo Roberto Massa Cereda
- * @version 3.0
- * @since 1.0
+ * @version 3.1
+ * @since 3.1
  */
-class TeXPrinter : App(MainWindowLayout::class) {
-  override fun start(stage: Stage) {
-    stage.maxHeight = 375.0
-    stage.minWidth = 600.0
-    stage.icons += Image("/org/islandoftex/texprinter/images/printer.png")
-    super.start(stage)
-  }
+class TeXPrinter : CliktCommand() {
+  private val cli by option(help = "Run the application in CLI mode without GUI.")
+      .flag("--gui", default = false)
+  private val questionId by option(help = "The integer identifier of the question to print.")
+      .int()
+      .default(Int.MIN_VALUE)
+  private val output by option(help = "The output format of the print run.")
+      .choice("pdf", "tex")
+  private val filename by option(help = "The file to save to.")
+      .file(exists = false, folderOkay = false)
 
-  companion object {
-    var isConsoleApplication: Boolean = false
+  override fun run() {
+    AppMain.isConsoleApplication = cli
+    if (questionId != Int.MIN_VALUE && output != null) {
+      val file = filename ?: File("$questionId.$output")
 
-    val config = Json.parse(Configuration.serializer(),
-        this::class.java
-            .getResource("/org/islandoftex/texprinter/config/texprinter.json")
-            .readText())
+      echo("\u001b[1mTeXPrinter v${config.appVersionNumber} - A TeX.SX question printer\u001b[0m\n")
+      echo("\u001b[2mCopyright (c) 2012-${LocalDate.now().year}, Paulo Roberto Massa Cereda\u001B[0m")
+      echo("\u001B[2mCopyright (c) 2018-${LocalDate.now().year}, Ben Frank\u001B[0m")
+      echo("\u001B[2mAll rights reserved.\u001B[0m\n")
 
-    private const val DEBUG: Boolean = false
-    private val logger = KotlinLogging.logger { }
+      // fetch the question
+      val q = Question("http://tex.stackexchange.com/questions/$questionId")
 
-    /**
-     * The main method.
-     *
-     * @param args The command line arguments.
-     */
-    @JvmStatic
-    fun main(args: Array<String>) {
-      // configure the logger
-      System.setProperty("org.slf4j.simpleLogger.defaultLogLevel",
-          if (DEBUG) "DEBUG" else "ERROR")
-
-      // the question id
-      var questionId = ""
-
-      // command line parser
-      if (args.isNotEmpty()) {
-        // assume command-line use
-        // parse the arguments
-        var outputFormat = ""
-
-        if ("version" in args) {
-          println("TeXPrinter " + config.appVersionNumber + " - " + config.appVersionName)
-          System.exit(0)
-        } else if ("help" in args) {
-          println("texprinter [ --question-id ID --output EXT | --version | --help ]")
-        }
-
-        args.forEach {
-          val tmp = it.removePrefix("--").split("=")
-          if (tmp.size == 2) {
-            when (tmp[0]) {
-              "question-id" -> {
-                questionId = tmp[1]
-              }
-              "output" -> {
-                outputFormat = if (tmp[1].equals("pdf", ignoreCase = true) ||
-                                   tmp[1].equals("tex", ignoreCase = true)) {
-                  tmp[1]
-                } else {
-                  ""
-                }
-              }
-            }
-          }
-        }
-
-        if (questionId.isNotBlank() && outputFormat.isNotBlank()) {
-          // set the flag
-          isConsoleApplication = true
-          println("\u001b[1mTeXPrinter v${config.appVersionNumber} - A TeX.SX question printer\u001b[0m\n")
-          println("\u001b[2mCopyright (c) 2012-${LocalDate.now().year}, Paulo Roberto Massa Cereda\u001B[0m")
-          println("\u001B[2mCopyright (c) 2018-${LocalDate.now().year}, Ben Frank\u001B[0m")
-          println("\u001B[2mAll rights reserved.\u001B[0m\n")
-
-          // fetch the question
-          val q = Question("http://tex.stackexchange.com/questions/" + questionId.trim())
-          // set the filename
-          var filename = questionId.trim()
-
-          // check the result
-          if (outputFormat == "pdf") {
-            // set the filename to PDF
-            filename = "$filename.pdf"
-            // and generate it
-            PDFGenerator.generate(q, filename)
-          } else {
-            // set the filename to TeX
-            filename = "$filename.tex"
-            // and generate it
-            TeXGenerator.generate(q, filename)
-          }
-
-          logger.info { "Done! The new file was generated successfully! Have fun!" }
-          System.exit(0)
-        }
+      // check the result
+      if (output == "pdf") {
+        PDFGenerator.generate(q, file.name)
+      } else {
+        TeXGenerator.generate(q, file.name)
       }
+
+      echo("Done! The new file was generated successfully! Have fun!")
+      exitProcess(0)
+    } else if (cli) {
+      echo("No parameters provided!", err = true)
+    }
+    if (!cli) {
       try {
-        launch<TeXPrinter>(args)
+        launch<GUI>()
       } catch (ex: Exception) {
-        if (DEBUG) {
+        if (AppMain.DEBUG) {
           ex.printStackTrace()
         }
-        Dialogs.showExceptionWindow(ex)
       }
     }
   }

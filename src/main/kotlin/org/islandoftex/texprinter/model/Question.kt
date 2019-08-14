@@ -9,6 +9,7 @@ import javafx.application.Platform
 import javafx.scene.control.Alert
 import javafx.scene.control.ButtonType
 import mu.KotlinLogging
+import org.islandoftex.texprinter.AppMain
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import java.io.IOException
@@ -427,7 +428,7 @@ class Question
       }
 
       // show dialog
-      if (!TeXPrinter.isConsoleApplication) {
+      if (!AppMain.isConsoleApplication) {
         Platform.runLater {
           Alert(Alert.AlertType.ERROR,
               "I'm sorry to tell you this, but the question ID you " +
