@@ -12,7 +12,6 @@ import java.util.*
 buildscript {
   repositories {
     jcenter()
-    maven("https://kotlin.bintray.com/kotlinx")
   }
 
   logger.lifecycle("Checking JDK compatibility")
@@ -37,15 +36,15 @@ buildscript {
 
 repositories {
   jcenter()
-  maven("https://kotlin.bintray.com/kotlinx")
 }
 
 plugins {
-  val kotlinVersion = "1.3.41"
+  val kotlinVersion = "1.3.61"
   kotlin("jvm") version kotlinVersion
   application
-  id("com.github.johnrengelman.shadow") version "5.1.0"  // Apache 2.0
-  id("kotlinx-serialization") version kotlinVersion      // Apache 2.0
+  id("com.github.ben-manes.versions") version "0.27.0"                  // Apache 2.0
+  id("com.github.johnrengelman.shadow") version "5.2.0"                 // Apache 2.0
+  id("org.jetbrains.kotlin.plugin.serialization") version kotlinVersion // Apache 2.0
 }
 
 val kotlinVersion = plugins.getPlugin(KotlinPluginWrapper::class).kotlinPluginVersion
@@ -98,21 +97,19 @@ dependencies {
     }
   }
   implementation(kotlin("stdlib", kotlinVersion))                              // Apache 2.0
-  implementation(kotlin("stdlib-jdk8", kotlinVersion))                         // Apache 2.0
-  implementation(kotlin("reflect", kotlinVersion))                             // Apache 2.0
-  implementation("com.github.ajalt:clikt:2.1.0")                               // Apache 2.0
-  implementation("com.itextpdf:itext7-core:7.1.7")                             // AGPL 3.0
-  implementation("com.itextpdf:html2pdf:2.1.4")                                // AGPL 3.0
+  implementation("com.github.ajalt:clikt:2.3.0")                               // Apache 2.0
+  implementation("com.itextpdf:itext7-core:7.1.9")                             // AGPL 3.0
+  implementation("com.itextpdf:html2pdf:2.1.6")                                // AGPL 3.0
   implementation("org.jsoup:jsoup:1.12.1")                                     // MIT
-  implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.11.1") // Apache 2.0
-  implementation("io.github.microutils:kotlin-logging:1.7.4")                  // Apache 2.0
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.14.0") // Apache 2.0
+  implementation("io.github.microutils:kotlin-logging:1.7.8")                  // Apache 2.0
   implementation("org.slf4j:slf4j-simple:1.8.0-beta4")                         // MIT
   implementation("no.tornado:tornadofx:1.7.19")                                // Apache 2.0
   implementation("org.controlsfx:controlsfx:${                                 // BSD 3-clause
-  if (JavaVersion.current() >= JavaVersion.VERSION_11) "11.0.0"
-  else "8.40.15"
+  if (JavaVersion.current() >= JavaVersion.VERSION_11) "11.0.1"
+  else "8.40.16"
   }")
-  testImplementation("io.kotlintest:kotlintest-runner-junit5:3.4.0")           // Apache 2.0
+  testImplementation("io.kotlintest:kotlintest-runner-junit5:3.4.2")           // Apache 2.0
 }
 
 group = "org.islandoftex"
