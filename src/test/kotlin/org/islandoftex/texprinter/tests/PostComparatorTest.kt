@@ -2,8 +2,8 @@
 
 package org.islandoftex.texprinter.tests
 
-import io.kotlintest.shouldBe
-import io.kotlintest.specs.ShouldSpec
+import io.kotest.core.spec.style.ShouldSpec
+import io.kotest.matchers.shouldBe
 import org.islandoftex.texprinter.model.Post
 import org.islandoftex.texprinter.utils.PostComparator
 import java.util.*
@@ -16,7 +16,7 @@ import java.util.*
  * @since 1.1
  */
 class PostComparatorTest : ShouldSpec({
-  "PriorityQueue" {
+  context("PriorityQueue") {
     should("check posts with no acceptance PriorityQueue") {
       val queue = PriorityQueue(1, PostComparator())
 
@@ -85,7 +85,7 @@ class PostComparatorTest : ShouldSpec({
     }
   }
 
-  "ArrayList" {
+  context("ArrayList") {
     should("check posts with no acceptance ArrayList") {
       val list = arrayListOf(
           Post().apply {

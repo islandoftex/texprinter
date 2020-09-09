@@ -3,7 +3,10 @@
 module org.islandoftex.texprinter {
   // Kotlin compatibility
   requires kotlin.stdlib;
-  requires kotlinx.serialization.runtime;
+  requires kotlinx.serialization.core.jvm;
+
+  // command line utility
+  requires clikt.jvm;
 
   // logging
   requires kotlin.logging;

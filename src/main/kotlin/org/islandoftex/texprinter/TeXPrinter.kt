@@ -35,7 +35,7 @@ class TeXPrinter : CliktCommand() {
   private val output by option(help = "The output format of the print run.")
       .choice("pdf", "tex")
   private val filename by option(help = "The file to save to.")
-      .file(exists = false, folderOkay = false)
+      .file(mustExist = false, canBeDir = false)
 
   override fun run() {
     AppMain.isConsoleApplication = cli

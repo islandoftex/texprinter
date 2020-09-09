@@ -39,12 +39,12 @@ repositories {
 }
 
 plugins {
-  val kotlinVersion = "1.3.72"
+  val kotlinVersion = "1.4.0"
   kotlin("jvm") version kotlinVersion
+  kotlin("plugin.serialization") version kotlinVersion
   application
-  id("com.github.ben-manes.versions") version "0.28.0"                  // Apache 2.0
-  id("com.github.johnrengelman.shadow") version "5.2.0"                 // Apache 2.0
-  id("org.jetbrains.kotlin.plugin.serialization") version kotlinVersion // Apache 2.0
+  id("com.github.ben-manes.versions") version "0.31.0"                  // Apache 2.0
+  id("com.github.johnrengelman.shadow") version "6.0.0"                 // Apache 2.0
 }
 
 val kotlinVersion = plugins.getPlugin(KotlinPluginWrapper::class).kotlinPluginVersion
@@ -96,21 +96,22 @@ dependencies {
           .replace(".", "-")}:$externalJFXVersion:$javafxPlatform")
     }
   }
-  implementation(kotlin("stdlib", kotlinVersion))                              // Apache 2.0
-  implementation("com.github.ajalt:clikt:2.6.0")                               // Apache 2.0
-  implementation("com.itextpdf:itext7-core:7.1.10")                            // AGPL 3.0
-  implementation("com.itextpdf:html2pdf:2.1.7")                                // AGPL 3.0
-  implementation("org.jsoup:jsoup:1.13.1")                                     // MIT
-  implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0") // Apache 2.0
-  implementation("io.github.microutils:kotlin-logging:1.7.9")                  // Apache 2.0
-  implementation("org.slf4j:slf4j-simple:2.0.0-alpha1")                        // MIT
-  implementation("no.tornado:tornadofx:1.7.20")                                // Apache 2.0
-  implementation("org.controlsfx:controlsfx:${                                 // BSD 3-clause
-  if (JavaVersion.current() >= JavaVersion.VERSION_11) "11.0.1"
+  implementation(kotlin("stdlib", kotlinVersion))                                // Apache 2.0
+  implementation(kotlin("reflect", kotlinVersion))                               // Apache 2.0
+  implementation("com.github.ajalt.clikt:clikt:3.0.1")                           // Apache 2.0
+  implementation("com.itextpdf:itext7-core:7.1.12")                              // AGPL 3.0
+  implementation("com.itextpdf:html2pdf:3.0.1")                                  // AGPL 3.0
+  implementation("org.jsoup:jsoup:1.13.1")                                       // MIT
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.0.0-RC")    // Apache 2.0
+  implementation("io.github.microutils:kotlin-logging:1.8.3")                    // Apache 2.0
+  implementation("org.slf4j:slf4j-simple:2.0.0-alpha1")                          // MIT
+  implementation("no.tornado:tornadofx:1.7.20")                                  // Apache 2.0
+  implementation("org.controlsfx:controlsfx:${                                   // BSD 3-clause
+  if (JavaVersion.current() >= JavaVersion.VERSION_11) "11.0.2"
   else "8.40.16"
   }")
-  testImplementation("io.kotest:kotest-runner-junit5-jvm:4.0.2")               // Apache 2.0
-  testImplementation("io.kotest:kotest-assertions-core-jvm:4.0.2")             // Apache 2.0
+  testImplementation("io.kotest:kotest-runner-junit5-jvm:4.2.3")                 // Apache 2.0
+  testImplementation("io.kotest:kotest-assertions-core-jvm:4.2.3")               // Apache 2.0
 }
 
 group = "org.islandoftex"
@@ -118,17 +119,16 @@ version = "3.1.0"
 val projectDisplayName = "TeXPrinter"
 val projectName = projectDisplayName.toLowerCase()
 val moduleName = "$group.$projectName"
-val mainClass = "$moduleName.AppMain"
 val releasename = "Yummy pastéis"
 val authorname = "Paulo Roberto Massa Cereda and Ben Frank"
 
 application {
   applicationName = projectDisplayName
-  mainClassName = mainClass
+  mainClassName = "$moduleName.AppMain"
 }
 
 java {
-  sourceCompatibility = if (JavaVersion.current() == JavaVersion.VERSION_11)
+  sourceCompatibility = if (JavaVersion.current() >= JavaVersion.VERSION_11)
     JavaVersion.VERSION_11
   else
     JavaVersion.VERSION_1_8
@@ -191,7 +191,7 @@ val mainManifest: Manifest = DefaultManifest((project as ProjectInternal).fileRe
     .apply {
       attributes["Implementation-Title"] = projectDisplayName
       attributes["Implementation-Version"] = version
-      attributes["Main-Class"] = mainClass
+      attributes["Main-Class"] = "$moduleName.AppMain"
       if (java.sourceCompatibility < JavaVersion.VERSION_1_9) {
         attributes["Automatic-Module-Name"] = moduleName
       }

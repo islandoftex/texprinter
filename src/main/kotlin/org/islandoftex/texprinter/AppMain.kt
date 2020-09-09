@@ -1,6 +1,7 @@
 package org.islandoftex.texprinter
 
 import com.github.ajalt.clikt.parameters.options.versionOption
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.islandoftex.texprinter.config.Configuration
 
@@ -14,8 +15,7 @@ import org.islandoftex.texprinter.config.Configuration
 object AppMain {
   const val DEBUG: Boolean = false
   var isConsoleApplication: Boolean = false
-  val config = Json.parse(Configuration.serializer(),
-      this::class.java
+  val config = Json.decodeFromString<Configuration>(this::class.java
           .getResource("/org/islandoftex/texprinter/config/texprinter.json")
           .readText())
 
